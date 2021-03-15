@@ -2020,8 +2020,8 @@ PetscErrorCode PCCompareSubKSP(MPI_Comm comm,PetscInt n,KSP *ksp,PetscBool *cmp)
   ierr = PetscFunctionListGet(KSPList,&karray,&kn);CHKERRQ(ierr);
   ierr = PetscFunctionListGet(PCList,&parray,&pn);CHKERRQ(ierr);
 #if !defined(PETSC_USE_64BIT_INDICES)
-  if (kn > PETSC_MAX_INT) SETERRQ2(PETSC_COMM_SELF,PETSC_ERR_ARG_SIZ,"Size of the list of KSP %d exceeds PETSC_MAX_IT %D",kn,PETSC_MAX_INT);
-  if (pn > PETSC_MAX_INT) SETERRQ2(PETSC_COMM_SELF,PETSC_ERR_ARG_SIZ,"Size of the list of PC %d exceeds PETSC_MAX_IT %D",pn,PETSC_MAX_INT);
+  if (kn > PETSC_MAX_INT) SETERRQ2(PETSC_COMM_SELF,PETSC_ERR_ARG_SIZ,"Size of the list of KSP %d exceeds PETSC_MAX_INT %D",kn,PETSC_MAX_INT);
+  if (pn > PETSC_MAX_INT) SETERRQ2(PETSC_COMM_SELF,PETSC_ERR_ARG_SIZ,"Size of the list of PC %d exceeds PETSC_MAX_INT %D",pn,PETSC_MAX_INT);
 #endif
   if (*cmp) {
     if (n) {
