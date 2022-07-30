@@ -462,6 +462,25 @@ static PetscErrorCode PCApply_HYPRE(PC pc,Vec b,Vec x)
   PetscFunctionReturn(0);
 }
 
+static PetscErrorCode PCMatApply_HYPRE_BoomerAMG(PC pc,Mat B,Mat X)
+{
+  PC_HYPRE           *jac = (PC_HYPRE*)pc->data;
+  Mat_HYPRE          *hjac = (Mat_HYPRE*)(jac->hpmat->data);
+  HYPRE_ParCSRMatrix hmat;
+  const PetscScalar  *b;
+  PetscScalar        *x;
+
+  PetscFunctionBegin;
+  PetscCall(PetscCitationsRegister(hypreCitation,&cite));
+  PetscCall(MatDenseGetArrayRead(B, &b));
+  PetscCall(MatDenseGetArrayWrite(X, &x));
+  /* need to pass those row pointers to hypre multivectors */
+  /* need to call the multivectors version of HYPRE_Int (*solve)(HYPRE_Solver,HYPRE_ParCSRMatrix,HYPRE_ParVector,HYPRE_ParVector) */
+  PetscCall(MatDenseRestoreArrayWrite(X, &x));
+  PetscCall(MatDenseRestoreArrayRead(B, &b));
+  PetscFunctionReturn(0);
+}
+
 static PetscErrorCode PCReset_HYPRE(PC pc)
 {
   PC_HYPRE       *jac = (PC_HYPRE*)pc->data;
@@ -1906,6 +1925,7 @@ static PetscErrorCode  PCHYPRESetType_HYPRE(PC pc,const char name[])
     pc->ops->view            = PCView_HYPRE_BoomerAMG;
     pc->ops->applytranspose  = PCApplyTranspose_HYPRE_BoomerAMG;
     pc->ops->applyrichardson = PCApplyRichardson_HYPRE_BoomerAMG;
+    pc->ops->matapply        = PCMatApply_HYPRE_BoomerAMG;
     PetscCall(PetscObjectComposeFunction((PetscObject)pc,"PCGetInterpolations_C",PCGetInterpolations_BoomerAMG));
     PetscCall(PetscObjectComposeFunction((PetscObject)pc,"PCGetCoarseOperators_C",PCGetCoarseOperators_BoomerAMG));
     jac->destroy             = HYPRE_BoomerAMGDestroy;
