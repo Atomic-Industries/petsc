@@ -120,6 +120,7 @@ Changes: Development
 - Change ``DMPlexMarkBoundaryFaces()`` to avoid marking faces on the parallel boundary. To get the prior behavior, you can temporarily remove the ``PointSF`` from the ``DM``
 - Add ``-dm_localize_height`` to localize edges and faces
 - Add ``DMPlexCreateHypercubicMesh()`` to create hypercubic meshes needed for QCD
+- Add addtional parameters, ``ignoreLabelHalo`` and ``addOverlap``, to ``DMPlexFilter()``
 
 .. rubric:: FE/FV:
 
