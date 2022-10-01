@@ -1,8 +1,8 @@
 #include <petsc/private/dmnetworkimpl.h> /*I  "petscdmnetwork.h"  I*/
 
 typedef struct {
-  PetscInt  x;
-  PetscInt  y;
+  double    x;
+  double    y;
   PetscReal color;
 } Coordinates;
 
@@ -60,10 +60,10 @@ static PetscErrorCode EdgeSublineCreate_coord(DM dmnetwork,PetscInt e,Edge *edge
   PetscCall(VecGetValues(coords,2,rows,val+2));
 
   /* get cord[from] and cord[to] */
-  cord[from].x = (PetscInt)val[0];
-  cord[from].y = (PetscInt)val[1];
-  cord[to].x   = (PetscInt)val[2];
-  cord[to].y   = (PetscInt)val[3];
+  cord[from].x = (double)val[0];
+  cord[from].y = (double)val[1];
+  cord[to].x   = (double)val[2];
+  cord[to].y   = (double)val[3];
 
   /* cord[]-+1: offset in (x,y) of plot centering */
   if (cord[from].y > cord[to].y) {
@@ -103,11 +103,11 @@ static PetscErrorCode EdgeSublineWrite(Edge *edge_ptr,char *line,FILE *fp)
   PetscInt       j;
 
   PetscFunctionBegin;
-  sprintf(line,"%d,%d,%d\n",edge->n_sublines,edge->sublines[0].x,edge->sublines[0].y);
+  sprintf(line,"%d,%f,%f\n",edge->n_sublines,edge->sublines[0].x,edge->sublines[0].y);
   fputs(line, fp);
 
   for (j = 1; j <  edge->n_sublines; j++) {
-    sprintf(line,"%d,%d,%f\n",edge->sublines[j].x,edge->sublines[j].y,edge->color[j-1]); //x,y,color
+    sprintf(line,"%f,%f,%f\n",edge->sublines[j].x,edge->sublines[j].y,edge->color[j-1]); //x,y,color
     fputs(line, fp);
   }
   PetscCall(PetscFree2(edge->color, edge->sublines));
@@ -121,12 +121,13 @@ static PetscErrorCode DMView_Network_python(DM dmnetwork)
   MPI_Comm       comm;
   Coordinates    *cord;
   Edge           *edges;
-  PetscInt       nv=0,ne=0,i,xmax,xmin,ymin,ymax;
+  PetscInt       nv=0,ne=0,i;
+  double         xmax,xmin,ymin,ymax,min[4],max[4];
   PetscInt       Nsubnet,net;
   const PetscInt *vtx,*e;
   FILE           *fp;
   char           fileName[20], line[1000];
-  PetscInt       globalIndex,min[4],max[4];
+  PetscInt       globalIndex;
 
   PetscFunctionBegin;
   PetscCall(PetscObjectGetComm((PetscObject)dmnetwork,&comm));
@@ -159,25 +160,21 @@ static PetscErrorCode DMView_Network_python(DM dmnetwork)
     }
 
     /* Sync xmin, xmax, ymin, ymax over all processors */
-    PetscCallMPI(MPI_Allreduce(min, min+2, 2, MPIU_INT,MPIU_MIN,comm));
+    PetscCallMPI(MPI_Allreduce(min, min+2, 2, MPIU_REAL,MPIU_MIN,comm));
     xmin = min[2]; ymin = min[3];
 
-    PetscCallMPI(MPI_Allreduce(max, max+2, 2, MPIU_INT,MPIU_MAX,comm));
+    PetscCallMPI(MPI_Allreduce(max, max+2, 2, MPIU_REAL,MPIU_MAX,comm));
     xmax = max[2]; ymax = max[3];
-    /* printf("[%d] xmin/max: %d, %d, ymin/max: %d, %d\n",mpi_rank,xmin,xmax,ymin,ymax); */
+    /* printf("[%d] xmin/max: %g, %g, ymin/max: %g, %g\n",mpi_rank,xmin,xmax,ymin,ymax); */
 
     sprintf(fileName, "Net_proc%d_snet.txt",mpi_rank);
     fp = fopen(fileName, "r");
     if (fp == NULL) {
       fp = fopen(fileName, "a");
       /* min/max for 3D nv/ne used for data readin, size for # of networks, and 1 for the first time call */
-      sprintf(line, "%d,%d,%d,%d,%d,%d,%d,%d\n",xmin,xmax,ymin,ymax,nv,ne,mpi_size,1);
+      sprintf(line, "%f,%f,%f,%f\n",xmin,xmax,ymin,ymax);
       fputs(line, fp);
-    } else {
-      int time=1;
-      fclose(fp);
-      sprintf(line, "%d,%d,%d,%d,%d,%d,%d,%d\n",xmin,xmax,ymin,ymax,nv,ne,mpi_size,time);
-      fp = fopen(fileName, "r+");
+      sprintf(line, "%d,%d,%d\n",nv,ne,mpi_size);
       fputs(line, fp);
     }
     fclose(fp);
@@ -187,7 +184,7 @@ static PetscErrorCode DMView_Network_python(DM dmnetwork)
     fputs("Node Locations:\n", fp);
     for (i = 0; i < nv; i++) {
       PetscCall(DMNetworkGetGlobalVertexIndex(dmnetwork, vtx[i], &globalIndex));
-      sprintf(line,"%d,%d,%f,%d\n",cord[i].x,cord[i].y,cord[i].color,globalIndex);
+      sprintf(line,"%f,%f,%f,%d\n",cord[i].x,cord[i].y,cord[i].color,globalIndex);
       fputs(line, fp);
     }
 
