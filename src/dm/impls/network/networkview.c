@@ -3,15 +3,15 @@
 typedef struct {
   double    x;
   double    y;
-  PetscReal color;
+  double    color;
 } Coordinates;
 
 typedef struct {
-  PetscInt    from[2];   /* x,y from */
-  PetscInt    to[2];     /* x, y to */
+  double      from[2];   /* x,y from */
+  double      to[2];     /* x, y to */
+  double      *color;
   Coordinates *sublines; /* dim = n_sublines */
   PetscInt    n_sublines;
-  PetscReal   *color;
 } *Edge;
 
 /*
@@ -66,32 +66,38 @@ static PetscErrorCode EdgeSublineCreate_coord(DM dmnetwork,PetscInt e,Edge *edge
   cord[to].y   = (double)val[3];
 
   /* cord[]-+1: offset in (x,y) of plot centering */
-  if (cord[from].y > cord[to].y) {
-    if (cord[from].x > cord[to].x) {
-      edge->from[0] = cord[from].x-1;  edge->from[1] = cord[from].y-1;
-      edge->to[0]   = cord[to].x-1;    edge->to[1]   = cord[to].y-1;
-    } else if (cord[from].x <= cord[to].x) {
-      edge->from[0] = cord[from].x-1;  edge->from[1] = cord[from].y + 1;
-      edge->to[0]   = cord[to].x-1;    edge->to[1]   = cord[to].y + 1;
+  offset = 0.0;//1.0; when there are more than one edge between vfrom and vto!
+  if (offset != 0.0) {
+    if (cord[from].y > cord[to].y) {
+      if (cord[from].x > cord[to].x) {
+        edge->from[0] = cord[from].x-offset;  edge->from[1] = cord[from].y-offset;
+        edge->to[0]   = cord[to].x-offset;    edge->to[1]   = cord[to].y-offset;
+      } else if (cord[from].x <= cord[to].x) {
+        edge->from[0] = cord[from].x-offset;  edge->from[1] = cord[from].y +offset;
+        edge->to[0]   = cord[to].x-offset;    edge->to[1]   = cord[to].y +offset;
+      }
+    } else if (cord[from].y <= cord[to].y) {
+      if (cord[from].x > cord[to].x) {
+        edge->from[0] = cord[from].x +offset;  edge->from[1] = cord[from].y-offset;
+        edge->to[0]   = cord[to].x +offset;    edge->to[1]   = cord[to].y-offset;
+      } else if (cord[from].x <= cord[to].x) {
+        edge->from[0] = cord[from].x +offset;  edge->from[1] = cord[from].y +offset;
+        edge->to[0]   = cord[to].x +offset;    edge->to[1]   = cord[to].y +offset;
+      }
     }
-  } else if (cord[from].y <= cord[to].y) {
-    if (cord[from].x > cord[to].x) {
-      edge->from[0] = cord[from].x + 1;  edge->from[1] = cord[from].y-1;
-      edge->to[0]   = cord[to].x + 1;    edge->to[1]   = cord[to].y-1;
-    } else if (cord[from].x <= cord[to].x) {
-      edge->from[0] = cord[from].x + 1;  edge->from[1] = cord[from].y + 1;
-      edge->to[0]   = cord[to].x + 1;    edge->to[1]   = cord[to].y + 1;
-    }
+  } else {
+    edge->from[0] = cord[from].x; edge->from[1] = cord[from].y;
+    edge->to[0]   = cord[to].x;   edge->to[1]   = cord[to].y;
   }
 
-  // after the offset is set we break up the edges into the elements we got from usr->ctx.
+  /* after the offset is set we break up the edges into the elements we got from usr->ctx. */
   dx = ( edge->to[0]- edge->from[0])/(n_sublines-1);
   dy = ( edge->to[1]- edge->from[1])/(n_sublines-1);
 
   for ( j = 0; j <  n_sublines; j++) {
     edge->sublines[j].x = edge->from[0] + j*dx;
     edge->sublines[j].y = edge->from[1] + j*dy;
-    edge->color[j]      = 0.0; /* coloring currently hard coded */
+    edge->color[j]      = -0.1; /* coloring currently hard coded */
   }
   PetscFunctionReturn(0);
 }
@@ -121,10 +127,8 @@ static PetscErrorCode DMView_Network_python(DM dmnetwork)
   MPI_Comm       comm;
   Coordinates    *cord;
   Edge           *edges;
-  PetscInt       nv=0,ne=0,i;
+  PetscInt       nv=0,ne=0,i,vstart,vend,estart,eend;
   double         xmax,xmin,ymin,ymax,min[4],max[4];
-  PetscInt       Nsubnet,net;
-  const PetscInt *vtx,*e;
   FILE           *fp;
   char           fileName[20], line[1000];
   PetscInt       globalIndex;
@@ -134,67 +138,65 @@ static PetscErrorCode DMView_Network_python(DM dmnetwork)
   PetscCallMPI(MPI_Comm_rank(comm, &mpi_rank));
   PetscCallMPI(MPI_Comm_size(comm,&mpi_size));
 
-  PetscCall(DMNetworkGetNumSubNetworks(dmnetwork,NULL,&Nsubnet));
-  for (net=0; net<Nsubnet; net++) {
-    PetscCall(DMNetworkGetSubnetwork(dmnetwork,net,&nv,&ne,&vtx,&e));
-    if (nv) PetscCall(PetscPrintf(PETSC_COMM_SELF,"[%d] DMNetworkView_py: subnet %d: nv %d, ne %d\n",mpi_rank,net,nv,ne));
-    if (nv == 0) continue;
+  PetscCall(DMNetworkGetVertexRange(dmnetwork,&vstart,&vend));
+  nv = vend -vstart;
+  PetscCall(DMNetworkGetEdgeRange(dmnetwork,&estart,&eend));
+  ne = eend - estart;
 
-    PetscCall(PetscCalloc2(ne,&edges,nv,&cord));
-    for (i = 0; i < ne; i++) PetscCall(PetscCalloc1(1, &edges[i]));
+  PetscCall(PetscCalloc2(ne,&edges,nv,&cord));
+  for (i = 0; i < ne; i++) PetscCall(PetscCalloc1(1, &edges[i]));
 
-    /*  Get edge sublines and vertex coordinates from dmclone */
-    for (i = 0; i < ne; i++) PetscCall(EdgeSublineCreate_coord(dmnetwork,e[i],&edges[i],&cord));
+  /*  Get edge sublines and vertex coordinates from dmclone */
+  for (i = estart; i < eend; i++) PetscCall(EdgeSublineCreate_coord(dmnetwork,i,&edges[i-estart],&cord));
 
-    /* Get xmin, xmax, ymin, ymax for 2D plot */
-    for (i = 0; i < nv; i++) {
-      if (i ==0) {
-        max[0] = min[0] = cord[i].x; // for the 3d visualization we need the max and min
-        max[1] = min[1] = cord[i].y;
-        continue;
-      }
-      min[0] = PetscMin(min[0],cord[i].x);
-      min[1] = PetscMin(min[1],cord[i].y);
-      max[0] = PetscMax(max[0],cord[i].x);
-      max[1] = PetscMax(max[1],cord[i].y);
+  /* Get xmin, xmax, ymin, ymax for 2D plot */
+  for (i = 0; i < nv; i++) {
+    if (i ==0) {
+      max[0] = min[0] = cord[i].x; // for the 3d visualization we need the max and min
+      max[1] = min[1] = cord[i].y;
+      continue;
     }
-
-    /* Sync xmin, xmax, ymin, ymax over all processors */
-    PetscCallMPI(MPI_Allreduce(min, min+2, 2, MPIU_REAL,MPIU_MIN,comm));
-    xmin = min[2]; ymin = min[3];
-
-    PetscCallMPI(MPI_Allreduce(max, max+2, 2, MPIU_REAL,MPIU_MAX,comm));
-    xmax = max[2]; ymax = max[3];
-    /* printf("[%d] xmin/max: %g, %g, ymin/max: %g, %g\n",mpi_rank,xmin,xmax,ymin,ymax); */
-
-    sprintf(fileName, "Net_proc%d_snet.txt",mpi_rank);
-    fp = fopen(fileName, "r");
-    if (fp == NULL) {
-      fp = fopen(fileName, "a");
-      /* min/max for 3D nv/ne used for data readin, size for # of networks, and 1 for the first time call */
-      sprintf(line, "%f,%f,%f,%f\n",xmin,xmax,ymin,ymax);
-      fputs(line, fp);
-      sprintf(line, "%d,%d,%d\n",nv,ne,mpi_size);
-      fputs(line, fp);
-    }
-    fclose(fp);
-
-    /* Write Node Locations */
-    fp = fopen(fileName, "a");
-    fputs("Node Locations:\n", fp);
-    for (i = 0; i < nv; i++) {
-      PetscCall(DMNetworkGetGlobalVertexIndex(dmnetwork, vtx[i], &globalIndex));
-      sprintf(line,"%f,%f,%f,%d\n",cord[i].x,cord[i].y,cord[i].color,globalIndex);
-      fputs(line, fp);
-    }
-
-    /* Write Edges */
-    fputs("Edges & SubEdges:\n", fp);
-    for (i = 0; i < ne; i++) PetscCall(EdgeSublineWrite(&edges[i],line,fp));
-    fclose(fp);
-
-    PetscCall(PetscFree2(edges,cord));
+    min[0] = PetscMin(min[0],cord[i].x);
+    min[1] = PetscMin(min[1],cord[i].y);
+    max[0] = PetscMax(max[0],cord[i].x);
+    max[1] = PetscMax(max[1],cord[i].y);
   }
+
+  /* Sync xmin, xmax, ymin, ymax over all processors */
+  PetscCallMPI(MPI_Allreduce(min, min+2, 2, MPIU_REAL,MPIU_MIN,comm));
+  xmin = min[2]; ymin = min[3];
+
+  PetscCallMPI(MPI_Allreduce(max, max+2, 2, MPIU_REAL,MPIU_MAX,comm));
+  xmax = max[2]; ymax = max[3];
+  /* printf("[%d] xmin/max: %g, %g, ymin/max: %g, %g\n",mpi_rank,xmin,xmax,ymin,ymax);*/
+
+  sprintf(fileName, "Net_proc%d_snet.txt",mpi_rank);
+  fp = fopen(fileName, "r");
+  if (fp == NULL) {
+    fp = fopen(fileName, "a");
+    /* min/max for 3D nv/ne used for data readin, size for # of networks, and 1 for the first time call */
+    sprintf(line, "%f,%f,%f,%f\n",xmin,xmax,ymin,ymax);
+    fputs(line, fp);
+    sprintf(line, "%d,%d,%d\n",nv,ne,mpi_size);
+    fputs(line, fp);
+  }
+  fclose(fp);
+
+  /* Write Node Locations */
+  fp = fopen(fileName, "a");
+  fputs("Node Locations:\n", fp);
+  for (i = 0; i < nv; i++) {
+    PetscCall(DMNetworkGetGlobalVertexIndex(dmnetwork, i+vstart, &globalIndex));
+    sprintf(line,"%f,%f,%f,%d\n",cord[i].x,cord[i].y,cord[i].color,globalIndex);
+    fputs(line, fp);
+  }
+
+  /* Write Edges */
+  fputs("Edges & SubEdges:\n", fp);
+  for (i = 0; i < ne; i++) PetscCall(EdgeSublineWrite(&edges[i],line,fp));
+  fclose(fp);
+
+  PetscCall(PetscFree2(edges,cord));
   PetscFunctionReturn(0);
 }
 
