@@ -28,8 +28,8 @@ typedef struct {
  */
 static PetscErrorCode EdgeSublineCreate_coord(DM dmnetwork,PetscInt e,Edge *edge_ptr,Coordinates **cord_ptr)
 {
-  PetscInt       n_sublines,vStart,from,to,j,offset,rows[2];
-  PetscScalar    val[4];
+  PetscInt       n_sublines=2,vStart,from,to,j,offset,rows[2];
+  PetscScalar    val[2];
   Edge           edge = *edge_ptr;
   const PetscInt *connnodes;
   PetscReal      dx,dy;
@@ -38,7 +38,8 @@ static PetscErrorCode EdgeSublineCreate_coord(DM dmnetwork,PetscInt e,Edge *edge
   DM             dmclone;
 
   PetscFunctionBegin;
-  edge->n_sublines = n_sublines = 26;
+  PetscCall(PetscOptionsGetInt(NULL, ((PetscObject)dmnetwork)->prefix, "-nsublines", &n_sublines, NULL));
+  edge->n_sublines = n_sublines;
   PetscCall(PetscCalloc2(n_sublines-1,&edge->color,n_sublines,&edge->sublines));
 
   PetscCall(DMGetCoordinateDM(dmnetwork,&dmclone));
@@ -53,42 +54,19 @@ static PetscErrorCode EdgeSublineCreate_coord(DM dmnetwork,PetscInt e,Edge *edge
   rows[0] = offset;
   rows[1] = offset + 1;
   PetscCall(VecGetValues(coords,2,rows,val));
+  cord[from].x = (double)val[0];
+  cord[from].y = (double)val[1];
 
+  /* get cord[to] from vector coords */
   PetscCall(DMNetworkGetLocalVecOffset(dmclone,connnodes[1],0,&offset));
   rows[0] = offset;
   rows[1] = offset + 1;
-  PetscCall(VecGetValues(coords,2,rows,val+2));
+  PetscCall(VecGetValues(coords,2,rows,val));
+  cord[to].x   = (double)val[0];
+  cord[to].y   = (double)val[1];
 
-  /* get cord[from] and cord[to] */
-  cord[from].x = (double)val[0];
-  cord[from].y = (double)val[1];
-  cord[to].x   = (double)val[2];
-  cord[to].y   = (double)val[3];
-
-  /* cord[]-+1: offset in (x,y) of plot centering */
-  offset = 0.0;//1.0; when there are more than one edge between vfrom and vto!
-  if (offset != 0.0) {
-    if (cord[from].y > cord[to].y) {
-      if (cord[from].x > cord[to].x) {
-        edge->from[0] = cord[from].x-offset;  edge->from[1] = cord[from].y-offset;
-        edge->to[0]   = cord[to].x-offset;    edge->to[1]   = cord[to].y-offset;
-      } else if (cord[from].x <= cord[to].x) {
-        edge->from[0] = cord[from].x-offset;  edge->from[1] = cord[from].y +offset;
-        edge->to[0]   = cord[to].x-offset;    edge->to[1]   = cord[to].y +offset;
-      }
-    } else if (cord[from].y <= cord[to].y) {
-      if (cord[from].x > cord[to].x) {
-        edge->from[0] = cord[from].x +offset;  edge->from[1] = cord[from].y-offset;
-        edge->to[0]   = cord[to].x +offset;    edge->to[1]   = cord[to].y-offset;
-      } else if (cord[from].x <= cord[to].x) {
-        edge->from[0] = cord[from].x +offset;  edge->from[1] = cord[from].y +offset;
-        edge->to[0]   = cord[to].x +offset;    edge->to[1]   = cord[to].y +offset;
-      }
-    }
-  } else {
-    edge->from[0] = cord[from].x; edge->from[1] = cord[from].y;
-    edge->to[0]   = cord[to].x;   edge->to[1]   = cord[to].y;
-  }
+  edge->from[0] = cord[from].x; edge->from[1] = cord[from].y;
+  edge->to[0]   = cord[to].x;   edge->to[1]   = cord[to].y;
 
   /* after the offset is set we break up the edges into the elements we got from usr->ctx. */
   dx = ( edge->to[0]- edge->from[0])/(n_sublines-1);
@@ -211,16 +189,16 @@ PetscErrorCode DMView_Network(DM dm, PetscViewer viewer)
   PetscCallMPI(MPI_Comm_rank(PetscObjectComm((PetscObject)dm), &rank));
   PetscCall(PetscObjectTypeCompare((PetscObject)viewer, PETSCVIEWERASCII, &iascii));
   if (iascii) {
+    const PetscInt    *cone, *vtx, *edges;
+    PetscInt          vfrom, vto, i, j, nv, ne, nsv, p, nsubnet;
+    DM_Network        *network = (DM_Network *)dm->data;
     PetscViewerFormat format;
+
     PetscCall(PetscViewerGetFormat(viewer, &format));
     if (format == PETSC_VIEWER_ASCII_PYTHON) {
       PetscCall(DMView_Network_python(dm));
       PetscFunctionReturn(0);
     }
-
-    const PetscInt *cone, *vtx, *edges;
-    PetscInt        vfrom, vto, i, j, nv, ne, nsv, p, nsubnet;
-    DM_Network     *network = (DM_Network *)dm->data;
 
     nsubnet = network->cloneshared->Nsubnet; /* num of subnetworks */
     if (rank == 0) {
@@ -250,8 +228,8 @@ PetscErrorCode DMView_Network(DM dm, PetscViewer viewer)
     /* Shared vertices */
     PetscCall(DMNetworkGetSharedVertices(dm, NULL, &vtx));
     if (nsv) {
-      PetscInt        gidx;
-      PetscBool       ghost;
+      PetscInt       gidx;
+      PetscBool      ghost;
       const PetscInt *sv = NULL;
 
       PetscCall(PetscViewerASCIISynchronizedPrintf(viewer, "     SharedVertices:\n"));

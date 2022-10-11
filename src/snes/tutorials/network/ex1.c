@@ -346,7 +346,7 @@ int main(int argc, char **argv)
   PetscLogStage       stage[4];
   PetscMPIInt         rank, size;
   PetscInt            Nsubnet = 2, numVertices[2], numEdges[2], i, j, nv, ne, it_max = 10;
-  const PetscInt     *vtx, *edges;
+  const PetscInt      *vtx, *edges;
   Vec                 X, F;
   SNES                snes, snes_power, snes_water;
   Mat                 Jac;
@@ -356,15 +356,15 @@ int main(int argc, char **argv)
 
   /* Power subnetwork */
   UserCtx_Power *appctx_power                    = &user.appctx_power;
-  char           pfdata_file[PETSC_MAX_PATH_LEN] = "power/case9.m";
+  char          pfdata_file[PETSC_MAX_PATH_LEN] = "power/case9.m";
   PFDATA        *pfdata                          = NULL;
-  PetscInt       genj, loadj, *edgelist_power = NULL, power_netnum;
-  PetscScalar    Sbase = 0.0;
+  PetscInt      genj, loadj, *edgelist_power = NULL, power_netnum;
+  PetscScalar   Sbase = 0.0;
 
   /* Water subnetwork */
   AppCtx_Water *appctx_water                       = &user.appctx_water;
   WATERDATA    *waterdata                          = NULL;
-  char          waterdata_file[PETSC_MAX_PATH_LEN] = "water/sample1.inp";
+  char         waterdata_file[PETSC_MAX_PATH_LEN] = "water/sample1.inp";
   PetscInt     *edgelist_water                     = NULL, water_netnum;
 
   /* Shared vertices between subnetworks */
