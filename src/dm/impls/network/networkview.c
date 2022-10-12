@@ -7,9 +7,6 @@ typedef struct {
 } Coordinates;
 
 typedef struct {
-  double      from[2];   /* x,y from */
-  double      to[2];     /* x, y to */
-  double      *color;
   Coordinates *sublines; /* dim = n_sublines */
   PetscInt    n_sublines;
 } *Edge;
@@ -32,7 +29,7 @@ static PetscErrorCode EdgeSublineCreate_coord(DM dmnetwork,PetscInt e,Edge *edge
   PetscScalar    val[2];
   Edge           edge = *edge_ptr;
   const PetscInt *connnodes;
-  PetscReal      dx,dy;
+  PetscReal      dx,dy,dcolor;
   Coordinates    *cord = *cord_ptr;
   Vec            coords;
   DM             dmclone;
@@ -40,7 +37,7 @@ static PetscErrorCode EdgeSublineCreate_coord(DM dmnetwork,PetscInt e,Edge *edge
   PetscFunctionBegin;
   PetscCall(PetscOptionsGetInt(NULL, ((PetscObject)dmnetwork)->prefix, "-nsublines", &n_sublines, NULL));
   edge->n_sublines = n_sublines;
-  PetscCall(PetscCalloc2(n_sublines-1,&edge->color,n_sublines,&edge->sublines));
+  PetscCall(PetscCalloc1(n_sublines,&edge->sublines));
 
   PetscCall(DMGetCoordinateDM(dmnetwork,&dmclone));
   PetscCall(DMNetworkGetVertexRange(dmclone,&vStart,NULL));
@@ -54,28 +51,28 @@ static PetscErrorCode EdgeSublineCreate_coord(DM dmnetwork,PetscInt e,Edge *edge
   rows[0] = offset;
   rows[1] = offset + 1;
   PetscCall(VecGetValues(coords,2,rows,val));
-  cord[from].x = (double)val[0];
-  cord[from].y = (double)val[1];
+  cord[from].x     = (double)val[0];
+  cord[from].y     = (double)val[1];
+  cord[from].color = 0.0;
 
   /* get cord[to] from vector coords */
   PetscCall(DMNetworkGetLocalVecOffset(dmclone,connnodes[1],0,&offset));
   rows[0] = offset;
   rows[1] = offset + 1;
   PetscCall(VecGetValues(coords,2,rows,val));
-  cord[to].x   = (double)val[0];
-  cord[to].y   = (double)val[1];
-
-  edge->from[0] = cord[from].x; edge->from[1] = cord[from].y;
-  edge->to[0]   = cord[to].x;   edge->to[1]   = cord[to].y;
+  cord[to].x     = (double)val[0];
+  cord[to].y     = (double)val[1];
+  cord[to].color = 0.0;
 
   /* after the offset is set we break up the edges into the elements we got from usr->ctx. */
-  dx = ( edge->to[0]- edge->from[0])/(n_sublines-1);
-  dy = ( edge->to[1]- edge->from[1])/(n_sublines-1);
+  dx = (cord[to].x - cord[from].x)/(n_sublines-1);
+  dy = (cord[to].y - cord[from].y)/(n_sublines-1);
+  dcolor = 0.1/(n_sublines-1); /* coloring currently hard coded */
 
-  for ( j = 0; j <  n_sublines; j++) {
-    edge->sublines[j].x = edge->from[0] + j*dx;
-    edge->sublines[j].y = edge->from[1] + j*dy;
-    edge->color[j]      = -0.1; /* coloring currently hard coded */
+  for ( j = 0; j < n_sublines; j++) {
+    edge->sublines[j].x     = cord[from].x + j*dx;
+    edge->sublines[j].y     = cord[from].y + j*dy;
+    edge->sublines[j].color = cord[from].color + j*dcolor;
   }
   PetscFunctionReturn(0);
 }
@@ -91,10 +88,10 @@ static PetscErrorCode EdgeSublineWrite(Edge *edge_ptr,char *line,FILE *fp)
   fputs(line, fp);
 
   for (j = 1; j <  edge->n_sublines; j++) {
-    sprintf(line,"%f,%f,%f\n",edge->sublines[j].x,edge->sublines[j].y,edge->color[j-1]); //x,y,color
+    sprintf(line,"%f,%f,%f\n",edge->sublines[j].x,edge->sublines[j].y,edge->sublines[j-1].color);
     fputs(line, fp);
   }
-  PetscCall(PetscFree2(edge->color, edge->sublines));
+  PetscCall(PetscFree(edge->sublines));
   PetscCall(PetscFree(edge));
   PetscFunctionReturn(0);
 }
