@@ -4,17 +4,16 @@ import os
 class Configure(config.package.GNUPackage):
   def __init__(self, framework):
     config.package.GNUPackage.__init__(self, framework)
-    self.version         = '2.25.0'
+    self.version         = '2.26.0'
     self.minversion      = '2.14'
     self.versionname     = 'HYPRE_RELEASE_VERSION'
     self.versioninclude  = 'HYPRE_config.h'
     self.requiresversion = 1
-    self.gitcommit       = 'v'+self.version
+    self.gitcommit       = '36f3242ba0adff4d704dd43530af335195901770' # 2.26.0 + $(MAKE) fix + autoconf fix
     self.download        = ['git://https://github.com/hypre-space/hypre','https://github.com/hypre-space/hypre/archive/'+self.gitcommit+'.tar.gz']
     self.functions       = ['HYPRE_IJMatrixCreate']
     self.includes        = ['HYPRE.h']
     self.liblist         = [['libHYPRE.a']]
-    self.license         = 'https://computation.llnl.gov/casc/linear_solvers/sls_hypre.html'
     # Per hypre users guide section 7.5 - install manually on windows for MS compilers.
     self.precisions        = ['double']
     # HYPRE is supposed to work with complex number
