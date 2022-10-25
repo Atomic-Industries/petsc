@@ -517,7 +517,7 @@ int main(int argc, char **argv)
     DM          dmclone;
     Vec         coords;
     PetscCall(DMNetworkDistribute(&networkdm, 0));
-
+#if 0
     /* Set coordinates - current implementation requires calling DMNetworkDistribute() first */
     PetscCall(DMGetCoordinateDM(networkdm, &dmclone));
 
@@ -532,6 +532,7 @@ int main(int argc, char **argv)
       PetscCall(PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD));
     }
     PetscCall(VecDestroy(&coords));
+#endif
   }
 
   /* Test DMNetworkGetSubnetwork() and DMNetworkGetSubnetworkSharedVertices() */
