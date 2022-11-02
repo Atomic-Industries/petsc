@@ -5298,7 +5298,7 @@ PetscErrorCode DMCompleteBCLabels_Internal(DM dm)
     for (m = 0; m < gl; ++m)
       if (glabels[m] == glabels[gl]) continue;
     PetscCall(DMConvert(dm, DMPLEX, &plex));
-    PetscCall(DMPlexLabelComplete(plex, glabels[gl]));
+    if (!glabels[gl]->readonly) PetscCall(DMPlexLabelComplete(plex, glabels[gl]));
     PetscCall(DMDestroy(&plex));
     ++gl;
   }
@@ -7779,7 +7779,7 @@ PetscErrorCode DMAddBoundary(DM dm, DMBoundaryConditionType type, const char nam
       DM plex;
 
       PetscCall(DMConvert(dm, DMPLEX, &plex));
-      if (plex) PetscCall(DMPlexLabelComplete(plex, label));
+      if (plex && !label->readonly) PetscCall(DMPlexLabelComplete(plex, label));
       PetscCall(DMDestroy(&plex));
     }
   }

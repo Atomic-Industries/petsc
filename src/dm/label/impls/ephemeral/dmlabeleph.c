@@ -135,7 +135,7 @@ static PetscErrorCode DMLabelView_Ephemeral_Ascii(DMLabel label, PetscViewer vie
       const PetscInt *points;
       PetscInt        n, p;
 
-      PetscCall(DMLabelGetStratumIS(olabel, value, &pointIS));
+      PetscCall(DMLabelGetStratumIS(label, value, &pointIS));
       PetscCall(ISGetIndices(pointIS, &points));
       PetscCall(ISGetLocalSize(pointIS, &n));
       for (p = 0; p < n; ++p) PetscCall(PetscViewerASCIISynchronizedPrintf(viewer, "[%d]: %" PetscInt_FMT " (%" PetscInt_FMT ")\n", rank, points[p], value));
