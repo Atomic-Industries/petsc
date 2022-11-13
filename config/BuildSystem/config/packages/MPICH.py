@@ -5,7 +5,8 @@ class Configure(config.package.GNUPackage):
   def __init__(self, framework):
     config.package.GNUPackage.__init__(self, framework)
     self.version          = '4.0.3'
-    self.download         = ['https://github.com/pmodels/mpich/releases/download/v'+self.version+'/mpich-'+self.version+'.tar.gz',
+    self.download         = ['https://web.cels.anl.gov/~zhouh/temp/mpich-test.tar.gz',
+                             'https://github.com/pmodels/mpich/releases/download/v'+self.version+'/mpich-'+self.version+'.tar.gz',
                              'https://www.mpich.org/static/downloads/'+self.version+'/mpich-'+self.version+'.tar.gz']
     self.downloaddirnames = ['mpich']
     self.skippackagewithoptions = 1
@@ -17,6 +18,7 @@ class Configure(config.package.GNUPackage):
     self.compilerFlags   = framework.require('config.compilerFlags',self)
     self.cuda            = framework.require('config.packages.cuda',self)
     self.hwloc           = framework.require('config.packages.hwloc',self)
+    self.python          = framework.require('config.packages.python',self)
     self.odeps           = [self.hwloc]
     return
 
@@ -77,6 +79,9 @@ class Configure(config.package.GNUPackage):
     # MPICH configure errors out on certain standard configure arguments
     args = self.rmArgs(args,['--disable-f90','--enable-f90'])
     args = self.rmArgsStartsWith(args,['F90=','F90FLAGS='])
+    args.append('PYTHON='+self.python.pyexe)
+    args.append('--disable-maintainer-mode')
+    args.append('--disable-dependency-tracking')
     return args
 
   def Install(self):
