@@ -1876,7 +1876,7 @@ static PetscErrorCode DMPlexTransformMapLocalizedCoordinates(DMPlexTransform tr,
   PetscFunctionReturn(0);
 }
 
-static PetscErrorCode DMPlexTransformSetCoordinates(DMPlexTransform tr, DM rdm)
+PetscErrorCode DMPlexTransformSetCoordinates(DMPlexTransform tr, DM rdm)
 {
   DM                 dm, cdm, cdmCell, cdmNew, cdmCellNew;
   PetscSection       coordSection, coordSectionNew, coordSectionCell, coordSectionCellNew;

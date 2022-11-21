@@ -5309,6 +5309,10 @@ PetscErrorCode DMPlexCreateEphemeral(DMPlexTransform tr, DM *dm)
   PetscCall(DMPlexTransformDestroy(&((DM_Plex *)(*dm)->data)->tr));
   ((DM_Plex *)(*dm)->data)->tr = tr;
 
+  // Create ephemeral coordinates
+  //   TODO: right now, just create regular coordinates
+  PetscCall(DMPlexTransformSetCoordinates(tr, *dm));
+  // Create ephemeral labels, leave out depth and celltype
   PetscCall(DMPlexTransformGetDM(tr, &bdm));
   PetscCall(DMGetNumLabels(bdm, &Nl));
   for (PetscInt l = 0; l < Nl; ++l) {
