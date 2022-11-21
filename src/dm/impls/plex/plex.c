@@ -73,6 +73,7 @@ PetscErrorCode DMPlexGetSimplexOrBoxCells(DM dm, PetscInt height, PetscInt *cSta
 
   PetscFunctionBegin;
   PetscCall(DMPlexGetHeightStratum(dm, PetscMax(height, 0), &cS, &cE));
+  if (((DM_Plex*)dm->data)->tr) goto end;
   for (c = cS; c < cE; ++c) {
     DMPolytopeType cct;
 
@@ -100,6 +101,7 @@ PetscErrorCode DMPlexGetSimplexOrBoxCells(DM dm, PetscInt height, PetscInt *cSta
     // Reset label for fast lookup
     PetscCall(DMLabelMakeAllInvalid_Internal(ctLabel));
   }
+  end:
   if (cStart) *cStart = cS;
   if (cEnd) *cEnd = cE;
   PetscFunctionReturn(0);
@@ -818,7 +820,6 @@ static PetscErrorCode DMPlexView_Ascii_Coordinates(PetscViewer viewer, CoordSyst
 
 static PetscErrorCode DMPlexView_Ascii(DM dm, PetscViewer viewer)
 {
-  DM_Plex          *mesh = (DM_Plex *)dm->data;
   DM                cdm, cdmCell;
   PetscSection      coordSection, coordSectionCell;
   Vec               coordinates, coordinatesCell;
@@ -852,21 +853,24 @@ static PetscErrorCode DMPlexView_Ascii(DM dm, PetscViewer viewer)
     PetscCall(PetscViewerASCIIPushSynchronized(viewer));
     PetscCall(PetscViewerASCIISynchronizedPrintf(viewer, "[%d] Max support size: %" PetscInt_FMT "\n", rank, maxSupportSize));
     for (p = pStart; p < pEnd; ++p) {
-      PetscInt dof, off, s;
+      const PetscInt *support;
+      PetscInt        ss;
 
-      PetscCall(PetscSectionGetDof(mesh->supportSection, p, &dof));
-      PetscCall(PetscSectionGetOffset(mesh->supportSection, p, &off));
-      for (s = off; s < off + dof; ++s) PetscCall(PetscViewerASCIISynchronizedPrintf(viewer, "[%d]: %" PetscInt_FMT " ----> %" PetscInt_FMT "\n", rank, p, mesh->supports[s]));
+      PetscCall(DMPlexGetSupport(dm, p, &support));
+      PetscCall(DMPlexGetSupportSize(dm, p, &ss));
+      for (PetscInt s = 0; s < ss; ++s) PetscCall(PetscViewerASCIISynchronizedPrintf(viewer, "[%d]: %" PetscInt_FMT " ----> %" PetscInt_FMT "\n", rank, p, support[s]));
     }
     PetscCall(PetscViewerFlush(viewer));
     PetscCall(PetscViewerASCIIPrintf(viewer, "Cones:\n"));
     PetscCall(PetscViewerASCIISynchronizedPrintf(viewer, "[%d] Max cone size: %" PetscInt_FMT "\n", rank, maxConeSize));
     for (p = pStart; p < pEnd; ++p) {
-      PetscInt dof, off, c;
+      const PetscInt *cone, *ornt;
+      PetscInt        cs;
 
-      PetscCall(PetscSectionGetDof(mesh->coneSection, p, &dof));
-      PetscCall(PetscSectionGetOffset(mesh->coneSection, p, &off));
-      for (c = off; c < off + dof; ++c) PetscCall(PetscViewerASCIISynchronizedPrintf(viewer, "[%d]: %" PetscInt_FMT " <---- %" PetscInt_FMT " (%" PetscInt_FMT ")\n", rank, p, mesh->cones[c], mesh->coneOrientations[c]));
+      PetscCall(DMPlexGetConeSize(dm, p, &cs));
+      PetscCall(DMPlexGetOrientedCone(dm, p, &cone, &ornt));
+      for (PetscInt c = 0; c < cs; ++c) PetscCall(PetscViewerASCIISynchronizedPrintf(viewer, "[%d]: %" PetscInt_FMT " <---- %" PetscInt_FMT " (%" PetscInt_FMT ")\n", rank, p, cone[c], ornt[c]));
+      PetscCall(DMPlexRestoreOrientedCone(dm, p, &cone, &ornt));
     }
     PetscCall(PetscViewerFlush(viewer));
     PetscCall(PetscViewerASCIIPopSynchronized(viewer));
@@ -3749,8 +3753,7 @@ PetscErrorCode DMPlexGetTransitiveClosure_Internal(DM dm, PetscInt p, PetscInt o
     }
     if (useCone) {
       PetscCall(DMPlexGetConeSize(dm, q, &tmpSize));
-      PetscCall(DMPlexGetCone(dm, q, &tmp));
-      PetscCall(DMPlexGetConeOrientation(dm, q, &tmpO));
+      PetscCall(DMPlexGetOrientedCone(dm, q, &tmp, &tmpO));
     } else {
       PetscCall(DMPlexGetSupportSize(dm, q, &tmpSize));
       PetscCall(DMPlexGetSupport(dm, q, &tmp));
@@ -3776,6 +3779,7 @@ PetscErrorCode DMPlexGetTransitiveClosure_Internal(DM dm, PetscInt p, PetscInt o
         fifo[fifoSize++]       = ct;
       }
     }
+    if (useCone) PetscCall(DMPlexRestoreOrientedCone(dm, q, &tmp, &tmpO));
   }
   PetscCall(DMRestoreWorkArray(dm, 3 * maxSize, MPIU_INT, &fifo));
   if (numPoints) *numPoints = closureSize / 2;
@@ -5012,7 +5016,6 @@ PetscErrorCode DMPlexGetDepthStratum(DM dm, PetscInt depth, PetscInt *start, Pet
 @*/
 PetscErrorCode DMPlexGetHeightStratum(DM dm, PetscInt height, PetscInt *start, PetscInt *end)
 {
-  DMLabel  label;
   PetscInt depth, pStart, pEnd;
 
   PetscFunctionBegin;
@@ -5032,10 +5035,8 @@ PetscErrorCode DMPlexGetHeightStratum(DM dm, PetscInt height, PetscInt *start, P
     if (end) *end = pEnd;
     PetscFunctionReturn(0);
   }
-  PetscCall(DMPlexGetDepthLabel(dm, &label));
-  PetscCheck(label, PetscObjectComm((PetscObject)dm), PETSC_ERR_ARG_WRONG, "No label named depth was found");
-  PetscCall(DMLabelGetNumValues(label, &depth));
-  PetscCall(DMLabelGetStratumBounds(label, depth - 1 - height, start, end));
+  PetscCall(DMPlexGetDepth(dm, &depth));
+  PetscCall(DMPlexGetDepthStratum(dm, depth - height, start, end));
   PetscFunctionReturn(0);
 }
 
