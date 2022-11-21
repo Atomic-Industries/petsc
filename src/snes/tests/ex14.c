@@ -1,5 +1,12 @@
 static char help[] = "Finite element discretization on mesh patches.\n\n\n";
 
+/*
+  KNOWN BUGS:
+
+  1) Coordinates created at the beginning in the ephemeral mesh. We really want to create only coordinate patches when we are asked to do so for FEGeom.
+
+*/
+
 #include <petscdmplex.h>
 #include <petscdmplextransform.h>
 #include <petscds.h>
@@ -163,11 +170,7 @@ int main(int argc, char **argv)
   PetscCall(DMCreateGlobalVector(dm, &u));
   PetscCall(PetscObjectSetName((PetscObject)u, "potential"));
   PetscCall(SNESSetFromOptions(snes));
-
-  //PetscCall(DMPlexSetSNESLocalFEM(dm, &user, &user, &user));
-  PetscCall(DMSNESSetBoundaryLocal(dm, DMPlexSNESComputeBoundaryFEM, &user));
-  PetscCall(DMSNESSetFunctionLocal(dm, DMPlexSNESComputeResidualFEM, &user));
-
+  PetscCall(DMPlexSetSNESLocalFEM(dm, &user, &user, &user));
   PetscCall(DMSNESCheckFromOptions(snes, u));
   PetscCall(SNESSolve(snes, NULL, u));
   PetscCall(DMLabelDestroy(&user.active));
@@ -183,6 +186,7 @@ int main(int argc, char **argv)
   test:
     suffix: 0
     args: -first_dm_plex_transform_type transform_filter -cells 0,1,2,4 \
-          -phi_petscspace_degree 1 -mu_petscspace_degree 1 -pc_type lu
+          -phi_petscspace_degree 1 -mu_petscspace_degree 1 -pc_type lu \
+          -snes_converged_reason -snes_monitor
 
 TEST*/
