@@ -511,12 +511,15 @@ struct _p_Mat {
   PetscBool            form_explicit_transpose; /* hint to generate an explicit mat tranpsose for operations like MatMultTranspose() */
   PetscBool            transupdated;            /* whether or not the explicitly generated transpose is up-to-date */
   char                *factorprefix;            /* the prefix to use with factored matrix that is created */
+  void                *hash_ctx;                /* for use when user did not provide preallocation information */
 };
 
 PETSC_INTERN PetscErrorCode MatAXPY_Basic(Mat, PetscScalar, Mat, MatStructure);
 PETSC_INTERN PetscErrorCode MatAXPY_BasicWithPreallocation(Mat, Mat, PetscScalar, Mat, MatStructure);
 PETSC_INTERN PetscErrorCode MatAXPY_Basic_Preallocate(Mat, Mat, Mat *);
 PETSC_INTERN PetscErrorCode MatAXPY_Dense_Nest(Mat, PetscScalar, Mat);
+
+PETSC_INTERN PetscErrorCode MatSetUp_Default(Mat);
 
 /*
     Utility for MatFactor (Schur complement)
