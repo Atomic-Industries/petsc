@@ -27,7 +27,7 @@ static PetscErrorCode CreateIndicator(DM dm, Vec *indicator, DM *dmIndi)
   PetscCall(DMCreateDS(*dmIndi));
   PetscCall(PetscFEDestroy(&fe));
   PetscCall(DMCreateLocalVector(*dmIndi, indicator));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

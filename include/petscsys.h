@@ -897,7 +897,7 @@ M*/
 .seealso: `PetscNew()`, `PetscMalloc()`, `PetscMalloc1()`, `PetscCalloc1()`
 
 M*/
-#define PetscFree(a) ((*PetscTrFree)((void *)(a), __LINE__, PETSC_FUNCTION_NAME, __FILE__) || ((a) = NULL, 0))
+#define PetscFree(a) ((PetscErrorCode)((*PetscTrFree)((void *)(a), __LINE__, PETSC_FUNCTION_NAME, __FILE__) || ((a) = NULL, PETSC_SUCCESS)))
 
 /*MC
    PetscFree2 - Frees 2 chunks of memory obtained with `PetscMalloc2()`
@@ -1423,7 +1423,7 @@ M*/
       To use, write your own function, for example,
 $PetscErrorCode mypetschelpprintf(MPI_Comm comm,const char format[],....)
 ${
-$ PetscFunctionReturn(0);
+$ PetscFunctionReturn(PETSC_SUCCESS);
 $}
 then do the assignment
 $    PetscHelpPrintf = mypetschelpprintf;
@@ -1547,7 +1547,7 @@ static inline PetscErrorCode PetscMemmove(void *a, const void *b, size_t n)
 #else
   memmove((char *)(a), (char *)(b), n);
 #endif
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -1627,7 +1627,7 @@ static inline PetscErrorCode PetscMemcpy(void *a, const void *b, size_t n)
     memcpy((char *)(a), (char *)(b), n);
 #endif
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -1682,7 +1682,7 @@ static inline PetscErrorCode PetscMemzero(void *a, size_t n)
     }
 #endif
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*MC
@@ -1712,7 +1712,7 @@ static inline PetscErrorCode PetscMemzero(void *a, size_t n)
 .seealso: `PetscMemcpy()`, `PetscMemcmp()`, `PetscArrayzero()`, `PetscMemzero()`, `PetscArraycpy()`, `PetscMemmove()`, `PetscStrallocpy()`,
           `PetscArraymove()`
 M*/
-#define PetscArraycmp(str1, str2, cnt, e) ((sizeof(*(str1)) != sizeof(*(str2))) || PetscMemcmp(str1, str2, (size_t)(cnt) * sizeof(*(str1)), e))
+#define PetscArraycmp(str1, str2, cnt, e) ((PetscErrorCode)((sizeof(*(str1)) != sizeof(*(str2))) || PetscMemcmp(str1, str2, (size_t)(cnt) * sizeof(*(str1)), e)))
 
 /*MC
    PetscArraymove - Copies from one array in memory to another, the arrays may overlap. Use `PetscArraycpy()` when the arrays
@@ -1738,7 +1738,7 @@ M*/
 
 .seealso: `PetscMemcpy()`, `PetscMemcmp()`, `PetscArrayzero()`, `PetscMemzero()`, `PetscArraycpy()`, `PetscMemmove()`, `PetscArraycmp()`, `PetscStrallocpy()`
 M*/
-#define PetscArraymove(str1, str2, cnt) ((sizeof(*(str1)) != sizeof(*(str2))) || PetscMemmove(str1, str2, (size_t)(cnt) * sizeof(*(str1))))
+#define PetscArraymove(str1, str2, cnt) ((PetscErrorCode)((sizeof(*(str1)) != sizeof(*(str2))) || PetscMemmove(str1, str2, (size_t)(cnt) * sizeof(*(str1)))))
 
 /*MC
    PetscArraycpy - Copies from one array in memory to another
@@ -1763,7 +1763,7 @@ M*/
 
 .seealso: `PetscMemcpy()`, `PetscMemcmp()`, `PetscArrayzero()`, `PetscMemzero()`, `PetscArraymove()`, `PetscMemmove()`, `PetscArraycmp()`, `PetscStrallocpy()`
 M*/
-#define PetscArraycpy(str1, str2, cnt) ((sizeof(*(str1)) != sizeof(*(str2))) || PetscMemcpy(str1, str2, (size_t)(cnt) * sizeof(*(str1))))
+#define PetscArraycpy(str1, str2, cnt) ((PetscErrorCode)((sizeof(*(str1)) != sizeof(*(str2))) || PetscMemcpy(str1, str2, (size_t)(cnt) * sizeof(*(str1)))))
 
 /*MC
    PetscArrayzero - Zeros an array in memory.
@@ -1970,7 +1970,7 @@ static inline PetscErrorCode PetscIntCast(PetscInt64 a, PetscInt *b)
   }
 #endif
   *b = (PetscInt)(a);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -2002,7 +2002,7 @@ static inline PetscErrorCode PetscCountCast(PetscCount a, PetscInt *b)
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_ARG_OUTOFRANGE, "%" PetscCount_FMT " is too big for PetscInt, you may need to ./configure using --with-64-bit-indices", a);
   }
   *b = (PetscInt)(a);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -2035,7 +2035,7 @@ static inline PetscErrorCode PetscBLASIntCast(PetscInt a, PetscBLASInt *b)
   }
   PetscCheck(a >= 0, PETSC_COMM_SELF, PETSC_ERR_ARG_OUTOFRANGE, "Passing negative integer to BLAS/LAPACK routine");
   *b = (PetscBLASInt)(a);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -2063,7 +2063,7 @@ static inline PetscErrorCode PetscCuBLASIntCast(PetscInt a, PetscCuBLASInt *b)
   if (PetscDefined(USE_64BIT_INDICES)) PetscCheck(a <= PETSC_CUBLAS_INT_MAX, PETSC_COMM_SELF, PETSC_ERR_ARG_OUTOFRANGE, "%" PetscInt_FMT " is too big for cuBLAS, which is restricted to 32 bit integers.", a);
   PetscCheck(a >= 0, PETSC_COMM_SELF, PETSC_ERR_ARG_OUTOFRANGE, "Passing negative integer to cuBLAS routine");
   *b = (PetscCuBLASInt)(a);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -2091,7 +2091,7 @@ static inline PetscErrorCode PetscHipBLASIntCast(PetscInt a, PetscHipBLASInt *b)
   if (PetscDefined(USE_64BIT_INDICES)) PetscCheck(a <= PETSC_HIPBLAS_INT_MAX, PETSC_COMM_SELF, PETSC_ERR_ARG_OUTOFRANGE, "%" PetscInt_FMT " is too big for hipBLAS, which is restricted to 32 bit integers.", a);
   PetscCheck(a >= 0, PETSC_COMM_SELF, PETSC_ERR_ARG_OUTOFRANGE, "Passing negative integer to hipBLAS routine");
   *b = (PetscHipBLASInt)(a);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -2118,10 +2118,10 @@ static inline PetscErrorCode PetscMPIIntCast(PetscInt a, PetscMPIInt *b)
   *b = 0;
   if (PetscDefined(USE_64BIT_INDICES)) PetscCheck(a <= PETSC_MPI_INT_MAX, PETSC_COMM_SELF, PETSC_ERR_ARG_OUTOFRANGE, "%" PetscInt_FMT " is too big for MPI buffer length. We currently only support 32 bit integers", a);
   *b = (PetscMPIInt)(a);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
-#define PetscInt64Mult(a, b) ((PetscInt64)(a)) * ((PetscInt64)(b))
+#define PetscInt64Mult(a, b) (((PetscInt64)(a)) * ((PetscInt64)(b)))
 
 /*@C
 
@@ -2260,7 +2260,7 @@ static inline PetscErrorCode PetscIntMultError(PetscInt a, PetscInt b, PetscInt 
   PetscCheck(r <= PETSC_MAX_INT, PETSC_COMM_SELF, PETSC_ERR_SUP, "Product of two integers %d %d overflow, either you have an invalidly large integer error in your code or you must ./configure PETSc with --with-64-bit-indices for the case you are running", a, b);
 #endif
   if (result) *result = (PetscInt)r;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -2295,7 +2295,7 @@ static inline PetscErrorCode PetscIntSumError(PetscInt a, PetscInt b, PetscInt *
   PetscCheck(r <= PETSC_MAX_INT, PETSC_COMM_SELF, PETSC_ERR_SUP, "Sum of two integers %d %d overflow, either you have an invalidly large integer error in your code or you must ./configure PETSc with --with-64-bit-indices for the case you are running", a, b);
 #endif
   if (result) *result = (PetscInt)r;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -2626,12 +2626,12 @@ static inline PetscErrorCode PetscCitationsRegister(const char cit[], PetscBool 
   char  *vstring;
 
   PetscFunctionBegin;
-  if (set && *set) PetscFunctionReturn(0);
+  if (set && *set) PetscFunctionReturn(PETSC_SUCCESS);
   PetscCall(PetscStrlen(cit, &len));
   PetscCall(PetscSegBufferGet(PetscCitationsList, len, &vstring));
   PetscCall(PetscArraycpy(vstring, cit, len));
   if (set) *set = PETSC_TRUE;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PETSC_EXTERN                PETSC_DEPRECATED_FUNCTION("Google has discontinued its URL shortener service") PetscErrorCode PetscURLShorten(const char[], char[], size_t c);

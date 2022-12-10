@@ -144,7 +144,7 @@ PetscErrorCode EvaluateFunction(Tao tao, Vec X, Vec F, void *ptr)
   PetscCall(VecRestoreArrayRead(X, &x));
   PetscCall(VecRestoreArray(F, &f));
   PetscLogFlops(2.0 * M * N);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -169,7 +169,7 @@ PetscErrorCode EvaluateJacobian(Tao tao, Vec X, Mat J, Mat Jpre, void *ptr)
 
   PetscCall(VecRestoreArrayRead(X, &x)); /* not used for linear least square, but keep for future nonlinear least square) */
   PetscLogFlops(0);                      /* 0 for linear least square, >0 for nonlinear least square */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ------------------------------------------------------------ */
@@ -182,7 +182,7 @@ PetscErrorCode FormDictionaryMatrix(Mat D, AppCtx *user)
   PetscCall(MatAssemblyEnd(D, MAT_FINAL_ASSEMBLY));
 
   PetscLogFlops(0); /* 0 for fixed dictionary matrix, >0 for varying dictionary matrix */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ------------------------------------------------------------ */
@@ -190,7 +190,7 @@ PetscErrorCode FormStartingPoint(Vec X)
 {
   PetscFunctionBegin;
   PetscCall(VecSet(X, 0.0));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -245,7 +245,7 @@ PetscErrorCode InitializeUserData(AppCtx *user)
     user->D[k][k + 1] = 1.0;
   }
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

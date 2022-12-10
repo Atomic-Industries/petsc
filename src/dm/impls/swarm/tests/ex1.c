@@ -18,7 +18,7 @@ static PetscErrorCode CreateMesh(MPI_Comm comm, DM *dm, AppCtx *user)
   PetscCall(DMSetType(*dm, DMPLEX));
   PetscCall(DMSetFromOptions(*dm));
   PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode linear(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
@@ -87,7 +87,7 @@ static PetscErrorCode CreateParticles(DM dm, DM *sw, AppCtx *user)
   PetscCall(DMSwarmRestoreField(*sw, DMSwarmPICField_cellid, NULL, NULL, (void **)&cellid));
   PetscCall(DMSwarmRestoreField(*sw, "f_q", NULL, NULL, (void **)&vals));
   PetscCall(PetscFree4(xi0, v0, J, invJ));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode TestL2Projection(DM dm, DM sw, AppCtx *user)
@@ -125,7 +125,7 @@ static PetscErrorCode TestL2Projection(DM dm, DM sw, AppCtx *user)
   PetscCall(MatDestroy(&mass));
   PetscCall(DMRestoreGlobalVector(dm, &rhs));
   PetscCall(DMRestoreGlobalVector(dm, &uproj));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char *argv[])

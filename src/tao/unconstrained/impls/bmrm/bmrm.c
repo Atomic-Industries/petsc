@@ -23,7 +23,7 @@ static PetscErrorCode make_grad_node(Vec X, Vec_Chain **p)
   PetscCall(VecDuplicate(X, &(*p)->V));
   PetscCall(VecCopy(X, (*p)->V));
   (*p)->next = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode destroy_grad_list(Vec_Chain *head)
@@ -38,7 +38,7 @@ static PetscErrorCode destroy_grad_list(Vec_Chain *head)
     p = q;
   }
   head->next = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode TaoSolve_BMRM(Tao tao)
@@ -188,7 +188,7 @@ static PetscErrorCode TaoSolve_BMRM(Tao tao)
 
   PetscCall(VecDestroy(&bmrm->local_w));
   PetscCall(VecScatterDestroy(&bmrm->scatter));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ---------------------------------------------------------- */
@@ -198,7 +198,7 @@ static PetscErrorCode TaoSetup_BMRM(Tao tao)
   PetscFunctionBegin;
   /* Allocate some arrays */
   if (!tao->gradient) PetscCall(VecDuplicate(tao->solution, &tao->gradient));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -206,7 +206,7 @@ static PetscErrorCode TaoDestroy_BMRM(Tao tao)
 {
   PetscFunctionBegin;
   PetscCall(PetscFree(tao->data));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode TaoSetFromOptions_BMRM(Tao tao, PetscOptionItems *PetscOptionsObject)
@@ -217,7 +217,7 @@ static PetscErrorCode TaoSetFromOptions_BMRM(Tao tao, PetscOptionItems *PetscOpt
   PetscOptionsHeadBegin(PetscOptionsObject, "BMRM for regularized risk minimization");
   PetscCall(PetscOptionsReal("-tao_bmrm_lambda", "regulariser weight", "", 100, &bmrm->lambda, NULL));
   PetscOptionsHeadEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -231,7 +231,7 @@ static PetscErrorCode TaoView_BMRM(Tao tao, PetscViewer viewer)
     PetscCall(PetscViewerASCIIPushTab(viewer));
     PetscCall(PetscViewerASCIIPopTab(viewer));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -265,7 +265,7 @@ PETSC_EXTERN PetscErrorCode TaoCreate_BMRM(Tao tao)
   if (!tao->gatol_changed) tao->gatol = 1.0e-12;
   if (!tao->grtol_changed) tao->grtol = 1.0e-12;
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode init_df_solver(TAO_DF *df)
@@ -303,7 +303,7 @@ PetscErrorCode init_df_solver(TAO_DF *df)
   PetscCall(PetscMalloc1(n, &df->ipt));
   PetscCall(PetscMalloc1(n, &df->ipt2));
   PetscCall(PetscMalloc1(n, &df->uv));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode ensure_df_space(PetscInt dim, TAO_DF *df)
@@ -313,7 +313,7 @@ PetscErrorCode ensure_df_space(PetscInt dim, TAO_DF *df)
 
   PetscFunctionBegin;
   df->dim = dim;
-  if (dim <= df->cur_num_cp) PetscFunctionReturn(0);
+  if (dim <= df->cur_num_cp) PetscFunctionReturn(PETSC_SUCCESS);
 
   old_n = df->cur_num_cp;
   df->cur_num_cp += INCRE_DIM;
@@ -395,7 +395,7 @@ PetscErrorCode ensure_df_space(PetscInt dim, TAO_DF *df)
 
   PetscCall(PetscFree(df->uv));
   PetscCall(PetscMalloc1(n, &df->uv));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode destroy_df_solver(TAO_DF *df)
@@ -424,7 +424,7 @@ PetscErrorCode destroy_df_solver(TAO_DF *df)
   PetscCall(PetscFree(df->tplus));
   PetscCall(PetscFree(df->sk));
   PetscCall(PetscFree(df->yk));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Piecewise linear monotone target function for the Dai-Fletcher projector */

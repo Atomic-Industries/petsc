@@ -577,16 +577,16 @@ void PetscCallContinue(PetscErrorCode);
 #else
   #define PetscCallAbort(comm, ...) \
     do { \
-      PetscErrorCode ierr_abort_ = __VA_ARGS__; \
-      if (PetscUnlikely(ierr_abort_)) { \
-        PetscError(PETSC_COMM_SELF, __LINE__, PETSC_FUNCTION_NAME, __FILE__, ierr_abort_, PETSC_ERROR_REPEAT, " "); \
-        MPI_Abort(comm, ierr_abort_); \
+      PetscErrorCode ierr_petsc_abort_ = __VA_ARGS__; \
+      if (PetscUnlikely(ierr_petsc_abort_)) { \
+        ierr_petsc_abort_ = PetscError(PETSC_COMM_SELF, __LINE__, PETSC_FUNCTION_NAME, __FILE__, ierr_petsc_abort_, PETSC_ERROR_REPEAT, " "); \
+        MPI_Abort(comm, ierr_petsc_abort_); \
       } \
     } while (0)
   #define PetscCallContinue(...) \
     do { \
-      PetscErrorCode ierr_continue_ = __VA_ARGS__; \
-      if (PetscUnlikely(ierr_continue_)) PetscError(PETSC_COMM_SELF, __LINE__, PETSC_FUNCTION_NAME, __FILE__, ierr_continue_, PETSC_ERROR_REPEAT, " "); \
+      PetscErrorCode ierr_petsc_continue_ = __VA_ARGS__; \
+      if (PetscUnlikely(ierr_petsc_continue_)) { ierr_petsc_continue_ = PetscError(PETSC_COMM_SELF, __LINE__, PETSC_FUNCTION_NAME, __FILE__, ierr_petsc_continue_, PETSC_ERROR_REPEAT, " "); } \
     } while (0)
 #endif
 
@@ -659,12 +659,13 @@ PETSC_EXTERN PetscBool petscindebugger;
  M*/
 #define PETSCABORT(comm, ...) \
   do { \
-    if (petscwaitonerrorflg) PetscSleep(1000); \
+    PetscErrorCode ierr_petsc_abort_; \
+    if (petscwaitonerrorflg) ierr_petsc_abort_ = PetscSleep(1000); \
     if (petscindebugger) abort(); \
     else { \
-      PetscErrorCode ierr_petsc_abort_ = __VA_ARGS__; \
-      PetscMPIInt    size; \
+      PetscMPIInt size; \
       MPI_Comm_size(comm, &size); \
+      ierr_petsc_abort_ = __VA_ARGS__; \
       if (PetscCIEnabledPortableErrorOutput && size == PetscGlobalSize && ierr_petsc_abort_ != PETSC_ERR_SIG) { \
         MPI_Finalize(); \
         exit(0); \
@@ -876,7 +877,7 @@ void PetscCallCXX(PetscErrorCode);
     PetscFunctionBegin;
     // WRONG! baz() returns a PetscErrorCode, prefer PetscCallCXX() instead
     PetscCallCXXAbort(PETSC_COMM_SELF, v.emplace_back(1));
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
 .ve
 
@@ -1495,7 +1496,7 @@ M*/
    {
      PetscFunctionBegin; // don't forget the begin!
      *x = 10;
-     PetscFunctionReturn(0);
+     PetscFunctionReturn(PETSC_SUCCESS);
    }
 .ve
 

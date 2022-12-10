@@ -170,7 +170,7 @@ PetscErrorCode PCTFS_gs_init_vec_sz(PetscInt size)
 {
   PetscFunctionBegin;
   vec_sz = size;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -178,7 +178,7 @@ PetscErrorCode PCTFS_gs_init_msg_buf_sz(PetscInt buf_size)
 {
   PetscFunctionBegin;
   msg_buf = buf_size;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -461,7 +461,7 @@ static PetscErrorCode gsi_via_bit_mask(PCTFS_gs_id *gs)
   free((void *)gs->elms);
   free((void *)gs->ngh_buf);
   gs->local_elms = gs->companion = gs->elms = gs->ngh_buf = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -485,7 +485,7 @@ static PetscErrorCode place_in_tree(PetscInt elm)
   }
 
   tree_buf[ntree++] = elm;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -652,7 +652,7 @@ static PetscErrorCode get_ngh_buf(PCTFS_gs_id *gs)
 
   free((void *)p_mask);
   free((void *)sh_proc_mask);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -771,7 +771,7 @@ static PetscErrorCode set_pairwise(PCTFS_gs_id *gs)
   /* reset malloc pool */
   free((void *)p_mask);
   free((void *)tmp_proc_mask);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* to do pruned tree just save ngh buf copy for each one and decode here!
@@ -816,7 +816,7 @@ static PetscErrorCode set_tree(PCTFS_gs_id *gs)
 
   /* sentinel */
   *iptr_in = *iptr_out = -1;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -845,7 +845,7 @@ static PetscErrorCode PCTFS_gs_gop_local_out(PCTFS_gs_id *gs, PetscScalar *vals)
       while (*map >= 0) *(vals + *map++) = tmp;
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -880,7 +880,7 @@ static PetscErrorCode PCTFS_gs_gop_local_plus(PCTFS_gs_id *gs, PetscScalar *vals
       while (*map >= 0) *(vals + *map++) = tmp;
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -909,7 +909,7 @@ static PetscErrorCode PCTFS_gs_gop_local_in_plus(PCTFS_gs_id *gs, PetscScalar *v
       while (*map >= 0) *base += *(vals + *map++);
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -969,7 +969,7 @@ PetscErrorCode PCTFS_gs_free(PCTFS_gs_id *gs)
   if (gs->num_gop_local_reduce) free((void *)gs->num_gop_local_reduce);
 
   free((void *)gs);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -986,7 +986,7 @@ PetscErrorCode PCTFS_gs_gop_vec(PCTFS_gs_id *gs, PetscScalar *vals, const char *
     PCTFS_gs_gop_vec_plus(gs, vals, step);
     break;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -1016,7 +1016,7 @@ static PetscErrorCode PCTFS_gs_gop_vec_plus(PCTFS_gs_id *gs, PetscScalar *vals, 
     /* tree */
     else if (gs->max_left_over) PCTFS_gs_gop_vec_tree_plus(gs, vals, step);
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -1063,7 +1063,7 @@ static PetscErrorCode PCTFS_gs_gop_vec_local_plus(PCTFS_gs_id *gs, PetscScalar *
       reduce++;
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -1096,7 +1096,7 @@ static PetscErrorCode PCTFS_gs_gop_vec_local_in_plus(PCTFS_gs_id *gs, PetscScala
       while (*++map >= 0) PCTFS_rvec_add(base, vals + *map * step, step);
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -1129,7 +1129,7 @@ static PetscErrorCode PCTFS_gs_gop_vec_local_out(PCTFS_gs_id *gs, PetscScalar *v
       while (*++map >= 0) PCTFS_rvec_copy(vals + *map * step, base, step);
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -1223,7 +1223,7 @@ static PetscErrorCode PCTFS_gs_gop_vec_pairwise_plus(PCTFS_gs_id *gs, PetscScala
     PetscCallMPI(MPI_Wait(ids_out, &status));
     ids_out++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -1265,7 +1265,7 @@ static PetscErrorCode PCTFS_gs_gop_vec_tree_plus(PCTFS_gs_id *gs, PetscScalar *v
     PetscCall(PetscBLASIntCast(step, &dstep));
     PetscCallBLAS("BLAScopy", BLAScopy_(&dstep, buf + *out++ * step, &i1, vals + *in++ * step, &i1));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -1282,7 +1282,7 @@ PetscErrorCode PCTFS_gs_gop_hc(PCTFS_gs_id *gs, PetscScalar *vals, const char *o
     PCTFS_gs_gop_plus_hc(gs, vals, dim);
     break;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -1290,7 +1290,7 @@ static PetscErrorCode PCTFS_gs_gop_plus_hc(PCTFS_gs_id *gs, PetscScalar *vals, P
 {
   PetscFunctionBegin;
   /* if there's nothing to do return */
-  if (dim <= 0) PetscFunctionReturn(0);
+  if (dim <= 0) PetscFunctionReturn(PETSC_SUCCESS);
 
   /* can't do more dimensions then exist */
   dim = PetscMin(dim, PCTFS_i_log2_num_nodes);
@@ -1312,7 +1312,7 @@ static PetscErrorCode PCTFS_gs_gop_plus_hc(PCTFS_gs_id *gs, PetscScalar *vals, P
     if (gs->num_pairs) PCTFS_gs_gop_pairwise_plus_hc(gs, vals, dim); /* tree */
     else if (gs->max_left_over) PCTFS_gs_gop_tree_plus_hc(gs, vals, dim);
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -1411,7 +1411,7 @@ static PetscErrorCode PCTFS_gs_gop_pairwise_plus_hc(PCTFS_gs_id *gs, PetscScalar
     }
     msg_list++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -1439,5 +1439,5 @@ static PetscErrorCode PCTFS_gs_gop_tree_plus_hc(PCTFS_gs_id *gs, PetscScalar *va
   PCTFS_grop_hc(buf, work, size, op, dim);
 
   while (*in >= 0) *(vals + *in++) = *(buf + *out++);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

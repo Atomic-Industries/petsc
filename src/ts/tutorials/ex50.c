@@ -284,7 +284,7 @@ PetscErrorCode RHSFunction(TS ts, PetscReal t, Vec globalin, Vec globalout, void
   PetscCall(VecPointwiseMult(globalout, globalin, globalout)); /* u grad u */
   PetscCall(VecScale(globalout, -1.0));
   PetscCall(MatMultAdd(appctx->SEMop.keptstiff, globalin, globalout, globalout));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -315,7 +315,7 @@ PetscErrorCode RHSJacobian(TS ts, PetscReal t, Vec globalin, Mat A, Mat B, void 
   /*   A  = K - A    */
   PetscCall(MatScale(A, -1.0));
   PetscCall(MatAXPY(A, 0.0, appctx->SEMop.keptstiff, SAME_NONZERO_PATTERN));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* --------------------------------------------------------------------- */

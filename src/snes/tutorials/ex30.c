@@ -275,7 +275,7 @@ PetscErrorCode UpdateSolution(SNES snes, AppCtx *user, PetscInt *nits)
 done:
   if (param->stop_solve && !q) PetscCall(PetscPrintf(PETSC_COMM_WORLD, "USER SIGNAL: stopping solve.\n"));
   if (reason < 0 && !q) PetscCall(PetscPrintf(PETSC_COMM_WORLD, "FAILED TO CONVERGE: stopping solve.\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*=====================================================================
@@ -1142,7 +1142,7 @@ PetscErrorCode ViscosityField(DM da, Vec X, Vec V)
   PetscCall(DMRestoreLocalVector(da, &localX));
 
   param->ivisc = ivt;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ------------------------------------------------------------------- */
@@ -1237,7 +1237,7 @@ PetscErrorCode SNESConverged_Interactive(SNES snes, PetscInt it, PetscReal xnorm
     param->interrupted = PETSC_FALSE;
     PetscCall(PetscPrintf(PETSC_COMM_WORLD, "USER SIGNAL: exiting SNES solve. \n"));
     *reason = SNES_CONVERGED_FNORM_ABS;
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   } else if (param->toggle_kspmon) {
     param->toggle_kspmon = PETSC_FALSE;
 
@@ -1258,7 +1258,7 @@ PetscErrorCode SNESConverged_Interactive(SNES snes, PetscInt it, PetscReal xnorm
     }
   }
   PetscCall(SNESConvergedDefault(snes, it, xnorm, snorm, fnorm, reason, ctx));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ------------------------------------------------------------------- */
@@ -1407,7 +1407,7 @@ PetscErrorCode FormFunctionLocal(DMDALocalInfo *info, Field **x, Field **f, void
       }
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

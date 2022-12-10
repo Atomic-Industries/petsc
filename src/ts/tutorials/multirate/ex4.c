@@ -63,7 +63,7 @@ static PetscErrorCode PhysicsRiemann_Advect(void *vctx, PetscInt m, const PetscS
   speed     = ctx->a;
   flux[0]   = PetscMax(0, speed) * uL[0] + PetscMin(0, speed) * uR[0];
   *maxspeed = speed;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PhysicsCharacteristic_Advect(void *vctx, PetscInt m, const PetscScalar *u, PetscScalar *X, PetscScalar *Xi, PetscReal *speeds)
@@ -74,7 +74,7 @@ static PetscErrorCode PhysicsCharacteristic_Advect(void *vctx, PetscInt m, const
   X[0]      = 1.;
   Xi[0]     = 1.;
   speeds[0] = ctx->a;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PhysicsSample_Advect(void *vctx, PetscInt initial, FVBCType bctype, PetscReal xmin, PetscReal xmax, PetscReal t, PetscReal x, PetscReal *u)
@@ -121,7 +121,7 @@ static PetscErrorCode PhysicsSample_Advect(void *vctx, PetscInt initial, FVBCTyp
   default:
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_ARG_UNKNOWN_TYPE, "unknown initial condition");
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PhysicsCreate_Advect(FVCtx *ctx)
@@ -142,7 +142,7 @@ static PetscErrorCode PhysicsCreate_Advect(FVCtx *ctx)
   PetscOptionsBegin(ctx->comm, ctx->prefix, "Options for advection", "");
   PetscCall(PetscOptionsReal("-physics_advect_a", "Speed", "", user->a, &user->a, NULL));
   PetscOptionsEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 /* --------------------------------- Shallow Water ----------------------------------- */
 
@@ -227,7 +227,7 @@ converged:
     ShallowFlux(phys, ustar, flux);
   }
   *maxspeed = MaxAbs(MaxAbs(star.u - cstar, star.u + cstar), MaxAbs(L.u - cL, R.u + cR));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PhysicsRiemann_Shallow_Rusanov(void *vctx, PetscInt m, const PetscScalar *uL, const PetscScalar *uR, PetscScalar *flux, PetscReal *maxspeed)
@@ -255,7 +255,7 @@ static PetscErrorCode PhysicsRiemann_Shallow_Rusanov(void *vctx, PetscInt m, con
   flux[0]   = 0.5 * (fL[0] + fR[0]) + 0.5 * s * (L.h - R.h);
   flux[1]   = 0.5 * (fL[1] + fR[1]) + 0.5 * s * (uL[1] - uR[1]);
   *maxspeed = s;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PhysicsCharacteristic_Conservative(void *vctx, PetscInt m, const PetscScalar *u, PetscScalar *X, PetscScalar *Xi, PetscReal *speeds)
@@ -267,7 +267,7 @@ static PetscErrorCode PhysicsCharacteristic_Conservative(void *vctx, PetscInt m,
     for (j = 0; j < m; j++) Xi[i * m + j] = X[i * m + j] = (PetscScalar)(i == j);
     speeds[i] = PETSC_MAX_REAL; /* Indicates invalid */
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PhysicsCharacteristic_Shallow(void *vctx, PetscInt m, const PetscScalar *u, PetscScalar *X, PetscScalar *Xi, PetscReal *speeds)
@@ -295,7 +295,7 @@ static PetscErrorCode PhysicsCharacteristic_Shallow(void *vctx, PetscInt m, cons
 
   PetscCall(PetscArraycpy(Xi, X, 4));
   PetscCall(PetscKernel_A_gets_inverse_A_2(Xi, 0, PETSC_FALSE, NULL));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PhysicsSample_Shallow(void *vctx, PetscInt initial, FVBCType bctype, PetscReal xmin, PetscReal xmax, PetscReal t, PetscReal x, PetscReal *u)
@@ -358,7 +358,7 @@ static PetscErrorCode PhysicsSample_Shallow(void *vctx, PetscInt initial, FVBCTy
   default:
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_ARG_UNKNOWN_TYPE, "unknown initial condition");
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Implements inflow conditions for the given initial conditions. Which conditions are actually enforced depends on
@@ -403,7 +403,7 @@ static PetscErrorCode PhysicsInflow_Shallow(void *vctx, PetscReal t, PetscReal x
       SETERRQ(PETSC_COMM_SELF, PETSC_ERR_ARG_UNKNOWN_TYPE, "unknown initial condition");
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Selects which boundary conditions are marked as inflow and which as outflow when FVBC_INFLOW is selected. */
@@ -428,7 +428,7 @@ static PetscErrorCode PhysicsSetInflowType_Shallow(FVCtx *ctx)
   default:
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_ARG_UNKNOWN_TYPE, "unknown initial condition");
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PhysicsCreate_Shallow(FVCtx *ctx)
@@ -468,7 +468,7 @@ static PetscErrorCode PhysicsCreate_Shallow(FVCtx *ctx)
   PetscCall(ReconstructListFind_2WaySplit(rclist, rcname, &ctx->physics2.characteristic2));
   PetscCall(PetscFunctionListDestroy(&rlist));
   PetscCall(PetscFunctionListDestroy(&rclist));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode FVSample_2WaySplit(FVCtx *ctx, DM da, PetscReal time, Vec U)
@@ -518,7 +518,7 @@ PetscErrorCode FVSample_2WaySplit(FVCtx *ctx, DM da, PetscReal time, Vec U)
   }
   PetscCall(DMDAVecRestoreArray(da, U, &u));
   PetscCall(PetscFree(uj));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SolutionErrorNorms_2WaySplit(FVCtx *ctx, DM da, PetscReal t, Vec X, PetscReal *nrm1)
@@ -543,7 +543,7 @@ static PetscErrorCode SolutionErrorNorms_2WaySplit(FVCtx *ctx, DM da, PetscReal 
   PetscCall(VecRestoreArrayRead(X, &ptr_X));
   PetscCall(VecRestoreArrayRead(Y, &ptr_Y));
   PetscCall(VecDestroy(&Y));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode FVRHSFunction_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, void *vctx)
@@ -719,7 +719,7 @@ PetscErrorCode FVRHSFunction_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, void
       } else SETERRQ(PETSC_COMM_SELF, 1, "Stability constraint exceeded, %g > %g", (double)dt, (double)(ctx->cfl / ctx->cfl_idt));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* --------------------------------- Finite Volume Solver for slow components ----------------------------------- */
@@ -871,7 +871,7 @@ PetscErrorCode FVRHSFunctionslow_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, 
   PetscCall(DMDARestoreArray(da, PETSC_TRUE, &slope));
   PetscCall(DMRestoreLocalVector(da, &Xloc));
   PetscCallMPI(MPI_Allreduce(&cfl_idt, &ctx->cfl_idt, 1, MPIU_SCALAR, MPIU_MAX, PetscObjectComm((PetscObject)da)));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode FVRHSFunctionslowbuffer_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, void *vctx)
@@ -1041,7 +1041,7 @@ PetscErrorCode FVRHSFunctionslowbuffer_2WaySplit(TS ts, PetscReal time, Vec X, V
   PetscCall(VecRestoreArray(F, &f));
   PetscCall(DMDARestoreArray(da, PETSC_TRUE, &slope));
   PetscCall(DMRestoreLocalVector(da, &Xloc));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* --------------------------------- Finite Volume Solver for fast  parts ----------------------------------- */
@@ -1175,7 +1175,7 @@ PetscErrorCode FVRHSFunctionfast_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, 
   PetscCall(VecRestoreArray(F, &f));
   PetscCall(DMDARestoreArray(da, PETSC_TRUE, &slope));
   PetscCall(DMRestoreLocalVector(da, &Xloc));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char *argv[])

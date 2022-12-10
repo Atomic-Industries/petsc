@@ -321,7 +321,7 @@ PetscErrorCode SetBounds(Vec xl, Vec xu, PetscScalar ul, PetscScalar uh, AppCtx 
   }
   PetscCall(VecRestoreArray(xl, &l));
   PetscCall(VecRestoreArray(xu, &u));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* --------------------------------------------------------------------- */

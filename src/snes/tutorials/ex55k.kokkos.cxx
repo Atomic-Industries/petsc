@@ -106,7 +106,7 @@ PetscErrorCode FormFunctionLocalVec(DMDALocalInfo *info, Vec x, Vec f, AppCtx *u
   PetscCallCXX(DMDAVecRestoreKokkosOffsetViewWrite(info->da, f, &fv));
 
   PetscCall(PetscLogFlops(11.0 * info->ym * info->xm));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode FormObjectiveLocalVec(DMDALocalInfo *info, Vec x, PetscReal *obj, AppCtx *user)
@@ -162,7 +162,7 @@ PetscErrorCode FormObjectiveLocalVec(DMDALocalInfo *info, Vec x, PetscReal *obj,
   PetscCallCXX(DMDAVecRestoreKokkosOffsetView(info->da, x, &xv));
   PetscCall(PetscLogFlops(12.0 * info->ym * info->xm));
   PetscCallMPI(MPI_Allreduce(&lobj, obj, 1, MPIU_REAL, MPIU_SUM, comm));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode FormJacobianLocalVec(DMDALocalInfo *info, Vec x, Mat jac, Mat jacpre, AppCtx *user)
@@ -271,5 +271,5 @@ PetscErrorCode FormJacobianLocalVec(DMDALocalInfo *info, Vec x, Mat jac, Mat jac
     }));
   PetscCall(MatSetValuesCOO(jacpre, coo_v.data(), INSERT_VALUES));
   PetscCallCXX(DMDAVecRestoreKokkosOffsetView(info->da, x, &xv));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

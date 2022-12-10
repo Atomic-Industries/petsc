@@ -1133,7 +1133,7 @@ static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
   PetscCall(PetscOptionsEList("-sol_type", "The solution type", "ex76.c", solTypes, NUM_SOL_TYPES, solTypes[options->solType], &sol, NULL));
   options->solType = (SolType)sol;
   PetscOptionsEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupParameters(DM dm, AppCtx *user)
@@ -1163,7 +1163,7 @@ static PetscErrorCode SetupParameters(DM dm, AppCtx *user)
   PetscCall(PetscBagRegisterReal(bag, &p->T_in, 1.0, "T_in", "Inlet temperature"));
   PetscCall(PetscBagRegisterReal(bag, &p->g_dir, dir, "g_dir", "Gravity direction"));
   PetscCall(PetscBagRegisterReal(bag, &p->epsilon, 1.0, "epsilon", "Perturbation strength"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
@@ -1173,7 +1173,7 @@ static PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
   PetscCall(DMSetType(*dm, DMPLEX));
   PetscCall(DMSetFromOptions(*dm));
   PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode UniformBoundaryConditions(DM dm, DMLabel label, PetscSimplePointFunc exactFuncs[], PetscSimplePointFunc exactFuncs_t[], AppCtx *user)
@@ -1201,7 +1201,7 @@ static PetscErrorCode UniformBoundaryConditions(DM dm, DMLabel label, PetscSimpl
   PetscCall(PetscDSAddBoundary(ds, DM_BC_ESSENTIAL, "right wall temp", label, 1, &id, TEMP, 0, NULL, (void (*)(void))exactFuncs[TEMP], (void (*)(void))exactFuncs_t[TEMP], ctx, NULL));
   id = 4;
   PetscCall(PetscDSAddBoundary(ds, DM_BC_ESSENTIAL, "left wall temp", label, 1, &id, TEMP, 0, NULL, (void (*)(void))exactFuncs[TEMP], (void (*)(void))exactFuncs_t[TEMP], ctx, NULL));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupProblem(DM dm, AppCtx *user)
@@ -1414,7 +1414,7 @@ static PetscErrorCode SetupProblem(DM dm, AppCtx *user)
   PetscCall(PetscDSSetExactSolutionTimeDerivative(ds, VEL, exactFuncs_t[VEL], ctx));
   PetscCall(PetscDSSetExactSolutionTimeDerivative(ds, PRES, exactFuncs_t[PRES], ctx));
   PetscCall(PetscDSSetExactSolutionTimeDerivative(ds, TEMP, exactFuncs_t[TEMP], ctx));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreateCellDM(DM dm, AppCtx *user)
@@ -1440,7 +1440,7 @@ static PetscErrorCode CreateCellDM(DM dm, AppCtx *user)
   PetscCall(DMSetField(user->dmCell, 0, NULL, (PetscObject)fediv));
   PetscCall(DMCreateDS(user->dmCell));
   PetscCall(PetscFEDestroy(&fediv));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode GetCellDM(DM dm, AppCtx *user, DM *dmCell)
@@ -1452,7 +1452,7 @@ static PetscErrorCode GetCellDM(DM dm, AppCtx *user, DM *dmCell)
   if (user->dmCell) PetscCall(DMPlexGetSimplexOrBoxCells(user->dmCell, 0, &cellStart, &cellEnd));
   if (cStart != cellStart || cEnd != cellEnd) PetscCall(CreateCellDM(dm, user));
   *dmCell = user->dmCell;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupDiscretization(DM dm, AppCtx *user)
@@ -1505,7 +1505,7 @@ static PetscErrorCode SetupDiscretization(DM dm, AppCtx *user)
     PetscCall(PetscObjectCompose(pressure, "nullspace", (PetscObject)nullspacePres));
     PetscCall(MatNullSpaceDestroy(&nullspacePres));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreatePressureNullSpace(DM dm, PetscInt ofield, PetscInt nfield, MatNullSpace *nullSpace)
@@ -1523,7 +1523,7 @@ static PetscErrorCode CreatePressureNullSpace(DM dm, PetscInt ofield, PetscInt n
   PetscCall(VecViewFromOptions(vec, NULL, "-pressure_nullspace_view"));
   PetscCall(MatNullSpaceCreate(PetscObjectComm((PetscObject)dm), PETSC_FALSE, 1, &vec, nullSpace));
   PetscCall(VecDestroy(&vec));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode RemoveDiscretePressureNullspace_Private(TS ts, Vec u)
@@ -1535,11 +1535,11 @@ static PetscErrorCode RemoveDiscretePressureNullspace_Private(TS ts, Vec u)
   PetscFunctionBeginUser;
   PetscCall(TSGetDM(ts, &dm));
   PetscCall(DMGetApplicationContext(dm, &user));
-  if (!user->hasNullSpace) PetscFunctionReturn(0);
+  if (!user->hasNullSpace) PetscFunctionReturn(PETSC_SUCCESS);
   PetscCall(CreatePressureNullSpace(dm, 1, 1, &nullsp));
   PetscCall(MatNullSpaceRemove(nullsp, u));
   PetscCall(MatNullSpaceDestroy(&nullsp));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Make the discrete pressure discretely divergence free */
@@ -1550,7 +1550,7 @@ static PetscErrorCode RemoveDiscretePressureNullspace(TS ts)
   PetscFunctionBeginUser;
   PetscCall(TSGetSolution(ts, &u));
   PetscCall(RemoveDiscretePressureNullspace_Private(ts, u));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static void divergence(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal X[], PetscInt numConstants, const PetscScalar constants[], PetscScalar divu[])
@@ -1573,7 +1573,7 @@ static PetscErrorCode SetInitialConditions(TS ts, Vec u)
   PetscCall(DMComputeExactSolution(dm, t, u, NULL));
   PetscCall(DMGetApplicationContext(dm, &user));
   PetscCall(RemoveDiscretePressureNullspace_Private(ts, u));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MonitorError(TS ts, PetscInt step, PetscReal crtime, Vec u, void *ctx)
@@ -1611,7 +1611,7 @@ static PetscErrorCode MonitorError(TS ts, PetscInt step, PetscReal crtime, Vec u
   PetscCall(VecViewFromOptions(divu, NULL, "-div_vec_view"));
   PetscCall(DMRestoreGlobalVector(dmCell, &divu));
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

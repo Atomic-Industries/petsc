@@ -22,7 +22,7 @@ PETSC_INTERN PetscErrorCode MatFDColoringDegreeSequence_Minpack(PetscInt m, cons
   MINPACKdegr(&m, cja, cia, rja, ria, *seq, work);
 
   PetscCall(PetscFree(work));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -37,7 +37,7 @@ PetscErrorCode MatFDColoringMinimumNumberofColors_Private(PetscInt m, PetscInt *
   PetscFunctionBegin;
   for (i = 0; i < m; i++) c = PetscMax(c, ia[i + 1] - ia[i]);
   *minc = c;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatColoringApply_SL(MatColoring mc, ISColoring *iscoloring)
@@ -112,7 +112,7 @@ static PetscErrorCode MatColoringApply_SL(MatColoring mc, ISColoring *iscoloring
     PetscCall(ISColoringCreate(comm, nc, N_loc, colors_loc, PETSC_OWN_POINTER, iscoloring));
     PetscCall(ISColoringDestroy(&iscoloring_seq));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*MC
@@ -141,7 +141,7 @@ PETSC_EXTERN PetscErrorCode MatColoringCreate_SL(MatColoring mc)
   mc->ops->view           = NULL;
   mc->ops->destroy        = NULL;
   mc->ops->setfromoptions = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatColoringApply_LF(MatColoring mc, ISColoring *iscoloring)
@@ -219,7 +219,7 @@ static PetscErrorCode MatColoringApply_LF(MatColoring mc, ISColoring *iscoloring
     PetscCall(ISColoringCreate(comm, nc, N_loc, colors_loc, PETSC_OWN_POINTER, iscoloring));
     PetscCall(ISColoringDestroy(&iscoloring_seq));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*MC
@@ -248,7 +248,7 @@ PETSC_EXTERN PetscErrorCode MatColoringCreate_LF(MatColoring mc)
   mc->ops->view           = NULL;
   mc->ops->destroy        = NULL;
   mc->ops->setfromoptions = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatColoringApply_ID(MatColoring mc, ISColoring *iscoloring)
@@ -324,7 +324,7 @@ static PetscErrorCode MatColoringApply_ID(MatColoring mc, ISColoring *iscoloring
     PetscCall(ISColoringCreate(comm, nc, N_loc, colors_loc, PETSC_OWN_POINTER, iscoloring));
     PetscCall(ISColoringDestroy(&iscoloring_seq));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*MC
@@ -353,5 +353,5 @@ PETSC_EXTERN PetscErrorCode MatColoringCreate_ID(MatColoring mc)
   mc->ops->view           = NULL;
   mc->ops->destroy        = NULL;
   mc->ops->setfromoptions = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

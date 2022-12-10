@@ -178,7 +178,7 @@ static PetscErrorCode SetupParameters(AppCtx *user)
   PetscCall(PetscBagRegisterReal(bag, &p->nu, 1.0, "nu", "Kinematic viscosity"));
   PetscCall(PetscBagRegisterReal(bag, &p->u_0, 0.0, "u_0", "Tangential velocity at the wall"));
   PetscCall(PetscBagRegisterReal(bag, &p->alpha, 0.0, "alpha", "Angle of pipe wall to x-axis"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
@@ -213,7 +213,7 @@ PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
     PetscCall(DMSetCoordinates(*dm, coordinates));
   }
   PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode SetupProblem(DM dm, AppCtx *user)
@@ -259,7 +259,7 @@ PetscErrorCode SetupProblem(DM dm, AppCtx *user)
   /* Setup exact solution */
   PetscCall(PetscDSSetExactSolution(ds, 0, quadratic_u, ctx));
   PetscCall(PetscDSSetExactSolution(ds, 1, linear_p, ctx));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode SetupDiscretization(DM dm, AppCtx *user)
@@ -293,7 +293,7 @@ PetscErrorCode SetupDiscretization(DM dm, AppCtx *user)
   }
   PetscCall(PetscFEDestroy(&fe[0]));
   PetscCall(PetscFEDestroy(&fe[1]));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

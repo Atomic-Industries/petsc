@@ -40,7 +40,7 @@ PetscErrorCode monitor(Tao tao, AppCtx *ctx)
   PetscCall(VecRestoreArrayRead(X, &x));
   PetscCall(VecRestoreArrayRead(G, &g));
   fclose(fp);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

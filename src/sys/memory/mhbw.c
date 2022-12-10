@@ -78,5 +78,5 @@ PETSC_INTERN PetscErrorCode PetscSetUseHBWMalloc_Private(void)
   PetscFunctionBegin;
   PetscCall(PetscMallocSet(PetscHBWMalloc, PetscHBWFree, NULL));
   PetscTrRealloc = PetscHBWRealloc;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

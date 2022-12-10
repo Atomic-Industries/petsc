@@ -184,7 +184,7 @@ PetscErrorCode amgx_output_messages(PC_AMGX *amgx)
     amgx_output.clear();
   }
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 // XXX Need to add call in AmgX API that gracefully destroys everything
@@ -315,7 +315,7 @@ static PetscErrorCode PCSetUp_AMGX(PC pc)
     PetscCall(MatSeqAIJRestoreArrayRead(amgx->localA, &amgx->values));
   }
   amgx_output_messages(amgx);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -366,7 +366,7 @@ static PetscErrorCode PCApply_AMGX(PC pc, Vec b, Vec x)
     PetscCall(VecRestoreArrayRead(b, &b_));
   }
   amgx_output_messages(amgx);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PCReset_AMGX(PC pc)
@@ -383,7 +383,7 @@ static PetscErrorCode PCReset_AMGX(PC pc)
     amgx_output_messages(amgx);
     amgx->solve_state_init = false;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -415,7 +415,7 @@ static PetscErrorCode PCDestroy_AMGX(PC pc)
   }
   s_count -= 1;
   PetscCall(PetscFree(amgx));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <class T>
@@ -536,7 +536,7 @@ static PetscErrorCode PCSetFromOptions_AMGX(PC pc, PetscOptionItems *PetscOption
   // Set whether AmgX output will be seen
   PetscCall(PetscOptionsBool("-pc_amgx_verbose", "Enable output from AmgX", "", amgx->verbose, &amgx->verbose, NULL));
   PetscOptionsHeadEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PCView_AMGX(PC pc, PetscViewer viewer)
@@ -551,7 +551,7 @@ static PetscErrorCode PCView_AMGX(PC pc, PetscViewer viewer)
     std::replace(output_cfg.begin(), output_cfg.end(), ',', '\n');
     PetscCall(PetscViewerASCIIPrintf(viewer, "\n%s\n", output_cfg.c_str()));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*MC
@@ -630,7 +630,7 @@ PETSC_EXTERN PetscErrorCode PCCreate_AMGX(PC pc)
   PetscCallMPI(MPI_Comm_rank(amgx->comm, &amgx->rank));
 
   amgx_output_messages(amgx);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -660,5 +660,5 @@ PETSC_EXTERN PetscErrorCode PCAmgXGetResources(PC pc, void *rsrc_out)
     amgx->rsrc_init = true;
   }
   *static_cast<AMGX_resources_handle *>(rsrc_out) = amgx->rsrc;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

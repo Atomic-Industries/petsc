@@ -445,7 +445,7 @@ PetscErrorCode elem_3d_elast_v_25(PetscScalar *dd)
 
   PetscFunctionBeginUser;
   PetscCall(PetscArraycpy(dd, DD, 576));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

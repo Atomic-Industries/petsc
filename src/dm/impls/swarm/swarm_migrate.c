@@ -89,7 +89,7 @@ PetscErrorCode DMSwarmMigrate_Push_Basic(DM dm, PetscBool remove_sent_points)
   if (debug) PetscCall(DMSwarmDataExView(de));
   PetscCall(DMSwarmDataBucketDestroyPackedArray(swarm->db, &point_buffer));
   PetscCall(DMSwarmDataExDestroy(de));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode DMSwarmMigrate_DMNeighborScatter(DM dm, DM dmcell, PetscBool remove_sent_points, PetscInt *npoints_prior_migration)
@@ -172,7 +172,7 @@ PetscErrorCode DMSwarmMigrate_DMNeighborScatter(DM dm, DM dmcell, PetscBool remo
   }
   PetscCall(DMSwarmDataBucketDestroyPackedArray(swarm->db, &point_buffer));
   PetscCall(DMSwarmDataExDestroy(de));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode DMSwarmMigrate_CellDMScatter(DM dm, PetscBool remove_sent_points)
@@ -347,13 +347,13 @@ PetscErrorCode DMSwarmMigrate_CellDMScatter(DM dm, PetscBool remove_sent_points)
     PetscCall(DMSwarmGetSize(dm, &npoints2g));
     PetscCheck(npointsg == npoints2g, PetscObjectComm((PetscObject)dm), PETSC_ERR_USER, "Points from the DMSwarm must remain constant during migration (initial %" PetscInt_FMT " - final %" PetscInt_FMT ")", npointsg, npoints2g);
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode DMSwarmMigrate_CellDMExact(DM dm, PetscBool remove_sent_points)
 {
   PetscFunctionBegin;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -421,7 +421,7 @@ PetscErrorCode DMSwarmMigrate_GlobalToLocal_Basic(DM dm, PetscInt *globalsize)
   PetscCall(DMSwarmDataExView(de));
   PetscCall(DMSwarmDataBucketDestroyPackedArray(swarm->db, &point_buffer));
   PetscCall(DMSwarmDataExDestroy(de));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 typedef struct {
@@ -569,7 +569,7 @@ PETSC_EXTERN PetscErrorCode DMSwarmCollect_DMDABoundingBox(DM dm, PetscInt *glob
   PetscFree(bbox);
   PetscCall(DMSwarmDataExView(de));
   PetscCall(DMSwarmDataExDestroy(de));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* General collection when no order, or neighbour information is provided */
@@ -662,7 +662,7 @@ PETSC_EXTERN PetscErrorCode DMSwarmCollect_General(DM dm, PetscErrorCode (*colle
   PetscCall(DMSwarmDataBucketDestroyPackedArray(swarm->db, &point_buffer));
   PetscCall(DMSwarmDataExView(de));
   PetscCall(DMSwarmDataExDestroy(de));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@

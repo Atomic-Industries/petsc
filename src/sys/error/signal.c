@@ -327,7 +327,7 @@ PetscErrorCode PetscPushSignalHandler(PetscErrorCode (*routine)(int, void *), vo
   newsh->ctx     = ctx;
   newsh->classid = SIGNAL_CLASSID;
   sh             = newsh;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -346,7 +346,7 @@ PetscErrorCode PetscPopSignalHandler(void)
   struct SH *tmp;
 
   PetscFunctionBegin;
-  if (!sh) PetscFunctionReturn(0);
+  if (!sh) PetscFunctionReturn(PETSC_SUCCESS);
   PetscCheck(sh->classid == SIGNAL_CLASSID, PETSC_COMM_SELF, PETSC_ERR_COR, "Signal object has been corrupted");
 
   tmp = sh;
@@ -408,5 +408,5 @@ PetscErrorCode PetscPopSignalHandler(void)
   } else {
     SignalSet = PETSC_TRUE;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

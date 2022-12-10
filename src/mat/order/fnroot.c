@@ -49,7 +49,7 @@ PetscErrorCode SPARSEPACKfnroot(PetscInt *root, const PetscInt *xadj, const Pets
 
   SPARSEPACKrootls(root, &xadj[1], &adjncy[1], &mask[1], nlvl, &xls[1], &ls[1]);
   ccsize = xls[*nlvl + 1] - 1;
-  if (*nlvl == 1 || *nlvl == ccsize) PetscFunctionReturn(0);
+  if (*nlvl == 1 || *nlvl == ccsize) PetscFunctionReturn(PETSC_SUCCESS);
 
 /*       PICK A NODE WITH MINIMUM DEGREE FROM THE LAST LEVEL.*/
 L100:
@@ -76,8 +76,8 @@ L100:
 /*       AND GENERATE ITS ROOTED LEVEL STRUCTURE.*/
 L400:
   SPARSEPACKrootls(root, &xadj[1], &adjncy[1], &mask[1], &nunlvl, &xls[1], &ls[1]);
-  if (nunlvl <= *nlvl) PetscFunctionReturn(0);
+  if (nunlvl <= *nlvl) PetscFunctionReturn(PETSC_SUCCESS);
   *nlvl = nunlvl;
   if (*nlvl < ccsize) goto L100;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

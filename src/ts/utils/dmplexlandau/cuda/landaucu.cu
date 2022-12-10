@@ -28,7 +28,7 @@ PETSC_EXTERN PetscErrorCode LandauCUDACreateMatMaps(P4estVertexMaps maps[], poin
   PetscCallCUDA(cudaMemcpy(h_maps.gIdx, maps[grid].gIdx, maps[grid].num_elements * sizeof *maps[grid].gIdx, cudaMemcpyHostToDevice));
   PetscCallCUDA(cudaMalloc((void **)&maps[grid].d_self, sizeof(P4estVertexMaps)));
   PetscCallCUDA(cudaMemcpy(maps[grid].d_self, &h_maps, sizeof(P4estVertexMaps), cudaMemcpyHostToDevice));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PETSC_EXTERN PetscErrorCode LandauCUDADestroyMatMaps(P4estVertexMaps maps[], PetscInt num_grids)
@@ -41,7 +41,7 @@ PETSC_EXTERN PetscErrorCode LandauCUDADestroyMatMaps(P4estVertexMaps maps[], Pet
     PetscCallCUDA(cudaFree(h_maps.gIdx));
     PetscCallCUDA(cudaFree(d_maps));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode LandauCUDAStaticDataSet(DM plex, const PetscInt Nq, const PetscInt batch_sz, const PetscInt num_grids, PetscInt a_numCells[], PetscInt a_species_offset[], PetscInt a_mat_offset[], PetscReal nu_alpha[], PetscReal nu_beta[], PetscReal a_invMass[], PetscReal a_invJ[], PetscReal a_x[], PetscReal a_y[], PetscReal a_z[], PetscReal a_w[], LandauStaticData *SData_d)
@@ -123,7 +123,7 @@ PetscErrorCode LandauCUDAStaticDataSet(DM plex, const PetscInt Nq, const PetscIn
     PetscCallCUDA(cudaMalloc((void **)&SData_d->dfdz, nip * Nf * szs * batch_sz));
 #endif
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode LandauCUDAStaticDataClear(LandauStaticData *SData_d)
@@ -159,7 +159,7 @@ PetscErrorCode LandauCUDAStaticDataClear(LandauStaticData *SData_d)
     PetscCallCUDA(cudaFree(SData_d->elem_offset));
     PetscCallCUDA(cudaFree(SData_d->maps));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 //
 // The GPU Landau kernel
@@ -864,5 +864,5 @@ PetscErrorCode LandauCUDAJacobian(DM plex[], const PetscInt Nq, const PetscInt b
     PetscCallCUDA(cudaFree(d_elem_mats));
   }
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

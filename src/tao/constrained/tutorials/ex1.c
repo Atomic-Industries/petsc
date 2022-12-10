@@ -224,7 +224,7 @@ PetscErrorCode InitializeProblem(AppCtx *user)
   PetscCall(MatSetSizes(user->H, nloc, nloc, user->n, user->n));
   PetscCall(MatSetFromOptions(user->H));
   PetscCall(MatSetUp(user->H));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode DestroyProblem(AppCtx *user)
@@ -241,7 +241,7 @@ PetscErrorCode DestroyProblem(AppCtx *user)
   PetscCall(VecDestroy(&user->xu));
   PetscCall(VecDestroy(&user->Xseq));
   PetscCall(VecScatterDestroy(&user->scat));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Evaluate
@@ -280,7 +280,7 @@ PetscErrorCode FormFunctionGradient(Tao tao, Vec X, PetscReal *f, Vec G, void *c
   PetscCallMPI(MPI_Allreduce(&fin, f, 1, MPIU_REAL, MPIU_SUM, comm));
   PetscCall(VecAssemblyBegin(G));
   PetscCall(VecAssemblyEnd(G));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Evaluate
@@ -339,7 +339,7 @@ PetscErrorCode FormHessian(Tao tao, Vec x, Mat H, Mat Hpre, void *ctx)
   }
   PetscCall(VecScatterDestroy(&Discat));
   PetscCall(VecDestroy(&Diseq));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Evaluate
@@ -373,7 +373,7 @@ PetscErrorCode FormInequalityConstraints(Tao tao, Vec X, Vec CI, void *ctx)
   }
   PetscCall(VecAssemblyBegin(CI));
   PetscCall(VecAssemblyEnd(CI));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Evaluate
@@ -404,7 +404,7 @@ PetscErrorCode FormEqualityConstraints(Tao tao, Vec X, Vec CE, void *ctx)
   }
   PetscCall(VecAssemblyBegin(CE));
   PetscCall(VecAssemblyEnd(CE));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -442,7 +442,7 @@ PetscErrorCode FormInequalityJacobian(Tao tao, Vec X, Mat JI, Mat JIpre, void *c
   PetscCall(VecRestoreArrayRead(Xseq, &x));
   PetscCall(MatAssemblyBegin(JI, MAT_FINAL_ASSEMBLY));
   PetscCall(MatAssemblyEnd(JI, MAT_FINAL_ASSEMBLY));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -472,7 +472,7 @@ PetscErrorCode FormEqualityJacobian(Tao tao, Vec X, Mat JE, Mat JEpre, void *ctx
   }
   PetscCall(MatAssemblyBegin(JE, MAT_FINAL_ASSEMBLY));
   PetscCall(MatAssemblyEnd(JE, MAT_FINAL_ASSEMBLY));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

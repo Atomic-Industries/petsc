@@ -36,7 +36,7 @@ PetscErrorCode PCTFS_ivec_zero(PetscInt *arg1, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ = 0;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -44,7 +44,7 @@ PetscErrorCode PCTFS_ivec_set(PetscInt *arg1, PetscInt arg2, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ = arg2;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -56,7 +56,7 @@ PetscErrorCode PCTFS_ivec_max(PetscInt *arg1, PetscInt *arg2, PetscInt n)
     arg1++;
     arg2++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -68,7 +68,7 @@ PetscErrorCode PCTFS_ivec_min(PetscInt *arg1, PetscInt *arg2, PetscInt n)
     arg1++;
     arg2++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -76,7 +76,7 @@ PetscErrorCode PCTFS_ivec_mult(PetscInt *arg1, PetscInt *arg2, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ *= *arg2++;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -84,7 +84,7 @@ PetscErrorCode PCTFS_ivec_add(PetscInt *arg1, PetscInt *arg2, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ += *arg2++;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -96,7 +96,7 @@ PetscErrorCode PCTFS_ivec_lxor(PetscInt *arg1, PetscInt *arg2, PetscInt n)
     arg1++;
     arg2++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -104,7 +104,7 @@ PetscErrorCode PCTFS_ivec_xor(PetscInt *arg1, PetscInt *arg2, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ ^= *arg2++;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -112,7 +112,7 @@ PetscErrorCode PCTFS_ivec_or(PetscInt *arg1, PetscInt *arg2, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ |= *arg2++;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -124,7 +124,7 @@ PetscErrorCode PCTFS_ivec_lor(PetscInt *arg1, PetscInt *arg2, PetscInt n)
     arg1++;
     arg2++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -132,7 +132,7 @@ PetscErrorCode PCTFS_ivec_and(PetscInt *arg1, PetscInt *arg2, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ &= *arg2++;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -144,7 +144,7 @@ PetscErrorCode PCTFS_ivec_land(PetscInt *arg1, PetscInt *arg2, PetscInt n)
     arg1++;
     arg2++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -152,7 +152,7 @@ PetscErrorCode PCTFS_ivec_and3(PetscInt *arg1, PetscInt *arg2, PetscInt *arg3, P
 {
   PetscFunctionBegin;
   while (n--) *arg1++ = (*arg2++ & *arg3++);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -202,7 +202,7 @@ PetscErrorCode PCTFS_ivec_non_uniform(PetscInt *arg1, PetscInt *arg2, PetscInt n
     arg2 += j;
     i += j;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -301,7 +301,7 @@ PetscErrorCode PCTFS_ivec_sort(PetscInt *ar, PetscInt size)
       }
 
       /* check to see if stack is exhausted ==> DONE */
-      if (top_s == bottom_s) PetscFunctionReturn(0);
+      if (top_s == bottom_s) PetscFunctionReturn(PETSC_SUCCESS);
 
       /* else pop another list from the stack */
       ar   = *(--top_a);
@@ -406,7 +406,7 @@ PetscErrorCode PCTFS_ivec_sort_companion(PetscInt *ar, PetscInt *ar2, PetscInt s
       }
 
       /* check to see if stack is exhausted ==> DONE */
-      if (top_s == bottom_s) PetscFunctionReturn(0);
+      if (top_s == bottom_s) PetscFunctionReturn(PETSC_SUCCESS);
 
       /* else pop another list from the stack */
       ar2  = *(--top_a);
@@ -511,7 +511,7 @@ PetscErrorCode PCTFS_ivec_sort_companion_hack(PetscInt *ar, PetscInt **ar2, Pets
       }
 
       /* check to see if stack is exhausted ==> DONE */
-      if (top_s == bottom_s) PetscFunctionReturn(0);
+      if (top_s == bottom_s) PetscFunctionReturn(PETSC_SUCCESS);
 
       /* else pop another list from the stack */
       ar2  = (PetscInt **)*(--top_a);
@@ -532,7 +532,7 @@ PetscErrorCode PCTFS_SMI_sort(void *ar1, void *ar2, PetscInt size, PetscInt type
     if (ar2) PCTFS_ivec_sort_companion_hack((PetscInt *)ar1, (PetscInt **)ar2, size);
     else PCTFS_ivec_sort((PetscInt *)ar1, size);
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_PLIB, "PCTFS_SMI_sort only does SORT_INTEGER!");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -566,7 +566,7 @@ PetscErrorCode PCTFS_rvec_copy(PetscScalar *arg1, PetscScalar *arg2, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ = *arg2++;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*********************************ivec.c*************************************/
@@ -574,7 +574,7 @@ PetscErrorCode PCTFS_rvec_zero(PetscScalar *arg1, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ = 0.0;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -582,7 +582,7 @@ PetscErrorCode PCTFS_rvec_one(PetscScalar *arg1, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ = 1.0;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -590,7 +590,7 @@ PetscErrorCode PCTFS_rvec_set(PetscScalar *arg1, PetscScalar arg2, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ = arg2;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -598,7 +598,7 @@ PetscErrorCode PCTFS_rvec_scale(PetscScalar *arg1, PetscScalar arg2, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ *= arg2;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*********************************ivec.c*************************************/
@@ -606,7 +606,7 @@ PetscErrorCode PCTFS_rvec_add(PetscScalar *arg1, PetscScalar *arg2, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ += *arg2++;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*********************************ivec.c*************************************/
@@ -614,7 +614,7 @@ PetscErrorCode PCTFS_rvec_mult(PetscScalar *arg1, PetscScalar *arg2, PetscInt n)
 {
   PetscFunctionBegin;
   while (n--) *arg1++ *= *arg2++;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*********************************ivec.c*************************************/
@@ -626,7 +626,7 @@ PetscErrorCode PCTFS_rvec_max(PetscScalar *arg1, PetscScalar *arg2, PetscInt n)
     arg1++;
     arg2++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*********************************ivec.c*************************************/
@@ -638,7 +638,7 @@ PetscErrorCode PCTFS_rvec_max_abs(PetscScalar *arg1, PetscScalar *arg2, PetscInt
     arg1++;
     arg2++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*********************************ivec.c*************************************/
@@ -650,7 +650,7 @@ PetscErrorCode PCTFS_rvec_min(PetscScalar *arg1, PetscScalar *arg2, PetscInt n)
     arg1++;
     arg2++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*********************************ivec.c*************************************/
@@ -662,7 +662,7 @@ PetscErrorCode PCTFS_rvec_min_abs(PetscScalar *arg1, PetscScalar *arg2, PetscInt
     arg1++;
     arg2++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*********************************ivec.c*************************************/
@@ -674,7 +674,7 @@ PetscErrorCode PCTFS_rvec_exists(PetscScalar *arg1, PetscScalar *arg2, PetscInt 
     arg1++;
     arg2++;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/
@@ -707,7 +707,7 @@ PetscErrorCode PCTFS_rvec_non_uniform(PetscScalar *arg1, PetscScalar *arg2, Pets
     arg2 += j;
     i += j;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************ivec.c*************************************/

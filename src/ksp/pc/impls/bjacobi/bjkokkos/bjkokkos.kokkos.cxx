@@ -243,7 +243,7 @@ static PetscErrorCode PCBJKOKKOSCreateKSP_BJKOKKOS(PC pc)
   jac->batch_target = -1;
   jac->nsolves_team = 1;
   jac->ksp->max_it  = 50; // this is realy for GMRES w/o restarts
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 // y <-- Ax
@@ -1090,7 +1090,7 @@ static PetscErrorCode PCApply_BJKOKKOS(PC pc, Vec bin, Vec xout)
       PetscCall(VecDestroy(&bvec));
     }
   } // whole 'have aijkok' block
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PCSetUp_BJKOKKOS(PC pc)
@@ -1258,7 +1258,7 @@ static PetscErrorCode PCSetUp_BJKOKKOS(PC pc)
         });
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Default destroy, if it has never been setup */
@@ -1292,7 +1292,7 @@ static PetscErrorCode PCReset_BJKOKKOS(PC pc)
   jac->batch_x      = NULL;
   jac->batch_values = NULL;
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PCDestroy_BJKOKKOS(PC pc)
@@ -1300,7 +1300,7 @@ static PetscErrorCode PCDestroy_BJKOKKOS(PC pc)
   PetscFunctionBegin;
   PetscCall(PCReset_BJKOKKOS(pc));
   PetscCall(PetscFree(pc->data));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PCView_BJKOKKOS(PC pc, PetscViewer viewer)
@@ -1316,7 +1316,7 @@ static PetscErrorCode PCView_BJKOKKOS(PC pc, PetscViewer viewer)
     PetscCall(PetscViewerASCIIPrintf(viewer, "\t\tnwork = %" PetscInt_FMT ", rel tol = %e, abs tol = %e, div tol = %e, max it =%" PetscInt_FMT ", type = %s\n", jac->nwork, jac->ksp->rtol, jac->ksp->abstol, jac->ksp->divtol, jac->ksp->max_it,
                                      ((PetscObject)jac->ksp)->type_name));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PCSetFromOptions_BJKOKKOS(PC pc, PetscOptionItems *PetscOptionsObject)
@@ -1324,7 +1324,7 @@ static PetscErrorCode PCSetFromOptions_BJKOKKOS(PC pc, PetscOptionItems *PetscOp
   PetscFunctionBegin;
   PetscOptionsHeadBegin(PetscOptionsObject, "PC BJKOKKOS options");
   PetscOptionsHeadEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PCBJKOKKOSSetKSP_BJKOKKOS(PC pc, KSP ksp)
@@ -1335,7 +1335,7 @@ static PetscErrorCode PCBJKOKKOSSetKSP_BJKOKKOS(PC pc, KSP ksp)
   PetscCall(PetscObjectReference((PetscObject)ksp));
   PetscCall(KSPDestroy(&jac->ksp));
   jac->ksp = ksp;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -1363,7 +1363,7 @@ PetscErrorCode PCBJKOKKOSSetKSP(PC pc, KSP ksp)
   PetscValidHeaderSpecific(ksp, KSP_CLASSID, 2);
   PetscCheckSameComm(pc, 1, ksp, 2);
   PetscTryMethod(pc, "PCBJKOKKOSSetKSP_C", (PC, KSP), (pc, ksp));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PCBJKOKKOSGetKSP_BJKOKKOS(PC pc, KSP *ksp)
@@ -1373,7 +1373,7 @@ static PetscErrorCode PCBJKOKKOSGetKSP_BJKOKKOS(PC pc, KSP *ksp)
   PetscFunctionBegin;
   if (!jac->ksp) PetscCall(PCBJKOKKOSCreateKSP_BJKOKKOS(pc));
   *ksp = jac->ksp;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -1402,7 +1402,7 @@ PetscErrorCode PCBJKOKKOSGetKSP(PC pc, KSP *ksp)
   PetscValidHeaderSpecific(pc, PC_CLASSID, 1);
   PetscValidPointer(ksp, 2);
   PetscUseMethod(pc, "PCBJKOKKOSGetKSP_C", (PC, KSP *), (pc, ksp));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PCPostSolve_BJKOKKOS(PC pc, KSP ksp, Vec b, Vec x)
@@ -1411,7 +1411,7 @@ static PetscErrorCode PCPostSolve_BJKOKKOS(PC pc, KSP ksp, Vec b, Vec x)
 
   PetscFunctionBegin;
   ksp->its = jac->max_nits;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*MC
@@ -1469,5 +1469,5 @@ PETSC_EXTERN PetscErrorCode PCCreate_BJKOKKOS(PC pc)
 
   PetscCall(PetscObjectComposeFunction((PetscObject)pc, "PCBJKOKKOSGetKSP_C", PCBJKOKKOSGetKSP_BJKOKKOS));
   PetscCall(PetscObjectComposeFunction((PetscObject)pc, "PCBJKOKKOSSetKSP_C", PCBJKOKKOSSetKSP_BJKOKKOS));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

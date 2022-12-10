@@ -57,7 +57,7 @@ PetscErrorCode fill(Mat m, Vec v)
   PetscCall(MatAssemblyEnd(m, MAT_FINAL_ASSEMBLY));
   PetscCall(VecAssemblyBegin(v));
   PetscCall(VecAssemblyEnd(v));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

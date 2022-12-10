@@ -25,7 +25,7 @@ PetscErrorCode SPARSEPACKrevrse(const PetscInt *n, PetscInt *perm)
     perm[in] = swap;
     --in;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*****************************************************************/
@@ -91,5 +91,5 @@ PetscErrorCode SPARSEPACKgennd(const PetscInt *neqns, const PetscInt *xadj, cons
 /*        ORDERING VECTOR.*/
 L400:
   SPARSEPACKrevrse(neqns, &perm[1]);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

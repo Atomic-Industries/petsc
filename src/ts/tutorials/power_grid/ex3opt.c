@@ -35,7 +35,7 @@ PetscErrorCode monitor(Tao tao, AppCtx *ctx)
   fp = fopen("ex3opt_conv.out", "a");
   PetscCall(PetscFPrintf(PETSC_COMM_WORLD, fp, "%" PetscInt_FMT " %g\n", iterate, (double)gnorm));
   fclose(fp);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

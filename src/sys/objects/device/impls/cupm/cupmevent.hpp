@@ -34,7 +34,7 @@ inline PetscErrorCode CUPMEventPoolAllocator<T, flags>::create(cupmEvent_t *even
 {
   PetscFunctionBegin;
   PetscCallCUPM(cupmEventCreateWithFlags(event, flags));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <DeviceType T, unsigned long flags>
@@ -42,7 +42,7 @@ inline PetscErrorCode CUPMEventPoolAllocator<T, flags>::destroy(cupmEvent_t even
 {
   PetscFunctionBegin;
   PetscCallCUPM(cupmEventDestroy(event));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 } // anonymous namespace
@@ -136,7 +136,7 @@ inline PetscErrorCode CUPMEvent<T>::record(cupmStream_t stream) noexcept
 {
   PetscFunctionBegin;
   PetscCallCUPM(cupmEventRecord(get(), stream));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <DeviceType T>

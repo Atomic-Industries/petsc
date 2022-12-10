@@ -15,7 +15,7 @@ PetscErrorCode NameFields(DM da, PetscInt dof)
     PetscCall(PetscSNPrintf(fieldname, sizeof(fieldname), "field_%" PetscInt_FMT, c));
     PetscCall(DMDASetFieldName(da, c, fieldname));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*

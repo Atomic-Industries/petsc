@@ -37,7 +37,7 @@ PetscViewer PETSC_VIEWER_SAWS_(MPI_Comm comm)
   ierr = PetscCommDuplicate(comm, &ncomm, NULL);
   if (ierr) {
     PetscError(PETSC_COMM_SELF, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, " ");
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
   if (Petsc_Viewer_SAWs_keyval == MPI_KEYVAL_INVALID) {
     ierr = MPI_Comm_create_keyval(MPI_COMM_NULL_COPY_FN, MPI_COMM_NULL_DELETE_FN, &Petsc_Viewer_SAWs_keyval, 0);
@@ -85,14 +85,14 @@ PetscErrorCode PetscViewer_SAWS_Destroy(MPI_Comm comm)
   PetscViewer viewer;
 
   PetscFunctionBegin;
-  if (Petsc_Viewer_SAWs_keyval == MPI_KEYVAL_INVALID) PetscFunctionReturn(0);
+  if (Petsc_Viewer_SAWs_keyval == MPI_KEYVAL_INVALID) PetscFunctionReturn(PETSC_SUCCESS);
 
   PetscCallMPI(MPI_Comm_get_attr(comm, Petsc_Viewer_SAWs_keyval, (void **)&viewer, &flag));
   if (flag) {
     PetscCall(PetscViewerDestroy(&viewer));
     PetscCallMPI(MPI_Comm_delete_attr(comm, Petsc_Viewer_SAWs_keyval));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PetscViewerDestroy_SAWs(PetscViewer viewer)
@@ -102,12 +102,12 @@ static PetscErrorCode PetscViewerDestroy_SAWs(PetscViewer viewer)
      Make sure that we mark that the stack is no longer published
   */
   if (PetscObjectComm((PetscObject)viewer) == PETSC_COMM_WORLD) PetscCall(PetscStackSAWsViewOff());
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PETSC_EXTERN PetscErrorCode PetscViewerCreate_SAWs(PetscViewer v)
 {
   PetscFunctionBegin;
   v->ops->destroy = PetscViewerDestroy_SAWs;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

@@ -117,7 +117,7 @@ PetscErrorCode FormFunction_Subnet(DM networkdm, Vec localX, Vec localF, PetscIn
   }
   PetscCall(VecRestoreArrayRead(localX, &xarr));
   PetscCall(VecRestoreArray(localF, &farr));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode FormFunction(SNES snes, Vec X, Vec F, void *appctx)
@@ -152,7 +152,7 @@ PetscErrorCode FormFunction(SNES snes, Vec X, Vec F, void *appctx)
   PetscCall(DMLocalToGlobalBegin(networkdm, localF, ADD_VALUES, F));
   PetscCall(DMLocalToGlobalEnd(networkdm, localF, ADD_VALUES, F));
   PetscCall(DMRestoreLocalVector(networkdm, &localF));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode FormJacobian_Subnet(DM networkdm, Vec localX, Mat J, Mat Jpre, PetscInt nv, PetscInt ne, const PetscInt *vtx, const PetscInt *edges, void *appctx)
@@ -333,7 +333,7 @@ PetscErrorCode FormJacobian_Subnet(DM networkdm, Vec localX, Mat J, Mat Jpre, Pe
     }
   }
   PetscCall(VecRestoreArrayRead(localX, &xarr));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode FormJacobian(SNES snes, Vec X, Mat J, Mat Jpre, void *appctx)
@@ -364,7 +364,7 @@ PetscErrorCode FormJacobian(SNES snes, Vec X, Mat J, Mat Jpre, void *appctx)
 
   PetscCall(MatAssemblyBegin(J, MAT_FINAL_ASSEMBLY));
   PetscCall(MatAssemblyEnd(J, MAT_FINAL_ASSEMBLY));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode SetInitialValues_Subnet(DM networkdm, Vec localX, PetscInt nv, PetscInt ne, const PetscInt *vtx, const PetscInt *edges, void *appctx)
@@ -400,7 +400,7 @@ PetscErrorCode SetInitialValues_Subnet(DM networkdm, Vec localX, PetscInt nv, Pe
     }
   }
   PetscCall(VecRestoreArray(localX, &xarr));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode SetInitialValues(DM networkdm, Vec X, void *appctx)
@@ -427,7 +427,7 @@ PetscErrorCode SetInitialValues(DM networkdm, Vec X, void *appctx)
   PetscCall(DMLocalToGlobalBegin(networkdm, localX, ADD_VALUES, X));
   PetscCall(DMLocalToGlobalEnd(networkdm, localX, ADD_VALUES, X));
   PetscCall(DMRestoreLocalVector(networkdm, &localX));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

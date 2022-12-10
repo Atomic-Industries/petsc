@@ -59,7 +59,7 @@ PetscErrorCode PetscErrorPrintfInitialize(void)
   PetscCall(PetscOptionsGetBool(NULL, NULL, "-error_output_none", &use_none, NULL));
   if (use_none) PetscErrorPrintf = PetscErrorPrintfNone;
   PetscErrorPrintfInitializeCalled = PETSC_TRUE;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PetscErrorPrintfNone(const char format[], ...)

@@ -553,7 +553,7 @@ PetscErrorCode RHSFunctionHeat(TS ts, PetscReal t, Vec globalin, Vec globalout, 
   PetscCall(RHSMatrixHeat(ts, t, globalin, A, NULL, ctx));
   /* PetscCall(MatView(A,PETSC_VIEWER_STDOUT_WORLD)); */
   PetscCall(MatMult(A, globalin, globalout));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

@@ -81,7 +81,7 @@ inline PetscErrorCode CxxData::clear() noexcept
   PetscFunctionBegin;
   PetscCallCXX(this->upstream.clear());
   PetscCallCXX(this->deps.clear());
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PETSC_NODISCARD inline CxxData *CxxDataCast(PetscDeviceContext dctx) noexcept
@@ -105,7 +105,7 @@ inline PetscErrorCode PetscDeviceContextQueryOptions_Internal(PetscOptionItems *
   PetscCall(PetscOptionsEList("-device_context_stream_type", "PetscDeviceContext PetscStreamType", "PetscDeviceContextSetStreamType", PetscStreamTypes, PETSC_STREAM_MAX, PetscStreamTypes[stype], &stype, &streamType.second));
   deviceType.first = PetscDeviceTypeCast(dtype);
   streamType.first = PetscStreamTypeCast(stype);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 } // anonymous namespace

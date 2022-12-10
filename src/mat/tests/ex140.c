@@ -51,7 +51,7 @@ PetscErrorCode RunHasOperationTest()
     PetscCall(MatDestroy(&A));
     PetscCall(PetscOptionsClearValue(NULL, opts));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

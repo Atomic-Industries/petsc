@@ -843,7 +843,7 @@ PetscErrorCode MatrixFreeHessian(Tao tao, Vec x, Mat H, Mat Hpre, void *ptr)
   AppCtx *user = (AppCtx *)ptr;
   PetscFunctionBegin;
   PetscCall(FormHessian(tao, x, user->H, user->H, ptr));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 PetscErrorCode MyMatMult(Mat H_shell, Vec X, Vec Y)
 {
@@ -853,7 +853,7 @@ PetscErrorCode MyMatMult(Mat H_shell, Vec X, Vec Y)
   PetscCall(MatShellGetContext(H_shell, &ptr));
   user = (AppCtx *)ptr;
   PetscCall(MatMult(user->H, X, Y));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

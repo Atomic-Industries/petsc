@@ -63,7 +63,7 @@ PetscErrorCode PetscFPTrapPush(PetscFPTrap trap)
     _trapstack     = link;
   }
   if (trap != _trapmode) PetscCall(PetscSetFPTrap(trap));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -89,7 +89,7 @@ PetscErrorCode PetscFPTrapPop(void)
     _trapstack = _trapstack->next;
   }
   PetscCall(PetscFree(link));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*--------------------------------------- ---------------------------------------------------*/
@@ -128,7 +128,7 @@ sigfpe_handler_type PetscDefaultFPTrap(int sig, int code, struct sigcontext *scp
 
   (void)PetscError(PETSC_COMM_SELF, PETSC_ERR_FP, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
   PETSCABORT(MPI_COMM_WORLD, PETSC_ERR_FP);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -193,7 +193,7 @@ PetscErrorCode PetscSetFPTrap(PetscFPTrap flag)
 
   _trapmode = flag;
   PetscCall(PetscInfo(NULL, "Using PETSC_HAVE_SUN4_STYLE_FPTRAP\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -212,7 +212,7 @@ PetscErrorCode PetscDetermineInitialFPTrap(void)
 {
   PetscFunctionBegin;
   PetscCall(PetscInfo(NULL, "Unable to determine initial floating point trapping. Assuming it is off\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* -------------------------------------------------------------------------------------------*/
@@ -265,14 +265,14 @@ PetscErrorCode PetscSetFPTrap(PetscFPTrap flag)
   }
   _trapmode = flag;
   PetscCall(PetscInfo(NULL,"Using PETSC_HAVE_SOLARIS_STYLE_FPTRAP\n");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PetscDetermineInitialFPTrap(void)
 {
   PetscFunctionBegin;
   PetscCall(PetscInfo(NULL, "Unable to determine initial floating point trapping. Assuming it is off\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------------------------*/
@@ -310,14 +310,14 @@ PetscErrorCode PetscSetFPTrap(PetscFPTrap flag)
   else handle_sigfpes(_OFF, _EN_UNDERFL | _EN_OVERFL | _EN_DIVZERO | _EN_INVALID, 0, _ABORT_ON_ERROR, 0);
   _trapmode = flag;
   PetscCall(PetscInfo(NULL, "Using PETSC_HAVE_IRIX_STYLE_FPTRAP\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PetscDetermineInitialFPTrap(void)
 {
   PetscFunctionBegin;
   PetscCall(PetscInfo(NULL, "Unable to determine initial floating point trapping. Assuming it is off\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*----------------------------------------------- --------------------------------------------*/
@@ -386,14 +386,14 @@ PetscErrorCode PetscSetFPTrap(PetscFPTrap flag)
   }
   _trapmode = flag;
   PetscCall(PetscInfo(NULL, "Using PETSC_HAVE_RS6000_STYLE_FPTRAP\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PetscDetermineInitialFPTrap(void)
 {
   PetscFunctionBegin;
   PetscCall(PetscInfo(NULL, "Unable to determine initial floating point trapping. Assuming it is off\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ------------------------------------------------------------*/
@@ -423,14 +423,14 @@ PetscErrorCode PetscSetFPTrap(PetscFPTrap flag)
   (void)_controlfp(0, cw);
   _trapmode = flag;
   PetscCall(PetscInfo(NULL, "Using PETSC_HAVE_WINDOWS_COMPILERS FPTRAP\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PetscDetermineInitialFPTrap(void)
 {
   PetscFunctionBegin;
   PetscCall(PetscInfo(NULL, "Unable to determine initial floating point trapping. Assuming it is off\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ------------------------------------------------------------*/
@@ -538,7 +538,7 @@ PetscErrorCode PetscSetFPTrap(PetscFPTrap flag)
     PetscCheck(SIG_ERR != signal(SIGFPE, SIG_DFL), PETSC_COMM_SELF, PETSC_ERR_LIB, "Can't clear floating point handler");
   }
   _trapmode = flag;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PetscDetermineInitialFPTrap(void)
@@ -556,7 +556,7 @@ PetscErrorCode PetscDetermineInitialFPTrap(void)
   if (!(flags & _MM_MASK_DIV_ZERO)) {
   #else
   PetscCall(PetscInfo(NULL, "Floating point trapping unknown, assuming off\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
   #endif
   #if defined(FE_NOMASK_ENV) || defined PETSC_HAVE_XMMINTRIN_H
     _trapmode = PETSC_FP_TRAP_ON;
@@ -565,7 +565,7 @@ PetscErrorCode PetscDetermineInitialFPTrap(void)
     _trapmode = PETSC_FP_TRAP_OFF;
     PetscCall(PetscInfo(NULL, "Floating point trapping is off by default %d\n", flags));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
   #endif
 }
 
@@ -602,14 +602,14 @@ PetscErrorCode PetscSetFPTrap(PetscFPTrap flag)
   }
   _trapmode = flag;
   PetscCall(PetscInfo(NULL, "Using PETSC_HAVE_IEEEFP_H FPTRAP\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PetscDetermineInitialFPTrap(void)
 {
   PetscFunctionBegin;
   PetscCall(PetscInfo(NULL, "Unable to determine initial floating point trapping. Assuming it is off\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* -------------------------Default -----------------------------------*/
@@ -632,13 +632,13 @@ PetscErrorCode PetscSetFPTrap(PetscFPTrap flag)
 
   _trapmode = flag;
   PetscCall(PetscInfo(NULL, "Using default FPTRAP\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PetscDetermineInitialFPTrap(void)
 {
   PetscFunctionBegin;
   PetscCall(PetscInfo(NULL, "Unable to determine initial floating point trapping. Assuming it is off\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 #endif

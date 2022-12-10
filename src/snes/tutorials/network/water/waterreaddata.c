@@ -24,7 +24,7 @@ PetscErrorCode PumpHeadCurveResidual(SNES snes, Vec X, Vec F, void *ctx)
   PetscCall(VecRestoreArrayRead(X, &x));
   PetscCall(VecRestoreArray(F, &f));
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode SetPumpHeadCurveParams(Pump *pump)
@@ -77,7 +77,7 @@ PetscErrorCode SetPumpHeadCurveParams(Pump *pump)
   PetscCall(VecDestroy(&X));
   PetscCall(VecDestroy(&F));
   PetscCall(SNESDestroy(&snes));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int LineStartsWith(const char *a, const char *b)
@@ -116,7 +116,7 @@ PetscErrorCode GetDataSegment(FILE *fp, char *line, fpos_t *data_segment_start_p
     data_segment_end = CheckDataSegmentEnd(line);
   }
   *ndatalines = nlines;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode WaterReadData(WATERDATA *water, char *filename)
@@ -317,5 +317,5 @@ PetscErrorCode WaterReadData(WATERDATA *water, char *filename)
       PetscCall(SetPumpHeadCurveParams(pump));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

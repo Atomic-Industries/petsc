@@ -20,8 +20,8 @@ public:
 
   PETSC_NODISCARD PetscErrorCode        create(value_type *) noexcept  = delete;
   PETSC_NODISCARD PetscErrorCode        destroy(value_type &) noexcept = delete;
-  PETSC_NODISCARD static PetscErrorCode reset(value_type &) noexcept { return 0; }
-  PETSC_NODISCARD static PetscErrorCode finalize() noexcept { return 0; }
+  PETSC_NODISCARD static PetscErrorCode reset(value_type &) noexcept { return PETSC_SUCCESS; }
+  PETSC_NODISCARD static PetscErrorCode finalize() noexcept { return PETSC_SUCCESS; }
 
 protected:
   // make the constructor protected, this forces this class to be derived from to ever be
@@ -104,7 +104,7 @@ inline PetscErrorCode ObjectPool<T, Allocator, Container>::finalize_() noexcept
     stack_.pop();
   }
   PetscCall(this->allocator().finalize());
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <typename T, typename Allocator, typename Container>
@@ -116,12 +116,12 @@ inline PetscErrorCode ObjectPool<T, Allocator, Container>::allocate(value_type *
   PetscCall(this->register_finalize());
   if (stack_.empty()) {
     PetscCall(this->allocator().create(obj, std::forward<Args>(args)...));
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
   PetscCall(this->allocator().reset(stack_.top(), std::forward<Args>(args)...));
   *obj = std::move(stack_.top());
   stack_.pop();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <typename T, typename Allocator, typename Container>
@@ -137,7 +137,7 @@ inline PetscErrorCode ObjectPool<T, Allocator, Container>::deallocate(value_type
     // of pushing onto the stack we just destroy the object directly
     PetscCall(this->allocator().destroy(std::move(obj)));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 } // namespace Petsc

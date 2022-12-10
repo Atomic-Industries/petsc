@@ -51,7 +51,7 @@ PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
   }
 
   PetscCall(PetscLogEventRegister("CreateMesh", DM_CLASSID, &options->createMeshEvent));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user)
@@ -82,7 +82,7 @@ PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user)
   PetscCall(DMMoabSetFieldNames(user->dm, user->nfields, (const char **)user->fieldnames));
   PetscCall(PetscObjectSetName((PetscObject)user->dm, "Structured Mesh"));
   PetscCall(PetscLogEventEnd(user->createMeshEvent, 0, 0, 0, 0));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

@@ -155,7 +155,7 @@ static PetscErrorCode MatLUFactorNumeric_SeqAIJCUSPARSEBAND(Mat B, Mat A, const 
   int                           Ni = 10, team_size = 9, Nf = 1, nVec = 56, nconcurrent = 1, nsm = -1; // Nf is batch size - not used
 
   PetscFunctionBegin;
-  if (A->rmap->n == 0) PetscFunctionReturn(0);
+  if (A->rmap->n == 0) PetscFunctionReturn(PETSC_SUCCESS);
   // cusparse setup
   PetscCheck(cusparsestructA, PETSC_COMM_SELF, PETSC_ERR_COR, "Missing cusparsestructA");
   matstructA = (Mat_SeqAIJCUSPARSEMultStruct *)cusparsestructA->mat; //  matstruct->cprowIndices
@@ -217,7 +217,7 @@ static PetscErrorCode MatLUFactorNumeric_SeqAIJCUSPARSEBAND(Mat B, Mat A, const 
   B->ops->solvetranspose    = NULL; // need transpose
   B->ops->matsolve          = NULL;
   B->ops->matsolvetranspose = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode MatLUFactorSymbolic_SeqAIJCUSPARSEBAND(Mat B, Mat A, IS isrow, IS iscol, const MatFactorInfo *)
@@ -336,7 +336,7 @@ PetscErrorCode MatLUFactorSymbolic_SeqAIJCUSPARSEBAND(Mat B, Mat A, IS isrow, IS
   B->ops->lufactornumeric = MatLUFactorNumeric_SeqAIJCUSPARSEBAND;
   B->offloadmask          = PETSC_OFFLOAD_GPU;
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Use -pc_factor_mat_solver_type cusparseband */
@@ -344,7 +344,7 @@ PetscErrorCode MatFactorGetSolverType_seqaij_cusparse_band(Mat, MatSolverType *t
 {
   PetscFunctionBegin;
   *type = MATSOLVERCUSPARSEBAND;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PETSC_EXTERN PetscErrorCode MatGetFactor_seqaijcusparse_cusparse_band(Mat A, MatFactorType ftype, Mat *B)
@@ -367,7 +367,7 @@ PETSC_EXTERN PetscErrorCode MatGetFactor_seqaijcusparse_cusparse_band(Mat A, Mat
 
   PetscCall(MatSeqAIJSetPreallocation(*B, MAT_SKIP_ALLOCATION, NULL));
   PetscCall(PetscObjectComposeFunction((PetscObject)(*B), "MatFactorGetSolverType_C", MatFactorGetSolverType_seqaij_cusparse_band));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #define WARP_SIZE 32
@@ -471,7 +471,7 @@ static PetscErrorCode MatSolve_SeqAIJCUSPARSEBAND(Mat A, Vec bb, Vec xx)
   PetscInt                              bw = (int)(2. * (double)n - 1. - (double)(PetscSqrtReal(1. + 4. * ((double)n * (double)n - (double)nz)) + PETSC_MACHINE_EPSILON)) / 2; // quadric formula for bandwidth
 
   PetscFunctionBegin;
-  if (A->rmap->n == 0) PetscFunctionReturn(0);
+  if (A->rmap->n == 0) PetscFunctionReturn(PETSC_SUCCESS);
 
   /* Get the GPU pointers */
   PetscCall(VecCUDAGetArrayWrite(xx, &xarray));
@@ -494,5 +494,5 @@ static PetscErrorCode MatSolve_SeqAIJCUSPARSEBAND(Mat A, Vec bb, Vec xx)
   PetscCall(PetscLogGpuFlops(2.0 * cusparseTriFactors->nnz - A->cmap->n));
   PetscCall(PetscLogGpuTimeEnd());
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

@@ -399,7 +399,7 @@ static inline PetscErrorCode PetscSortedIntUpperBound(PetscInt *array, PetscCoun
     } else count = step;
   }
   *upper = first;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #endif /* __VECIMPL_H */

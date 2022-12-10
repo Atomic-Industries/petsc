@@ -22,7 +22,7 @@ PetscErrorCode DMRestrictHook_Coordinates(DM dm, DM dmc, void *ctx)
     PetscCall(DMSetCoordinates(dmc, ccoords));
     PetscCall(VecDestroy(&ccoords));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode DMSubDomainHook_Coordinates(DM dm, DM subdm, void *ctx)
@@ -54,7 +54,7 @@ static PetscErrorCode DMSubDomainHook_Coordinates(DM dm, DM subdm, void *ctx)
     PetscCall(PetscFree(scat_i));
     PetscCall(PetscFree(scat_g));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -89,7 +89,7 @@ PetscErrorCode DMGetCoordinateDM(DM dm, DM *cdm)
     dm->coordinates[0].dm = cdm;
   }
   *cdm = dm->coordinates[0].dm;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -114,7 +114,7 @@ PetscErrorCode DMSetCoordinateDM(DM dm, DM cdm)
   PetscCall(PetscObjectReference((PetscObject)cdm));
   PetscCall(DMDestroy(&dm->coordinates[0].dm));
   dm->coordinates[0].dm = cdm;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -142,7 +142,7 @@ PetscErrorCode DMGetCellCoordinateDM(DM dm, DM *cdm)
   PetscValidHeaderSpecific(dm, DM_CLASSID, 1);
   PetscValidPointer(cdm, 2);
   *cdm = dm->coordinates[1].dm;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -176,7 +176,7 @@ PetscErrorCode DMSetCellCoordinateDM(DM dm, DM cdm)
   PetscCall(PetscObjectReference((PetscObject)cdm));
   PetscCall(DMDestroy(&dm->coordinates[1].dm));
   dm->coordinates[1].dm = cdm;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -201,7 +201,7 @@ PetscErrorCode DMGetCoordinateDim(DM dm, PetscInt *dim)
   PetscValidIntPointer(dim, 2);
   if (dm->coordinates[0].dim == PETSC_DEFAULT) dm->coordinates[0].dim = dm->dim;
   *dim = dm->coordinates[0].dim;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -232,7 +232,7 @@ PetscErrorCode DMSetCoordinateDim(DM dm, PetscInt dim)
       PetscCall(PetscDSSetCoordinateDimension(ds, dim));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -266,7 +266,7 @@ PetscErrorCode DMGetCoordinateSection(DM dm, PetscSection *section)
   PetscValidPointer(section, 2);
   PetscCall(DMGetCoordinateDM(dm, &cdm));
   PetscCall(DMGetLocalSection(cdm, section));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -309,7 +309,7 @@ PetscErrorCode DMSetCoordinateSection(DM dm, PetscInt dim, PetscSection section)
     }
     if (d >= 0) PetscCall(DMSetCoordinateDim(dm, d));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -344,7 +344,7 @@ PetscErrorCode DMGetCellCoordinateSection(DM dm, PetscSection *section)
   *section = NULL;
   PetscCall(DMGetCellCoordinateDM(dm, &cdm));
   if (cdm) PetscCall(DMGetLocalSection(cdm, section));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -388,7 +388,7 @@ PetscErrorCode DMSetCellCoordinateSection(DM dm, PetscInt dim, PetscSection sect
     }
     if (d >= 0) PetscCall(DMSetCoordinateDim(dm, d));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -430,7 +430,7 @@ PetscErrorCode DMGetCoordinates(DM dm, Vec *c)
     PetscCall(DMLocalToGlobalEnd(cdm, dm->coordinates[0].xl, INSERT_VALUES, dm->coordinates[0].x));
   }
   *c = dm->coordinates[0].x;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -462,7 +462,7 @@ PetscErrorCode DMSetCoordinates(DM dm, Vec c)
   PetscCall(VecDestroy(&dm->coordinates[0].xl));
   PetscCall(DMCoarsenHookAdd(dm, DMRestrictHook_Coordinates, NULL, NULL));
   PetscCall(DMSubDomainHookAdd(dm, DMSubDomainHook_Coordinates, NULL, NULL));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -501,7 +501,7 @@ PetscErrorCode DMGetCellCoordinates(DM dm, Vec *c)
     PetscCall(DMLocalToGlobalEnd(cdm, dm->coordinates[1].xl, INSERT_VALUES, dm->coordinates[1].x));
   }
   *c = dm->coordinates[1].x;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -531,7 +531,7 @@ PetscErrorCode DMSetCellCoordinates(DM dm, Vec c)
   PetscCall(VecDestroy(&dm->coordinates[1].x));
   dm->coordinates[1].x = c;
   PetscCall(VecDestroy(&dm->coordinates[1].xl));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -559,7 +559,7 @@ PetscErrorCode DMGetCoordinatesLocalSetUp(DM dm)
     PetscCall(DMGlobalToLocalBegin(cdm, dm->coordinates[0].x, INSERT_VALUES, dm->coordinates[0].xl));
     PetscCall(DMGlobalToLocalEnd(cdm, dm->coordinates[0].x, INSERT_VALUES, dm->coordinates[0].xl));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -592,7 +592,7 @@ PetscErrorCode DMGetCoordinatesLocal(DM dm, Vec *c)
   PetscValidPointer(c, 2);
   PetscCall(DMGetCoordinatesLocalSetUp(dm));
   *c = dm->coordinates[0].xl;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -620,7 +620,7 @@ PetscErrorCode DMGetCoordinatesLocalNoncollective(DM dm, Vec *c)
   PetscValidPointer(c, 2);
   PetscCheck(dm->coordinates[0].xl || !dm->coordinates[0].x, PetscObjectComm((PetscObject)dm), PETSC_ERR_ARG_WRONGSTATE, "DMGetCoordinatesLocalSetUp() has not been called");
   *c = dm->coordinates[0].xl;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -683,7 +683,7 @@ PetscErrorCode DMGetCoordinatesLocalTuple(DM dm, IS p, PetscSection *pCoordSecti
   if (pCoordSection) {
     *pCoordSection = newcs;
   } else PetscCall(PetscSectionDestroy(&newcs));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -715,7 +715,7 @@ PetscErrorCode DMSetCoordinatesLocal(DM dm, Vec c)
   PetscCall(VecDestroy(&dm->coordinates[0].xl));
   dm->coordinates[0].xl = c;
   PetscCall(VecDestroy(&dm->coordinates[0].x));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -743,7 +743,7 @@ PetscErrorCode DMGetCellCoordinatesLocalSetUp(DM dm)
     PetscCall(DMGlobalToLocalBegin(cdm, dm->coordinates[1].x, INSERT_VALUES, dm->coordinates[1].xl));
     PetscCall(DMGlobalToLocalEnd(cdm, dm->coordinates[1].x, INSERT_VALUES, dm->coordinates[1].xl));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -773,7 +773,7 @@ PetscErrorCode DMGetCellCoordinatesLocal(DM dm, Vec *c)
   PetscValidPointer(c, 2);
   PetscCall(DMGetCellCoordinatesLocalSetUp(dm));
   *c = dm->coordinates[1].xl;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -798,7 +798,7 @@ PetscErrorCode DMGetCellCoordinatesLocalNoncollective(DM dm, Vec *c)
   PetscValidPointer(c, 2);
   PetscCheck(dm->coordinates[1].xl || !dm->coordinates[1].x, PetscObjectComm((PetscObject)dm), PETSC_ERR_ARG_WRONGSTATE, "DMGetCellCoordinatesLocalSetUp() has not been called");
   *c = dm->coordinates[1].xl;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -830,7 +830,7 @@ PetscErrorCode DMSetCellCoordinatesLocal(DM dm, Vec c)
   PetscCall(VecDestroy(&dm->coordinates[1].xl));
   dm->coordinates[1].xl = c;
   PetscCall(VecDestroy(&dm->coordinates[1].x));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode DMGetCoordinateField(DM dm, DMField *field)
@@ -842,7 +842,7 @@ PetscErrorCode DMGetCoordinateField(DM dm, DMField *field)
     if (dm->ops->createcoordinatefield) PetscCall((*dm->ops->createcoordinatefield)(dm, &dm->coordinates[0].field));
   }
   *field = dm->coordinates[0].field;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode DMSetCoordinateField(DM dm, DMField field)
@@ -853,7 +853,7 @@ PetscErrorCode DMSetCoordinateField(DM dm, DMField field)
   PetscCall(PetscObjectReference((PetscObject)field));
   PetscCall(DMFieldDestroy(&dm->coordinates[0].field));
   dm->coordinates[0].field = field;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -925,7 +925,7 @@ PetscErrorCode DMGetLocalBoundingBox(DM dm, PetscReal lmin[], PetscReal lmax[])
   }
   if (lmin) PetscCall(PetscArraycpy(lmin, min, cdim));
   if (lmax) PetscCall(PetscArraycpy(lmax, max, cdim));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -957,7 +957,7 @@ PetscErrorCode DMGetBoundingBox(DM dm, PetscReal gmin[], PetscReal gmax[])
   PetscCall(DMGetLocalBoundingBox(dm, lmin, lmax));
   if (gmin) PetscCall(MPIU_Allreduce(lmin, gmin, count, MPIU_REAL, MPIU_MIN, PetscObjectComm((PetscObject)dm)));
   if (gmax) PetscCall(MPIU_Allreduce(lmax, gmax, count, MPIU_REAL, MPIU_MAX, PetscObjectComm((PetscObject)dm)));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -1026,7 +1026,7 @@ PetscErrorCode DMProjectCoordinates(DM dm, PetscFE disc)
       SETERRQ(PetscObjectComm((PetscObject)discOld), PETSC_ERR_SUP, "Discretization type %s not supported", discname);
     }
   }
-  if (!disc) PetscFunctionReturn(0);
+  if (!disc) PetscFunctionReturn(PETSC_SUCCESS);
   { // Check if the new space is the same as the old modulo quadrature
     PetscDualSpace dsOld, ds;
     PetscCall(PetscFEGetDualSpace(discOld, &dsOld));
@@ -1062,7 +1062,7 @@ PetscErrorCode DMProjectCoordinates(DM dm, PetscFE disc)
   PetscCall(DMSetCoordinates(dm, coordsNew));
   PetscCall(VecDestroy(&coordsNew));
   PetscCall(DMDestroy(&cdmNew));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -1122,5 +1122,5 @@ PetscErrorCode DMLocatePoints(DM dm, Vec v, DMPointLocationType ltype, PetscSF *
   PetscCall(PetscLogEventBegin(DM_LocatePoints, dm, 0, 0, 0));
   PetscUseTypeMethod(dm, locatepoints, v, ltype, *cellSF);
   PetscCall(PetscLogEventEnd(DM_LocatePoints, dm, 0, 0, 0));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

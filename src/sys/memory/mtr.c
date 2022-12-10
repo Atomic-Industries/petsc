@@ -177,7 +177,7 @@ PetscErrorCode PetscTrMallocDefault(size_t a, PetscBool clear, int lineno, const
   /* Do not try to handle empty blocks */
   if (!a) {
     *result = NULL;
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
 
   PetscCall(PetscMallocValidate(lineno, function, filename));
@@ -252,7 +252,7 @@ PetscErrorCode PetscTrMallocDefault(size_t a, PetscBool clear, int lineno, const
   }
   if (PetscLogMallocTrace > -1 && a >= PetscLogMallocTraceThreshold) PetscCall(PetscViewerASCIIPrintf(PetscLogMallocTraceViewer, "Alloc %zu %s:%d (%s)\n", a, filename ? filename : "null", lineno, function ? function : "null"));
   *result = (void *)inew;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -273,7 +273,7 @@ PetscErrorCode PetscTrFreeDefault(void *aa, int lineno, const char function[], c
 
   PetscFunctionBegin;
   /* Do not try to handle empty blocks */
-  if (!a) PetscFunctionReturn(0);
+  if (!a) PetscFunctionReturn(PETSC_SUCCESS);
 
   PetscCall(PetscMallocValidate(lineno, function, filename));
 
@@ -327,7 +327,7 @@ PetscErrorCode PetscTrFreeDefault(void *aa, int lineno, const char function[], c
 
   if (head->next) head->next->prev = head->prev;
   PetscCall(PetscFreeAlign(a, lineno, function, filename));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -359,12 +359,12 @@ PetscErrorCode PetscTrReallocDefault(size_t len, int lineno, const char function
   if (!len) {
     PetscCall(PetscTrFreeDefault(*result, lineno, function, filename));
     *result = NULL;
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
   /* If the orginal space was NULL just use the regular malloc() */
   if (!*result) {
     PetscCall(PetscTrMallocDefault(len, PETSC_FALSE, lineno, function, filename, result));
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
 
   PetscCall(PetscMallocValidate(lineno, function, filename));
@@ -462,7 +462,7 @@ PetscErrorCode PetscTrReallocDefault(size_t len, int lineno, const char function
     PetscLogMallocFunction[PetscLogMalloc++] = function;
   }
   *result = (void *)inew;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -545,7 +545,7 @@ PetscErrorCode PetscMemoryView(PetscViewer viewer, const char message[])
     PetscCall(PetscViewerASCIIPrintf(viewer, "Run with -malloc_debug to get statistics on PetscMalloc() calls\nOS cannot compute process memory\n"));
   }
   PetscCall(PetscViewerFlush(viewer));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -565,7 +565,7 @@ PetscErrorCode PetscMallocGetCurrentUsage(PetscLogDouble *space)
 {
   PetscFunctionBegin;
   *space = (PetscLogDouble)TRallocated;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -586,7 +586,7 @@ PetscErrorCode PetscMallocGetMaximumUsage(PetscLogDouble *space)
 {
   PetscFunctionBegin;
   *space = (PetscLogDouble)TRMaxMem;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -605,10 +605,10 @@ PetscErrorCode PetscMallocGetMaximumUsage(PetscLogDouble *space)
 PetscErrorCode PetscMallocPushMaximumUsage(int event)
 {
   PetscFunctionBegin;
-  if (++NumTRMaxMems > MAXTRMAXMEMS) PetscFunctionReturn(0);
+  if (++NumTRMaxMems > MAXTRMAXMEMS) PetscFunctionReturn(PETSC_SUCCESS);
   TRMaxMems[NumTRMaxMems - 1]       = TRallocated;
   TRMaxMemsEvents[NumTRMaxMems - 1] = event;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -631,10 +631,10 @@ PetscErrorCode PetscMallocPopMaximumUsage(int event, PetscLogDouble *mu)
 {
   PetscFunctionBegin;
   *mu = 0;
-  if (NumTRMaxMems-- > MAXTRMAXMEMS) PetscFunctionReturn(0);
+  if (NumTRMaxMems-- > MAXTRMAXMEMS) PetscFunctionReturn(PETSC_SUCCESS);
   PetscCheck(TRMaxMemsEvents[NumTRMaxMems] == event, PETSC_COMM_SELF, PETSC_ERR_MEMC, "PetscMallocPush/PopMaximumUsage() are not nested");
   *mu = TRMaxMems[NumTRMaxMems];
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -660,7 +660,7 @@ PetscErrorCode PetscMallocGetStack(void *ptr, PetscStack **stack)
   PetscFunctionBegin;
   head   = (TRSPACE *)(((char *)ptr) - HEADER_BYTES);
   *stack = &head->stack;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 #else
   *stack = NULL;
   return 0;
@@ -724,7 +724,7 @@ PetscErrorCode PetscMallocDump(FILE *fp)
     }
     head = head->next;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -756,7 +756,7 @@ PetscErrorCode PetscMallocViewSet(PetscLogDouble logmin)
   PetscCall(PetscMemorySetGetMaximumUsage());
   if (logmin < 0) logmin = 0.0; /* PETSC_DEFAULT or PETSC_DECIDE */
   PetscLogMallocThreshold = (size_t)logmin;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -778,7 +778,7 @@ PetscErrorCode PetscMallocViewGet(PetscBool *logging)
 {
   PetscFunctionBegin;
   *logging = (PetscBool)(PetscLogMalloc >= 0);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -803,14 +803,14 @@ PetscErrorCode PetscMallocTraceSet(PetscViewer viewer, PetscBool active, PetscLo
   PetscFunctionBegin;
   if (!active) {
     PetscLogMallocTrace = -1;
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
   PetscLogMallocTraceViewer = !viewer ? PETSC_VIEWER_STDOUT_SELF : viewer;
   PetscLogMallocTrace       = 0;
   PetscCall(PetscMemorySetGetMaximumUsage());
   if (logmin < 0) logmin = 0.0; /* PETSC_DEFAULT or PETSC_DECIDE */
   PetscLogMallocTraceThreshold = (size_t)logmin;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -832,7 +832,7 @@ PetscErrorCode PetscMallocTraceGet(PetscBool *logging)
 {
   PetscFunctionBegin;
   *logging = (PetscBool)(PetscLogMallocTrace >= 0);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -919,7 +919,7 @@ PetscErrorCode PetscMallocView(FILE *fp)
   free((char **)shortfunction);
   err = fflush(fp);
   PetscCheck(!err, PETSC_COMM_SELF, PETSC_ERR_SYS, "fflush() failed on file");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -963,7 +963,7 @@ PetscErrorCode PetscMallocSetDebug(PetscBool eachcall, PetscBool initializenan)
   PetscLogMallocMax     = 10000;
   PetscLogMalloc        = -1;
   TRdebugIinitializenan = initializenan;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -989,7 +989,7 @@ PetscErrorCode PetscMallocGetDebug(PetscBool *basic, PetscBool *eachcall, PetscB
   if (basic) *basic = (PetscTrMalloc == PetscTrMallocDefault) ? PETSC_TRUE : PETSC_FALSE;
   if (eachcall) *eachcall = TRdebugLevel;
   if (initializenan) *initializenan = TRdebugIinitializenan;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -1011,7 +1011,7 @@ PetscErrorCode PetscMallocLogRequestedSizeSet(PetscBool flg)
 {
   PetscFunctionBegin;
   TRrequestedSize = flg;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -1030,5 +1030,5 @@ PetscErrorCode PetscMallocLogRequestedSizeGet(PetscBool *flg)
 {
   PetscFunctionBegin;
   *flg = TRrequestedSize;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

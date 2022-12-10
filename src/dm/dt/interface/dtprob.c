@@ -202,7 +202,7 @@ PetscErrorCode PetscPDFSampleGaussian1D(const PetscReal p[], const PetscReal dum
   }
   /* Scale erfinv() by \sqrt{\pi/2} */
   x[0] = PetscSqrtReal(PETSC_PI * 0.5) * r;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -595,7 +595,7 @@ PetscErrorCode PetscProbCreateFromOptions(PetscInt dim, const char prefix[], con
   default:
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Density type %s is not supported", DTProbDensityTypes[PetscMax(0, PetscMin(den, DTPROB_NUM_DENSITY))]);
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #ifdef PETSC_HAVE_KS
@@ -733,6 +733,6 @@ PetscErrorCode PetscProbComputeKSStatistic(Vec v, PetscProbFunc cdf, PetscReal *
     PetscCall(PetscViewerDestroy(&viewer));
   }
   *alpha = KSfbar((int)n, (double)Dn);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 #endif
 }

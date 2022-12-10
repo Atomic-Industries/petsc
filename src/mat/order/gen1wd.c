@@ -91,5 +91,5 @@ L500:
   SPARSEPACKrevrse(neqns, &perm[1]);
   SPARSEPACKrevrse(nblks, &xblk[1]);
   xblk[*nblks + 1] = *neqns + 1;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

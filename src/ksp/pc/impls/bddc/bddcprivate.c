@@ -24,7 +24,7 @@ PetscErrorCode MatDenseOrthogonalRangeOrComplement(Mat A, PetscBool range, Petsc
 
   PetscFunctionBegin;
   PetscCall(MatGetSize(A, &nr, &nc));
-  if (!nr || !nc) PetscFunctionReturn(0);
+  if (!nr || !nc) PetscFunctionReturn(PETSC_SUCCESS);
 
   /* workspace */
   if (!work) {
@@ -74,7 +74,7 @@ PetscErrorCode MatDenseOrthogonalRangeOrComplement(Mat A, PetscBool range, Petsc
   }
   PetscCall(MatDenseRestoreArray(*B, &data));
   PetscCall(PetscFree(U));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* TODO REMOVE */
@@ -91,7 +91,7 @@ PetscErrorCode PCBDDCComputeNedelecChangeEdge(Mat lG, IS edge, IS extrow, IS ext
 
   PetscFunctionBegin;
   PetscCall(ISGetSize(edge, &esize));
-  if (!esize) PetscFunctionReturn(0);
+  if (!esize) PetscFunctionReturn(PETSC_SUCCESS);
   PetscCall(ISGetSize(extrow, &rsize));
   PetscCall(ISGetSize(extcol, &csize));
 
@@ -145,7 +145,7 @@ PetscErrorCode PCBDDCComputeNedelecChangeEdge(Mat lG, IS edge, IS extrow, IS ext
     PetscCall(MatDestroy(&GEc));
   }
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCNedelecSupport(PC pc)
@@ -209,7 +209,7 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
     }
     PetscCall(VecRestoreArrayRead(matis->counter, (const PetscScalar **)&vals));
     PetscCall(MPIU_Allreduce(&lrc[0], &lrc[1], 1, MPIU_BOOL, MPI_LOR, comm));
-    if (!lrc[1]) PetscFunctionReturn(0);
+    if (!lrc[1]) PetscFunctionReturn(PETSC_SUCCESS);
   }
 
   /* Get Nedelec field */
@@ -274,7 +274,7 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
     PetscCall(PetscFree(eidxs));
     PetscCall(ISDestroy(&nedfieldlocal));
     PetscCall(ISDestroy(&enedfieldlocal));
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
 
   /* Compute some l2g maps */
@@ -1355,7 +1355,7 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
   PetscCall(PCBDDCSetChangeOfBasisMat(pc, T, singular));
   PetscCall(MatDestroy(&T));
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* the near-null space of BDDC carries information on quadrature weights,
@@ -1403,7 +1403,7 @@ PetscErrorCode PCBDDCNullSpaceCreate(MPI_Comm comm, PetscBool has_const, PetscIn
     PetscCall(PetscObjectStateIncrease((PetscObject)quad_vecs[i]));
     PetscCall(VecLockReadPush(quad_vecs[i]));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCComputeNoNetFlux(Mat A, Mat divudotp, PetscBool transpose, IS vl2l, PCBDDCGraph graph, MatNullSpace *nnsp)
@@ -1424,7 +1424,7 @@ PetscErrorCode PCBDDCComputeNoNetFlux(Mat A, Mat divudotp, PetscBool transpose, 
   if (!maxneighs) {
     PetscCall(ISLocalToGlobalMappingRestoreInfo(graph->l2gmap, &n_neigh, &neigh, &n_shared, &shared));
     *nnsp = NULL;
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
   maxsize = 0;
   for (i = 0; i < n_neigh; i++) maxsize = PetscMax(n_shared[i], maxsize);
@@ -1499,7 +1499,7 @@ PetscErrorCode PCBDDCComputeNoNetFlux(Mat A, Mat divudotp, PetscBool transpose, 
     PetscCall(VecLockReadPush(quad_vecs[i]));
   }
   PetscCall(VecDestroyVecs(maxneighs, &quad_vecs));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCAddPrimalVerticesLocalIS(PC pc, IS primalv)
@@ -1521,7 +1521,7 @@ PetscErrorCode PCBDDCAddPrimalVerticesLocalIS(PC pc, IS primalv)
       PetscCall(PCBDDCSetPrimalVerticesLocalIS(pc, primalv));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode func_coords_private(PetscInt dim, PetscReal t, const PetscReal X[], PetscInt Nf, PetscScalar *out, void *ctx)
@@ -1530,7 +1530,7 @@ static PetscErrorCode func_coords_private(PetscInt dim, PetscReal t, const Petsc
 
   PetscFunctionBegin;
   for (f = 0; f < Nf; f++) out[f] = X[*comp];
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCComputeLocalTopologyInfo(PC pc)
@@ -1791,7 +1791,7 @@ boundary:
       }
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCConsistencyCheckIS(PC pc, MPI_Op mop, IS *is)
@@ -1829,7 +1829,7 @@ PetscErrorCode PCBDDCConsistencyCheckIS(PC pc, MPI_Op mop, IS *is)
   PetscCall(ISCreateGeneral(PetscObjectComm((PetscObject)(*is)), nnd, nidxs, PETSC_OWN_POINTER, &nis));
   PetscCall(ISDestroy(is));
   *is = nis;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCBenignRemoveInterior(PC pc, Vec r, Vec z)
@@ -1838,7 +1838,7 @@ PetscErrorCode PCBDDCBenignRemoveInterior(PC pc, Vec r, Vec z)
   PC_BDDC *pcbddc = (PC_BDDC *)(pc->data);
 
   PetscFunctionBegin;
-  if (!pcbddc->benign_have_null) PetscFunctionReturn(0);
+  if (!pcbddc->benign_have_null) PetscFunctionReturn(PETSC_SUCCESS);
   if (pcbddc->ChangeOfBasisMatrix) {
     Vec swap;
 
@@ -1861,7 +1861,7 @@ PetscErrorCode PCBDDCBenignRemoveInterior(PC pc, Vec r, Vec z)
     PetscCall(VecCopy(z, pcbddc->work_change));
     PetscCall(MatMult(pcbddc->ChangeOfBasisMatrix, pcbddc->work_change, z));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCBenignMatMult_Private_Private(Mat A, Vec x, Vec y, PetscBool transpose)
@@ -1942,21 +1942,21 @@ PetscErrorCode PCBDDCBenignMatMult_Private_Private(Mat A, Vec x, Vec y, PetscBoo
     }
     PetscCall(VecRestoreArray(y, &ay));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCBenignMatMultTranspose_Private(Mat A, Vec x, Vec y)
 {
   PetscFunctionBegin;
   PetscCall(PCBDDCBenignMatMult_Private_Private(A, x, y, PETSC_TRUE));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCBenignMatMult_Private(Mat A, Vec x, Vec y)
 {
   PetscFunctionBegin;
   PetscCall(PCBDDCBenignMatMult_Private_Private(A, x, y, PETSC_FALSE));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCBenignShellMat(PC pc, PetscBool restore)
@@ -1972,7 +1972,7 @@ PetscErrorCode PCBDDCBenignShellMat(PC pc, PetscBool restore)
     PCBDDCReuseSolvers reuse = pcbddc->sub_schurs ? pcbddc->sub_schurs->reuse_solver : NULL;
 
     PetscCheck(!pcbddc->benign_original_mat, PETSC_COMM_SELF, PETSC_ERR_PLIB, "Benign original mat has not been restored");
-    if (!pcbddc->benign_change || !pcbddc->benign_n || pcbddc->benign_change_explicit) PetscFunctionReturn(0);
+    if (!pcbddc->benign_change || !pcbddc->benign_n || pcbddc->benign_change_explicit) PetscFunctionReturn(PETSC_SUCCESS);
     PetscCall(PetscMalloc1(pcis->n, &work));
     PetscCall(MatCreate(PETSC_COMM_SELF, &A_IB));
     PetscCall(MatSetSizes(A_IB, pcis->n - pcis->n_B, pcis->n_B, PETSC_DECIDE, PETSC_DECIDE));
@@ -2010,7 +2010,7 @@ PetscErrorCode PCBDDCBenignShellMat(PC pc, PetscBool restore)
     pcbddc->benign_original_mat = pcis->A_BI;
     pcis->A_BI                  = A_BI;
   } else {
-    if (!pcbddc->benign_original_mat) PetscFunctionReturn(0);
+    if (!pcbddc->benign_original_mat) PetscFunctionReturn(PETSC_SUCCESS);
     PetscCall(MatShellGetContext(pcis->A_IB, &ctx));
     PetscCall(MatDestroy(&pcis->A_IB));
     pcis->A_IB = ctx->A;
@@ -2026,7 +2026,7 @@ PetscErrorCode PCBDDCBenignShellMat(PC pc, PetscBool restore)
     PetscCall(PetscFree(ctx->work));
     PetscCall(PetscFree(ctx));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* used just in bddc debug mode */
@@ -2045,7 +2045,7 @@ PetscErrorCode PCBDDCBenignProject(PC pc, IS is1, IS is2, Mat *B)
   } else {
     *B = An;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* TODO: add reuse flag */
@@ -2092,7 +2092,7 @@ PetscErrorCode MatSeqAIJCompress(Mat A, Mat *B)
   }
   if (*B == A) PetscCall(MatDestroy(&A));
   *B = Bt;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCDetectDisconnectedComponents(PC pc, PetscBool filter, PetscInt *ncc, IS *cc[], IS *primalv)
@@ -2183,7 +2183,7 @@ PetscErrorCode PCBDDCDetectDisconnectedComponents(PC pc, PetscBool filter, Petsc
     PetscCall(MatISGetLocalMat(pc->pmat, &A));
     if (!A->rmap->N || !A->cmap->N) {
       PetscCall(PCBDDCGraphDestroy(&graph));
-      PetscFunctionReturn(0);
+      PetscFunctionReturn(PETSC_SUCCESS);
     }
     PetscCall(PetscObjectBaseTypeCompare((PetscObject)A, MATSEQAIJ, &isseqaij));
     if (!isseqaij && filter) {
@@ -2339,7 +2339,7 @@ PetscErrorCode PCBDDCDetectDisconnectedComponents(PC pc, PetscBool filter, Petsc
   graph->xadj   = NULL;
   graph->adjncy = NULL;
   PetscCall(PCBDDCGraphDestroy(&graph));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCBenignCheck(PC pc, IS zerodiag)
@@ -2418,7 +2418,7 @@ PetscErrorCode PCBDDCBenignCheck(PC pc, IS zerodiag)
     PetscInt val = PetscRealPart(pcbddc->benign_p0[i]);
     PetscCheck(val == -PetscGlobalRank - i, PETSC_COMM_SELF, PETSC_ERR_PLIB, "Error testing PCBDDCBenignGetOrSetP0! Found %g at %" PetscInt_FMT " instead of %g", (double)PetscRealPart(pcbddc->benign_p0[i]), i, (double)(-PetscGlobalRank - i));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCBenignDetectSaddlePoint(PC pc, PetscBool reuse, IS *zerodiaglocal)
@@ -2861,7 +2861,7 @@ project_b0:
     PetscCall(ISLocalToGlobalMappingApply(matis->rmapping, pcbddc->benign_n, pcbddc->benign_p0_lidx, pcbddc->benign_p0_gidx));
   }
   *zerodiaglocal = zerodiag;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCBenignGetOrSetP0(PC pc, Vec v, PetscBool get)
@@ -2885,7 +2885,7 @@ PetscErrorCode PCBDDCBenignGetOrSetP0(PC pc, Vec v, PetscBool get)
     PetscCall(PetscSFReduceEnd(pcbddc->benign_sf, MPIU_SCALAR, pcbddc->benign_p0, array, MPI_REPLACE));
     PetscCall(VecRestoreArray(v, &array));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCBenignPopOrPushB0(PC pc, PetscBool pop)
@@ -2898,7 +2898,7 @@ PetscErrorCode PCBDDCBenignPopOrPushB0(PC pc, PetscBool pop)
     - cannot push before pop.
     - cannot call this if pcbddc->local_mat is NULL
   */
-  if (!pcbddc->benign_n) PetscFunctionReturn(0);
+  if (!pcbddc->benign_n) PetscFunctionReturn(PETSC_SUCCESS);
   if (pop) {
     if (pcbddc->benign_change_explicit) {
       IS       is_p0;
@@ -2982,7 +2982,7 @@ PetscErrorCode PCBDDCBenignPopOrPushB0(PC pc, PetscBool pop)
     PetscCall(MatAssemblyBegin(pcbddc->local_mat, MAT_FINAL_ASSEMBLY));
     PetscCall(MatAssemblyEnd(pcbddc->local_mat, MAT_FINAL_ASSEMBLY));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCAdaptiveSelection(PC pc)
@@ -3002,7 +3002,7 @@ PetscErrorCode PCBDDCAdaptiveSelection(PC pc)
 #endif
 
   PetscFunctionBegin;
-  if (!pcbddc->adaptive_selection) PetscFunctionReturn(0);
+  if (!pcbddc->adaptive_selection) PetscFunctionReturn(PETSC_SUCCESS);
   PetscCheck(sub_schurs, PETSC_COMM_SELF, PETSC_ERR_PLIB, "Adaptive selection of constraints requires SubSchurs data");
   PetscCheck(sub_schurs->schur_explicit || !sub_schurs->n_subs, PetscObjectComm((PetscObject)pc), PETSC_ERR_SUP, "Adaptive selection of constraints requires MUMPS and/or MKL_CPARDISO");
   PetscCheck(!sub_schurs->n_subs || sub_schurs->is_symmetric, PETSC_COMM_SELF, PETSC_ERR_SUP, "Adaptive selection not yet implemented for this matrix pencil (herm %d, symm %d, posdef %d)", sub_schurs->is_hermitian, sub_schurs->is_symmetric,
@@ -3586,7 +3586,7 @@ PetscErrorCode PCBDDCAdaptiveSelection(PC pc)
     PetscCall(PetscViewerASCIIPrintf(pcbddc->dbg_viewer, "Maximum number of constraints per cc %" PetscInt_FMT "\n", maxneigs_r));
   }
   PetscCall(PetscLogEventEnd(PC_BDDC_AdaptiveSetUp[pcbddc->current_level], pc, 0, 0, 0));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCSetUpSolvers(PC pc)
@@ -3613,7 +3613,7 @@ PetscErrorCode PCBDDCSetUpSolvers(PC pc)
 
   /* free */
   PetscCall(PetscFree(coarse_submat_vals));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCResetCustomization(PC pc)
@@ -3631,7 +3631,7 @@ PetscErrorCode PCBDDCResetCustomization(PC pc)
   PetscCall(ISDestroy(&pcbddc->DirichletBoundariesLocal));
   PetscCall(PCBDDCSetDofsSplitting(pc, 0, NULL));
   PetscCall(PCBDDCSetDofsSplittingLocal(pc, 0, NULL));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCResetTopography(PC pc)
@@ -3658,7 +3658,7 @@ PetscErrorCode PCBDDCResetTopography(PC pc)
   pcbddc->graphanalyzed        = PETSC_FALSE;
   pcbddc->recompute_topography = PETSC_TRUE;
   pcbddc->corner_selected      = PETSC_FALSE;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCResetSolvers(PC pc)
@@ -3705,7 +3705,7 @@ PetscErrorCode PCBDDCResetSolvers(PC pc)
     PetscCall(PetscFree(pcbddc->benign_zerodiag_subs));
   }
   PetscCall(PetscFree3(pcbddc->benign_p0_lidx, pcbddc->benign_p0_gidx, pcbddc->benign_p0));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCSetUpLocalWorkVectors(PC pc)
@@ -3749,7 +3749,7 @@ PetscErrorCode PCBDDCSetUpLocalWorkVectors(PC pc)
     PetscCall(VecSetSizes(pcbddc->vec1_C, PETSC_DECIDE, n_constraints));
     PetscCall(VecSetType(pcbddc->vec1_C, impVecType));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCSetUpCorrection(PC pc, PetscScalar **coarse_submat_vals_n)
@@ -4768,7 +4768,7 @@ PetscErrorCode PCBDDCSetUpCorrection(PC pc, PetscScalar **coarse_submat_vals_n)
   }
   /* get back data */
   *coarse_submat_vals_n = coarse_submat_vals;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode MatCreateSubMatrixUnsorted(Mat A, IS isrow, IS iscol, Mat *B)
@@ -4869,7 +4869,7 @@ PetscErrorCode MatCreateSubMatrixUnsorted(Mat A, IS isrow, IS iscol, Mat *B)
   PetscCall(MatDestroyMatrices(1, &work_mat));
   PetscCall(ISDestroy(&isrow_s));
   PetscCall(ISDestroy(&iscol_s));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCComputeLocalMatrix(PC pc, Mat ChangeOfBasisMatrix)
@@ -4969,7 +4969,7 @@ PetscErrorCode PCBDDCComputeLocalMatrix(PC pc, Mat ChangeOfBasisMatrix)
   PetscCall(MatIsSymmetricKnown(matis->A, &isset, &issym));
   if (isset) PetscCall(MatSetOption(pcbddc->local_mat, MAT_SYMMETRIC, issym));
   PetscCall(MatDestroy(&new_mat));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCSetUpLocalScatters(PC pc)
@@ -4991,7 +4991,7 @@ PetscErrorCode PCBDDCSetUpLocalScatters(PC pc)
         AND
       - we are not in debugging mode (this is needed since there are Synchronized prints at the end of the subroutine
   */
-  if (!pcbddc->new_primal_space_local && pcbddc->local_primal_size && !pcbddc->dbg_flag) PetscFunctionReturn(0);
+  if (!pcbddc->new_primal_space_local && pcbddc->local_primal_size && !pcbddc->dbg_flag) PetscFunctionReturn(PETSC_SUCCESS);
   /* destroy old objects */
   PetscCall(ISDestroy(&pcbddc->is_R_local));
   PetscCall(VecScatterDestroy(&pcbddc->R_to_B));
@@ -5130,7 +5130,7 @@ PetscErrorCode PCBDDCSetUpLocalScatters(PC pc)
       PetscCall(ISDestroy(&tis));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatNullSpacePropagateAny_Private(Mat A, IS is, Mat B)
@@ -5155,11 +5155,11 @@ static PetscErrorCode MatNullSpacePropagateAny_Private(Mat A, IS is, Mat B)
   } else {
     PetscCall(MatGetNullSpace(B, &NullSpace));
     if (!NullSpace) PetscCall(MatGetNearNullSpace(B, &NullSpace));
-    if (NullSpace) PetscFunctionReturn(0);
+    if (NullSpace) PetscFunctionReturn(PETSC_SUCCESS);
   }
   PetscCall(MatGetNullSpace(A, &NullSpace));
   if (!NullSpace) PetscCall(MatGetNearNullSpace(A, &NullSpace));
-  if (!NullSpace) PetscFunctionReturn(0);
+  if (!NullSpace) PetscFunctionReturn(PETSC_SUCCESS);
 
   PetscCall(MatCreateVecs(A, &v, NULL));
   PetscCall(MatCreateVecs(B, &v2, NULL));
@@ -5199,7 +5199,7 @@ static PetscErrorCode MatNullSpacePropagateAny_Private(Mat A, IS is, Mat B)
   PetscCall(VecDestroy(&v));
   PetscCall(VecDestroy(&v2));
   PetscCall(VecScatterDestroy(&sct));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCSetUpLocalSolvers(PC pc, PetscBool dirichlet, PetscBool neumann)
@@ -5514,7 +5514,7 @@ PetscErrorCode PCBDDCSetUpLocalSolvers(PC pc, PetscBool dirichlet, PetscBool neu
   }
   /* free Neumann problem's matrix */
   PetscCall(MatDestroy(&A_RR));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PCBDDCSolveSubstructureCorrection(PC pc, Vec inout_B, Vec inout_D, PetscBool applytranspose)
@@ -5598,7 +5598,7 @@ static PetscErrorCode PCBDDCSolveSubstructureCorrection(PC pc, Vec inout_B, Vec 
     PetscCall(VecScatterBegin(pcbddc->R_to_D, pcbddc->vec1_R, inout_D, INSERT_VALUES, SCATTER_FORWARD));
     PetscCall(VecScatterEnd(pcbddc->R_to_D, pcbddc->vec1_R, inout_D, INSERT_VALUES, SCATTER_FORWARD));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* parameter apply transpose determines if the interface preconditioner should be applied transposed or not */
@@ -5728,7 +5728,7 @@ PetscErrorCode PCBDDCApplyInterfacePreconditioner(PC pc, PetscBool applytranspos
       PetscCall(MatMult(pcbddc->coarse_phi_B, pcbddc->vec1_P, pcis->vec1_B));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCScatterCoarseDataBegin(PC pc, InsertMode imode, ScatterMode smode)
@@ -5756,7 +5756,7 @@ PetscErrorCode PCBDDCScatterCoarseDataBegin(PC pc, InsertMode imode, ScatterMode
     to   = pcbddc->coarse_vec;
   }
   PetscCall(VecScatterBegin(pcbddc->coarse_loc_to_glob, from, to, imode, smode));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCScatterCoarseDataEnd(PC pc, InsertMode imode, ScatterMode smode)
@@ -5788,7 +5788,7 @@ PetscErrorCode PCBDDCScatterCoarseDataEnd(PC pc, InsertMode imode, ScatterMode s
       PetscCall(VecResetArray(from));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCConstraintsSetUp(PC pc)
@@ -6825,7 +6825,7 @@ PetscErrorCode PCBDDCConstraintsSetUp(PC pc)
     PetscCall(PetscFree(constraints_n));
     PetscCall(PetscFree(constraints_idxs_B));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCAnalyzeInterface(PC pc)
@@ -6924,7 +6924,7 @@ PetscErrorCode PCBDDCAnalyzeInterface(PC pc)
     pcbddc->corner_selected = pcbddc->corner_selection;
   }
   if (rcsr) pcbddc->mat_graph->nvtxs_csr = 0;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCOrthonormalizeVecs(PetscInt *nio, Vec vecs[])
@@ -6935,7 +6935,7 @@ PetscErrorCode PCBDDCOrthonormalizeVecs(PetscInt *nio, Vec vecs[])
 
   PetscFunctionBegin;
   n = *nio;
-  if (!n) PetscFunctionReturn(0);
+  if (!n) PetscFunctionReturn(PETSC_SUCCESS);
   PetscCall(PetscMalloc2(n, &alphas, n, &onorms));
   PetscCall(VecNormalize(vecs[0], &norm));
   if (norm < PETSC_SMALL) {
@@ -6970,7 +6970,7 @@ PetscErrorCode PCBDDCOrthonormalizeVecs(PetscInt *nio, Vec vecs[])
   }
   for (i = 0, *nio = 0; i < n; i++) *nio += onorms[i] != 0.0 ? 1 : 0;
   PetscCall(PetscFree2(alphas, onorms));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCMatISGetSubassemblingPattern(Mat mat, PetscInt *n_subdomains, PetscInt redprocs, IS *is_sends, PetscBool *have_void)
@@ -7039,7 +7039,7 @@ PetscErrorCode PCBDDCMatISGetSubassemblingPattern(Mat mat, PetscInt *n_subdomain
     if (*n_subdomains != 1) *n_subdomains = active_procs;
     PetscCall(ISCreateGeneral(PetscObjectComm((PetscObject)mat), issize, &isidx, PETSC_COPY_VALUES, is_sends));
     PetscCall(PetscFree(procs_candidates));
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
   PetscCall(PetscOptionsGetBool(NULL, NULL, "-matis_partitioning_use_vwgt", &use_vwgt, NULL));
   PetscCall(PetscOptionsGetInt(NULL, NULL, "-matis_partitioning_threshold", &threshold, NULL));
@@ -7230,7 +7230,7 @@ PetscErrorCode PCBDDCMatISGetSubassemblingPattern(Mat mat, PetscInt *n_subdomain
   i = 1;
   if (!color) i = 0;
   PetscCall(ISCreateGeneral(PetscObjectComm((PetscObject)mat), i, ranks_send_to_idx, PETSC_OWN_POINTER, is_sends));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 typedef enum {
@@ -7759,7 +7759,7 @@ PetscErrorCode PCBDDCMatISSubassemble(Mat mat, IS is_sends, PetscInt n_subdomain
     }
     *mat_n = NULL;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* temporary hack into ksp private data structure */
@@ -8512,7 +8512,7 @@ PetscErrorCode PCBDDCSetUpCoarseSolver(PC pc, PetscScalar *coarse_submat_vals)
   /* free memory */
   PetscCall(MatDestroy(&coarse_mat));
   PetscCall(PetscLogEventEnd(PC_BDDC_CoarseSolver[pcbddc->current_level], pc, 0, 0, 0));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCComputePrimalNumbering(PC pc, PetscInt *coarse_size_n, PetscInt **local_primal_indices_n)
@@ -8614,7 +8614,7 @@ PetscErrorCode PCBDDCComputePrimalNumbering(PC pc, PetscInt *coarse_size_n, Pets
   /* get back data */
   *coarse_size_n          = coarse_size;
   *local_primal_indices_n = local_primal_indices;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCGlobalToLocal(VecScatter g2l_ctx, Vec gwork, Vec lwork, IS globalis, IS *localis)
@@ -8654,7 +8654,7 @@ PetscErrorCode PCBDDCGlobalToLocal(VecScatter g2l_ctx, Vec gwork, Vec lwork, IS 
   PetscCall(VecRestoreArrayRead(lwork, (const PetscScalar **)&vals));
   PetscCall(ISCreateGeneral(PetscObjectComm((PetscObject)gwork), lsize, idxs, PETSC_OWN_POINTER, &localis_t));
   *localis = localis_t;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCComputeFakeChange(PC pc, PetscBool constraints, PCBDDCGraph graph, PCBDDCSubSchurs schurs, Mat *change, IS *change_primal, IS *change_primal_mult, PetscBool *change_with_qr)
@@ -8710,7 +8710,7 @@ PetscErrorCode PCBDDCComputeFakeChange(PC pc, PetscBool constraints, PCBDDCGraph
   pcisf->vec1_N             = NULL;
   pcisf->BtoNmap            = NULL;
   PetscCall(PCDestroy(&pcf));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCSetUpSubSchurs(PC pc)
@@ -8823,7 +8823,7 @@ PetscErrorCode PCBDDCSetUpSubSchurs(PC pc)
   /* free adjacency */
   if (free_used_adj) PetscCall(PetscFree2(used_xadj, used_adjncy));
   PetscCall(PetscLogEventEnd(PC_BDDC_Schurs[pcbddc->current_level], pc, 0, 0, 0));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCInitSubSchurs(PC pc)
@@ -8875,7 +8875,7 @@ PetscErrorCode PCBDDCInitSubSchurs(PC pc)
 
   /* free graph struct */
   if (pcbddc->sub_schurs_rebuild) PetscCall(PCBDDCGraphDestroy(&graph));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCBDDCCheckOperator(PC pc)
@@ -8986,7 +8986,7 @@ PetscErrorCode PCBDDCCheckOperator(PC pc)
     PetscCall(MatDestroy(&S_j));
     PetscCall(MatDestroy(&B0_B));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #include <../src/mat/impls/aij/mpi/mpiaij.h>
@@ -9071,5 +9071,5 @@ PetscErrorCode MatMPIAIJRestrict(Mat A, MPI_Comm ccomm, Mat *B)
     PetscCall(VecDestroy(&gvec));
   }
   PetscCall(MatDestroy(&At));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

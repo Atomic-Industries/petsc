@@ -211,7 +211,7 @@ static PetscErrorCode ProcessOptions(MPI_Comm comm, UserCtx *user)
   PetscCall(PetscOptionsEnum("-mesh_transform", "Method used to perturb the mesh vertices. Options are skew, perturb, skew_perturb,or none", "ex39.c", TransformTypes, (PetscEnum)user->mesh_transform, (PetscEnum *)&user->mesh_transform, NULL));
   PetscCall(PetscOptionsEnum("-sol_form", "Form of the exact solution. Options are Linear or Sinusoidal", "ex39.c", SolutionTypes, (PetscEnum)user->sol_form, (PetscEnum *)&user->sol_form, NULL));
   PetscOptionsEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Perturb the position of each mesh vertex by a small amount.*/
@@ -243,7 +243,7 @@ static PetscErrorCode PerturbMesh(DM *mesh, PetscScalar *coordVals, PetscInt npo
   }
 
   PetscRandomDestroy(&ran);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Apply a global skew transformation to the mesh. */
@@ -279,7 +279,7 @@ static PetscErrorCode SkewMesh(DM *mesh, PetscScalar *coordVals, PetscInt npoint
   }
   PetscCall(PetscFree(transMat));
   PetscCall(PetscRandomDestroy(&ran));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Accesses the mesh coordinate array and performs the transformation operations
@@ -313,7 +313,7 @@ static PetscErrorCode TransformMesh(UserCtx *user, DM *mesh)
   }
   PetscCall(VecRestoreArray(coords, &coordVals));
   PetscCall(DMSetCoordinates(*mesh, coords));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreateMesh(MPI_Comm comm, UserCtx *user, DM *mesh)
@@ -329,7 +329,7 @@ static PetscErrorCode CreateMesh(MPI_Comm comm, UserCtx *user, DM *mesh)
   /* Get any other mesh options from the command line */
   PetscCall(DMSetApplicationContext(*mesh, user));
   PetscCall(DMViewFromOptions(*mesh, NULL, "-dm_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Setup the system of equations that we wish to solve */
@@ -374,7 +374,7 @@ static PetscErrorCode SetupProblem(DM dm, UserCtx *user)
 
   PetscCall(DMGetLabel(dm, "marker", &label));
   PetscCall(PetscDSAddBoundary(prob, DM_BC_NATURAL, "Boundary Integral", label, 1, &id, 0, 0, NULL, (void (*)(void))NULL, NULL, user, NULL));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Create the finite element spaces we will use for this system */
@@ -420,7 +420,7 @@ static PetscErrorCode SetupDiscretization(DM mesh, PetscErrorCode (*setup)(DM, U
   PetscCall(PetscFEDestroy(&fepres));
   PetscCall(PetscFEDestroy(&fedivErr));
   PetscCall(DMDestroy(&cdm));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

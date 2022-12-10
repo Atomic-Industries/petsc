@@ -35,7 +35,7 @@ PetscErrorCode PetscClassRegLogCreate(PetscClassRegLog *classLog)
   PetscCall(PetscMalloc1(l->maxClasses, &l->classInfo));
 
   *classLog = l;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -61,7 +61,7 @@ PetscErrorCode PetscClassRegLogDestroy(PetscClassRegLog classLog)
   for (c = 0; c < classLog->numClasses; c++) PetscCall(PetscClassRegInfoDestroy(&classLog->classInfo[c]));
   PetscCall(PetscFree(classLog->classInfo));
   PetscCall(PetscFree(classLog));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -83,7 +83,7 @@ PetscErrorCode PetscClassRegInfoDestroy(PetscClassRegInfo *c)
 {
   PetscFunctionBegin;
   PetscCall(PetscFree(c->name));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -114,7 +114,7 @@ PetscErrorCode PetscClassPerfLogCreate(PetscClassPerfLog *classLog)
   PetscCall(PetscMalloc1(l->maxClasses, &l->classInfo));
 
   *classLog = l;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -137,7 +137,7 @@ PetscErrorCode PetscClassPerfLogDestroy(PetscClassPerfLog classLog)
   PetscFunctionBegin;
   PetscCall(PetscFree(classLog->classInfo));
   PetscCall(PetscFree(classLog));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------ General Functions -------------------------------------------------*/
@@ -164,7 +164,7 @@ PetscErrorCode PetscClassPerfInfoClear(PetscClassPerfInfo *classInfo)
   classInfo->destructions = 0;
   classInfo->mem          = 0.0;
   classInfo->descMem      = 0.0;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -197,7 +197,7 @@ PetscErrorCode PetscClassPerfLogEnsureSize(PetscClassPerfLog classLog, int size)
     classLog->maxClasses *= 2;
   }
   while (classLog->numClasses < size) PetscCall(PetscClassPerfInfoClear(&classLog->classInfo[classLog->numClasses++]));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*--------------------------------------------- Registration Functions ----------------------------------------------*/
@@ -241,7 +241,7 @@ PetscErrorCode PetscClassRegLogRegister(PetscClassRegLog classLog, const char cn
 
   classLog->classInfo[c].name    = str;
   classLog->classInfo[c].classid = classid;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------ Query Functions --------------------------------------------------*/
@@ -276,7 +276,7 @@ PetscErrorCode PetscClassRegLogGetClass(PetscClassRegLog classLog, PetscClassId 
   }
   PetscCheck(c < classLog->numClasses, PETSC_COMM_SELF, PETSC_ERR_ARG_WRONG, "Invalid object classid %d\nThis could happen if you compile with PETSC_HAVE_DYNAMIC_LIBRARIES, but link with static libraries.", classid);
   *oclass = c;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*----------------------------------------------- Logging Functions -------------------------------------------------*/
@@ -352,7 +352,7 @@ PetscErrorCode PetscLogObjCreateDefault(PetscObject obj)
     }
   }
   PetscCall(PetscSpinlockUnlock(&PetscLogSpinLock));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Default object destroy logger */
@@ -412,5 +412,5 @@ PetscErrorCode PetscLogObjDestroyDefault(PetscObject obj)
     petsc_objects[obj->id].obj = NULL;
   }
   PetscCall(PetscSpinlockUnlock(&PetscLogSpinLock));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

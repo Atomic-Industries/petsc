@@ -73,7 +73,7 @@ PetscErrorCode PetscDLOpen(const char name[], PetscDLMode mode, PetscDLHandle *h
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, erc, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&buff, 0, NULL);
     PetscCall(PetscError(PETSC_COMM_SELF, __LINE__, PETSC_FUNCTION_NAME, __FILE__, PETSC_ERR_FILE_OPEN, PETSC_ERROR_REPEAT, "Unable to open dynamic library:\n  %s\n  Error message from LoadLibrary() %s\n", name, buff));
     LocalFree(buff);
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   #else
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_FILE_OPEN, "Unable to open dynamic library:\n  %s\n  Error message from LoadLibrary() %s", name, "unavailable");
   #endif
@@ -121,7 +121,7 @@ PetscErrorCode PetscDLOpen(const char name[], PetscDLMode mode, PetscDLHandle *h
 #endif
 
   *handle = (PetscDLHandle)dlhandle;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -148,13 +148,14 @@ PetscErrorCode PetscDLClose(PetscDLHandle *handle)
   #if defined(PETSC_HAVE_FREELIBRARY)
   if (FreeLibrary((dlhandle_t)*handle) == 0) {
     #if defined(PETSC_HAVE_GETLASTERROR)
-    char *buff = NULL;
-    DWORD erc  = GetLastError();
+    PetscErrorCode ierr;
+    char          *buff = NULL;
+    DWORD          erc  = GetLastError();
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, erc, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&buff, 0, NULL);
-    PetscErrorPrintf("Error closing dynamic library:\n  Error message from FreeLibrary() %s\n", buff);
+    ierr = PetscErrorPrintf("Error closing dynamic library:\n  Error message from FreeLibrary() %s\n", buff);
     LocalFree(buff);
     #else
-    PetscErrorPrintf("Error closing dynamic library:\n  Error message from FreeLibrary() %s\n", "unavailable");
+    SETERRQ(PETSC_COMM_SELF, PETSC_ERR_LIB, "Error closing dynamic library:\n  Error message from FreeLibrary() %s\n", "unavailable");
     #endif
   }
   #endif /* !PETSC_HAVE_FREELIBRARY */
@@ -173,7 +174,7 @@ PetscErrorCode PetscDLClose(PetscDLHandle *handle)
     #else
     const char *errmsg = "unavailable";
     #endif
-    PetscErrorPrintf("Error closing dynamic library:\n  Error message from dlclose() %s\n", errmsg);
+    SETERRQ(PETSC_COMM_SELF, PETSC_ERR_LIB, "Error closing dynamic library:\n  Error message from dlclose() %s\n", errmsg);
   }
   #endif /* !PETSC_HAVE_DLCLOSE */
 
@@ -185,7 +186,7 @@ PetscErrorCode PetscDLClose(PetscDLHandle *handle)
 #endif
 
   *handle = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 // clang-format off
@@ -341,5 +342,5 @@ PetscErrorCode PetscDLAddr(void (*func)(void), char **name)
   #endif
   }
 #endif
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

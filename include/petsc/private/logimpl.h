@@ -185,6 +185,6 @@ static inline PetscErrorCode PetscLogPauseCurrentEvent_Internal(PetscLogEvent *e
   PetscValidIntPointer(event, 1);
   PetscCall(PetscLogGetCurrentEvent_Internal(event));
   PetscCall(PetscLogEventPause_Internal(*event));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 #endif /* PETSC_LOGIMPL_H */

@@ -46,7 +46,7 @@ PETSC_EXTERN PetscErrorCode PetscMallocSetHIPHost(void)
   PetscTrMalloc   = PetscHIPHostMalloc;
   PetscTrRealloc  = PetscHIPHostRealloc;
   PetscTrFree     = PetscHIPHostFree;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -64,5 +64,5 @@ PETSC_EXTERN PetscErrorCode PetscMallocResetHIPHost(void)
   PetscTrMalloc  = PetscMallocOld;
   PetscTrRealloc = PetscReallocOld;
   PetscTrFree    = PetscFreeOld;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

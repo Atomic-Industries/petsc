@@ -104,7 +104,7 @@ static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
   PetscCheck(!flg || d == 2, PETSC_COMM_SELF, PETSC_ERR_ARG_WRONG, "Must give dim coordinates for the source location, not %" PetscInt_FMT, d);
   PetscOptionsEnd();
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode ProcessMonitorOptions(MPI_Comm comm, AppCtx *options)
@@ -140,7 +140,7 @@ static PetscErrorCode ProcessMonitorOptions(MPI_Comm comm, AppCtx *options)
     }
   }
   PetscOptionsEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode FunctionalRegister(Functional *functionalRegistry, const char name[], PetscInt *offset, FunctionalFunc func, void *ctx)
@@ -158,7 +158,7 @@ static PetscErrorCode FunctionalRegister(Functional *functionalRegistry, const c
   f->next   = NULL;
   *ptr      = f;
   *offset   = f->offset;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode FunctionalDestroy(Functional *link)
@@ -166,7 +166,7 @@ static PetscErrorCode FunctionalDestroy(Functional *link)
   Functional next, l;
 
   PetscFunctionBeginUser;
-  if (!link) PetscFunctionReturn(0);
+  if (!link) PetscFunctionReturn(PETSC_SUCCESS);
   l     = *link;
   *link = NULL;
   for (; l; l = next) {
@@ -174,7 +174,7 @@ static PetscErrorCode FunctionalDestroy(Functional *link)
     PetscCall(PetscFree(l->name));
     PetscCall(PetscFree(l));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static void f0_zero_u(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -526,7 +526,7 @@ static PetscErrorCode advect_inflow(PetscReal time, const PetscReal *c, const Pe
 
   PetscFunctionBeginUser;
   xG[0] = user->inflowState;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode advect_outflow(PetscReal time, const PetscReal *c, const PetscReal *n, const PetscScalar *xI, PetscScalar *xG, void *ctx)
@@ -534,7 +534,7 @@ static PetscErrorCode advect_outflow(PetscReal time, const PetscReal *c, const P
   PetscFunctionBeginUser;
   //xG[0] = xI[dim];
   xG[0] = xI[2];
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode ExactSolution(DM dm, PetscReal time, const PetscReal *x, PetscScalar *u, void *ctx)
@@ -558,7 +558,7 @@ static PetscErrorCode ExactSolution(DM dm, PetscReal time, const PetscReal *x, P
   default:
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unknown solution type");
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode Functional_Error(DM dm, PetscReal time, const PetscReal *x, const PetscScalar *y, PetscReal *f, void *ctx)
@@ -569,7 +569,7 @@ static PetscErrorCode Functional_Error(DM dm, PetscReal time, const PetscReal *x
   PetscFunctionBeginUser;
   PetscCall(ExactSolution(dm, time, x, yexact, ctx));
   f[user->errorFunctional] = PetscAbsScalar(y[0] - yexact[0]);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
@@ -579,7 +579,7 @@ static PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
   PetscCall(DMSetType(*dm, DMPLEX));
   PetscCall(DMSetFromOptions(*dm));
   PetscCall(DMViewFromOptions(*dm, NULL, "-orig_dm_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupBC(DM dm, AppCtx *user)
@@ -688,7 +688,7 @@ static PetscErrorCode SetupBC(DM dm, AppCtx *user)
     PetscCall(DMAddBoundary(dm, DM_BC_NATURAL_RIEMANN, "inflow", label, PETSC_STATIC_ARRAY_LENGTH(inflowids), inflowids, 1, 0, NULL, (void (*)(void))advect_inflow, NULL, user, NULL));
     PetscCall(DMAddBoundary(dm, DM_BC_NATURAL_RIEMANN, "outflow", label, PETSC_STATIC_ARRAY_LENGTH(outflowids), outflowids, 1, 0, NULL, (void (*)(void))advect_outflow, NULL, user, NULL));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupProblem(DM dm, AppCtx *user)
@@ -741,7 +741,7 @@ static PetscErrorCode SetupProblem(DM dm, AppCtx *user)
   else PetscCall(PetscDSSetRiemannSolver(prob, 1, riemann_coupled_advection));
 
   PetscCall(FunctionalRegister(&user->functionalRegistry, "Error", &user->errorFunctional, Functional_Error, user));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupDiscretization(DM dm, AppCtx *user)
@@ -787,7 +787,7 @@ static PetscErrorCode SetupDiscretization(DM dm, AppCtx *user)
   PetscCall(PetscFEDestroy(&fe[0]));
   PetscCall(PetscFEDestroy(&fe[1]));
   PetscCall(PetscFVDestroy(&fv));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreateDM(MPI_Comm comm, AppCtx *user, DM *dm)
@@ -812,7 +812,7 @@ static PetscErrorCode CreateDM(MPI_Comm comm, AppCtx *user, DM *dm)
   PetscCall(SetupDiscretization(*dm, user));
   /* Setup BC */
   PetscCall(SetupBC(*dm, user));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetInitialConditionFVM(DM dm, Vec X, PetscInt field, PetscErrorCode (*func)(PetscInt, PetscReal, const PetscReal[], PetscInt, PetscScalar *, void *), void *ctx)
@@ -843,7 +843,7 @@ static PetscErrorCode SetInitialConditionFVM(DM dm, Vec X, PetscInt field, Petsc
   }
   PetscCall(VecRestoreArrayRead(cellgeom, &cgeom));
   PetscCall(VecRestoreArray(X, &x));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MonitorFunctionals(TS ts, PetscInt stepnum, PetscReal time, Vec X, void *ctx)
@@ -1009,7 +1009,7 @@ static PetscErrorCode MonitorFunctionals(TS ts, PetscInt stepnum, PetscReal time
     PetscCall(PetscFree(ftable));
   }
   PetscCall(PetscFree(xnorms));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

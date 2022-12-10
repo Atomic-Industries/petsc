@@ -94,14 +94,14 @@ inline typename PoolAllocator::size_type PoolAllocator::block_size() const noexc
 inline PetscErrorCode PoolAllocator::set_block_size(size_type block_size) noexcept
 {
   PetscFunctionBegin;
-  if (PetscLikely(block_size == block_size_)) PetscFunctionReturn(0);
+  if (PetscLikely(block_size == block_size_)) PetscFunctionReturn(PETSC_SUCCESS);
   block_size_ = block_size;
   if (PetscUnlikely(block_size > max_block_size_)) {
     // new block_size is greater than our max, so we must discard our stack
     max_block_size_ = block_size;
     PetscCall(clear());
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 inline PetscErrorCode PoolAllocator::allocate(void **ptr, size_type size) noexcept
@@ -117,14 +117,14 @@ inline PetscErrorCode PoolAllocator::allocate(void **ptr, size_type size) noexce
     *ptr = stack_.top();
     PetscCallCXX(stack_.pop());
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 inline PetscErrorCode PoolAllocator::deallocate(void **ptr) noexcept
 {
   PetscFunctionBegin;
   PetscValidPointer(ptr, 1);
-  if (!*ptr) PetscFunctionReturn(0);
+  if (!*ptr) PetscFunctionReturn(PETSC_SUCCESS);
   if (PetscLikely(this->registered())) {
     PetscCallCXX(stack_.push(*ptr));
   } else {
@@ -134,7 +134,7 @@ inline PetscErrorCode PoolAllocator::deallocate(void **ptr) noexcept
     ::delete[] static_cast<char *>(*ptr);
   }
   *ptr = nullptr;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 inline PetscErrorCode PoolAllocator::clear() noexcept
@@ -144,7 +144,7 @@ inline PetscErrorCode PoolAllocator::clear() noexcept
     ::delete[] static_cast<char *>(stack_.top());
     PetscCallCXX(stack_.pop());
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 inline PetscErrorCode PoolAllocator::finalize_() noexcept
@@ -152,7 +152,7 @@ inline PetscErrorCode PoolAllocator::finalize_() noexcept
   PetscFunctionBegin;
   PetscCall(clear());
   PetscCallCXX(stack_ = container_type{});
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <typename Derived>

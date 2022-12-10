@@ -204,7 +204,7 @@ PETSC_INTERN PetscErrorCode PetscInitFortran_Private(PetscBool readarguments,con
     PetscCall(PetscOptionsInsert(NULL,&PetscGlobalArgc,&PetscGlobalArgs,tmp));
     PetscCall(PetscFree(tmp)); /* FREECHAR */
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*

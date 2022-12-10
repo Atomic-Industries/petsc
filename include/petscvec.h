@@ -598,7 +598,7 @@ static inline PetscErrorCode VecGetArrayPair(Vec x, Vec y, PetscScalar **xv, Pet
   PetscCall(VecGetArray(y, yv));
   if (x == y) *xv = *yv;
   else PetscCall(VecGetArrayRead(x, (const PetscScalar **)xv));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -626,7 +626,7 @@ static inline PetscErrorCode VecRestoreArrayPair(Vec x, Vec y, PetscScalar **xv,
   PetscFunctionBegin;
   PetscCall(VecRestoreArray(y, yv));
   if (x != y) PetscCall(VecRestoreArrayRead(x, (const PetscScalar **)xv));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #if defined(PETSC_USE_DEBUG)
@@ -649,7 +649,7 @@ static inline PetscErrorCode VecSetErrorIfLocked(Vec x, PetscInt arg)
     PetscCall(PetscObjectGetName((PetscObject)x, &name));
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_ARG_WRONGSTATE, "Vector '%s' (argument #%" PetscInt_FMT ") was locked for %s access in %s() at %s:%d (line numbers only accurate to function begin)", name, arg, state > 0 ? "read-only" : "write-only", func ? func : "unknown_function", file ? file : "unknown file", line);
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 /* The three are deprecated */
 PETSC_EXTERN PETSC_DEPRECATED_FUNCTION("Use VecLockReadPush() (since version 3.11)") PetscErrorCode VecLockPush(Vec);

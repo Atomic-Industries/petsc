@@ -8,7 +8,7 @@ int CreateError(PetscReal x)
   PetscFunctionBegin;
   x = 1.0 / x;
   PetscCall(PetscPrintf(PETSC_COMM_SELF, "x = %g\n", (double)x));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

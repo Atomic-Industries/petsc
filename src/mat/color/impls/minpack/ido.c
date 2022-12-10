@@ -232,5 +232,5 @@ L100:
   for (jcol = 1; jcol <= i__1; ++jcol) iwa2[list[jcol]] = jcol;
   i__1 = *n;
   for (jp = 1; jp <= i__1; ++jp) list[jp] = iwa2[jp];
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

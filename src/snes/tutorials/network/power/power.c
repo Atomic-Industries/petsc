@@ -35,7 +35,7 @@ PetscErrorCode FormFunction(SNES snes, Vec X, Vec F, void *appctx)
   PetscCall(DMLocalToGlobalBegin(networkdm, localF, ADD_VALUES, F));
   PetscCall(DMLocalToGlobalEnd(networkdm, localF, ADD_VALUES, F));
   PetscCall(DMRestoreLocalVector(networkdm, &localF));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode SetInitialValues(DM networkdm, Vec X, void *appctx)
@@ -60,7 +60,7 @@ PetscErrorCode SetInitialValues(DM networkdm, Vec X, void *appctx)
   PetscCall(DMLocalToGlobalBegin(networkdm, localX, ADD_VALUES, X));
   PetscCall(DMLocalToGlobalEnd(networkdm, localX, ADD_VALUES, X));
   PetscCall(DMRestoreLocalVector(networkdm, &localX));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

@@ -162,7 +162,7 @@ PetscErrorCode XYT_stats(xyt_ADT xyt_handle)
   /* if factorization not done there are no stats */
   if (!xyt_handle->info || !xyt_handle->mvi) {
     if (!PCTFS_my_id) PetscCall(PetscPrintf(PETSC_COMM_WORLD, "XYT_stats() :: no stats available!\n"));
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
 
   vals[0] = vals[1] = vals[2] = xyt_handle->info->nnz;
@@ -191,7 +191,7 @@ PetscErrorCode XYT_stats(xyt_ADT xyt_handle)
     PetscCall(PetscPrintf(PETSC_COMM_WORLD, "%d :: max   xyt_slv=%g\n", PCTFS_my_id, (double)PetscRealPart(fvals[1])));
     PetscCall(PetscPrintf(PETSC_COMM_WORLD, "%d :: avg   xyt_slv=%g\n", PCTFS_my_id, (double)PetscRealPart(fvals[2] / PCTFS_num_nodes)));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -551,7 +551,7 @@ static PetscErrorCode do_xyt_solve(xyt_ADT xyt_handle, PetscScalar *uc)
     PetscCall(PetscBLASIntCast(len, &dlen));
     PetscCallBLAS("BLASaxpy", BLASaxpy_(&dlen, uu_ptr++, x_ptr, &i1, uc + off, &i1));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode check_handle(xyt_ADT xyt_handle)
@@ -564,7 +564,7 @@ static PetscErrorCode check_handle(xyt_ADT xyt_handle)
   vals[0] = vals[1] = xyt_handle->id;
   PCTFS_giop(vals, work, PETSC_STATIC_ARRAY_LENGTH(op) - 1, op);
   PetscCheck(!(vals[0] != vals[1]) && !(xyt_handle->id <= 0), PETSC_COMM_SELF, PETSC_ERR_PLIB, "check_handle() :: bad handle :: id mismatch min/max %" PetscInt_FMT "/%" PetscInt_FMT " %" PetscInt_FMT, vals[0], vals[1], xyt_handle->id);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode det_separators(xyt_ADT xyt_handle)
@@ -714,7 +714,7 @@ static PetscErrorCode det_separators(xyt_ADT xyt_handle)
   free(lhs);
   free(rhs);
   free(used);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static mv_info *set_mvi(PetscInt *local2global, PetscInt n, PetscInt m, PetscErrorCode (*matvec)(mv_info *, PetscScalar *, PetscScalar *), void *grid_data)
@@ -743,5 +743,5 @@ static PetscErrorCode do_matvec(mv_info *A, PetscScalar *v, PetscScalar *u)
 {
   PetscFunctionBegin;
   A->matvec((mv_info *)A->grid_data, v, u);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

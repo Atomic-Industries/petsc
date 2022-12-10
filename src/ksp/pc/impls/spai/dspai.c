@@ -28,7 +28,7 @@ PetscErrorCode MatDumpSPAI(Mat A, FILE *file)
     for (j = 0; j < nz; j++) fprintf(file, "%d %d %16.14e\n", i + 1, cols[j] + 1, vals[j]);
     PetscCall(MatRestoreRow(A, i, &nz, &cols, &vals));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode VecDumpSPAI(Vec b, FILE *file)
@@ -41,5 +41,5 @@ PetscErrorCode VecDumpSPAI(Vec b, FILE *file)
   PetscCall(VecGetArray(b, &array));
   fprintf(file, "%d\n", n);
   for (i = 0; i < n; i++) fprintf(file, "%d %16.14e\n", i + 1, array[i]);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

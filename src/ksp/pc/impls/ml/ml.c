@@ -102,7 +102,7 @@ static PetscErrorCode PetscML_comm(double p[], void *ML_data)
 
   PetscFunctionBegin;
   PetscCallMPI(MPI_Comm_size(PetscObjectComm((PetscObject)A), &size));
-  if (size == 1) PetscFunctionReturn(0);
+  if (size == 1) PetscFunctionReturn(PETSC_SUCCESS);
 
   PetscCall(VecPlaceArray(ml->y, p));
   PetscCall(VecScatterBegin(a->Mvctx, ml->y, a->lvec, INSERT_VALUES, SCATTER_FORWARD));
@@ -111,7 +111,7 @@ static PetscErrorCode PetscML_comm(double p[], void *ML_data)
   PetscCall(VecGetArrayRead(a->lvec, &array));
   for (i = in_length; i < out_length; i++) p[i] = array[i - in_length];
   PetscCall(VecRestoreArrayRead(a->lvec, &array));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static int PetscML_matvec(ML_Operator *ML_data, int in_length, double p[], int out_length, double ap[])
@@ -135,7 +135,7 @@ static int PetscML_matvec(ML_Operator *ML_data, int in_length, double p[], int o
   PetscCall(MatMult(Aloc, ml->x, ml->y));
   PetscCall(VecResetArray(ml->x));
   PetscCall(VecResetArray(ml->y));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatMult_ML(Mat A, Vec x, Vec y)
@@ -154,7 +154,7 @@ static PetscErrorCode MatMult_ML(Mat A, Vec x, Vec y)
   PetscStackCallExternalVoid("ML_Operator_Apply", ML_Operator_Apply(shell->mlmat, x_length, (PetscScalar *)xarray, y_length, yarray));
   PetscCall(VecRestoreArrayRead(x, &xarray));
   PetscCall(VecRestoreArray(y, &yarray));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* newtype is ignored since only handles one case */
@@ -223,7 +223,7 @@ static PetscErrorCode MatConvert_MPIAIJ_ML(Mat A, MatType newtype, MatReuse scal
   } else SETERRQ(PetscObjectComm((PetscObject)A), PETSC_ERR_ARG_WRONG, "Invalid MatReuse %d", (int)scall);
   PetscCall(MatSeqAIJRestoreArrayRead(mpimat->A, (const PetscScalar **)&aa));
   PetscCall(MatSeqAIJRestoreArrayRead(mpimat->B, (const PetscScalar **)&ba));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatDestroy_ML(Mat A)
@@ -233,7 +233,7 @@ static PetscErrorCode MatDestroy_ML(Mat A)
   PetscFunctionBegin;
   PetscCall(MatShellGetContext(A, &shell));
   PetscCall(PetscFree(shell));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatWrapML_SeqAIJ(ML_Operator *mlmat, MatReuse reuse, Mat *newmat)
@@ -267,7 +267,7 @@ static PetscErrorCode MatWrapML_SeqAIJ(ML_Operator *mlmat, MatReuse reuse, Mat *
     }
     PetscCall(MatAssemblyBegin(*newmat, MAT_FINAL_ASSEMBLY));
     PetscCall(MatAssemblyEnd(*newmat, MAT_FINAL_ASSEMBLY));
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
 
   nz_max = PetscMax(1, mlmat->max_nz_per_row);
@@ -294,7 +294,7 @@ static PetscErrorCode MatWrapML_SeqAIJ(ML_Operator *mlmat, MatReuse reuse, Mat *
 
   PetscCall(PetscFree2(aa, aj));
   PetscCall(PetscFree(nnz));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatWrapML_SHELL(ML_Operator *mlmat, MatReuse reuse, Mat *newmat)
@@ -310,7 +310,7 @@ static PetscErrorCode MatWrapML_SHELL(ML_Operator *mlmat, MatReuse reuse, Mat *n
   if (reuse) {
     PetscCall(MatShellGetContext(*newmat, &shellctx));
     shellctx->mlmat = mlmat;
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
 
   MLcomm = mlmat->comm;
@@ -322,7 +322,7 @@ static PetscErrorCode MatWrapML_SHELL(ML_Operator *mlmat, MatReuse reuse, Mat *n
 
   shellctx->A     = *newmat;
   shellctx->mlmat = mlmat;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatWrapML_MPIAIJ(ML_Operator *mlmat, MatReuse reuse, Mat *newmat)
@@ -383,7 +383,7 @@ static PetscErrorCode MatWrapML_MPIAIJ(ML_Operator *mlmat, MatReuse reuse, Mat *
   *newmat = A;
 
   PetscCall(PetscFree2(aa, aj));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -432,7 +432,7 @@ static PetscErrorCode PCSetCoordinates_ML(PC pc, PetscInt ndm, PetscInt a_nloc, 
       for (ii = 0; ii < ndm; ii++) pc_ml->coords[ii * nloc + kk] = coords[bs * kk * ndm + ii];
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* -----------------------------------------------------------------------------*/
@@ -481,7 +481,7 @@ PetscErrorCode        PCReset_ML(PC pc)
   pc_ml->dim  = 0;
   pc_ml->nloc = 0;
   PetscCall(PCReset_MG(pc));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 /* -------------------------------------------------------------------------- */
 /*
@@ -591,7 +591,7 @@ PetscErrorCode PCSetUp_ML(PC pc)
       PetscCall(KSPSetOperators(gridctx[fine_level].ksp, gridctx[level].A, gridctx[fine_level].A));
 
       PetscCall(PCSetUp_MG(pc));
-      PetscFunctionReturn(0);
+      PetscFunctionReturn(PETSC_SUCCESS);
     } else {
       /* since ML can change the size of vectors/matrices at any level we must destroy everything */
       PetscCall(PCReset_ML(pc));
@@ -933,7 +933,7 @@ PetscErrorCode PCSetUp_ML(PC pc)
   /* setupcalled is set to 0 so that MG is setup from scratch */
   pc->setupcalled = 0;
   PetscCall(PCSetUp_MG(pc));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -956,7 +956,7 @@ PetscErrorCode PCDestroy_ML(PC pc)
   PetscCall(PetscFree(pc_ml));
   PetscCall(PCDestroy_MG(pc));
   PetscCall(PetscObjectComposeFunction((PetscObject)pc, "PCSetCoordinates_C", NULL));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PCSetFromOptions_ML(PC pc, PetscOptionItems *PetscOptionsObject)
@@ -1053,7 +1053,7 @@ PetscErrorCode PCSetFromOptions_ML(PC pc, PetscOptionItems *PetscOptionsObject)
     PetscCall(PetscOptionsReal("-pc_ml_AuxThreshold", "Auxiliary smoother drop tol", "None", pc_ml->AuxThreshold, &pc_ml->AuxThreshold, NULL));
   }
   PetscOptionsHeadEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1157,5 +1157,5 @@ PETSC_EXTERN PetscErrorCode PCCreate_ML(PC pc)
   pc->ops->setup          = PCSetUp_ML;
   pc->ops->reset          = PCReset_ML;
   pc->ops->destroy        = PCDestroy_ML;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

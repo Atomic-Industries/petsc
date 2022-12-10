@@ -62,7 +62,7 @@ static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
   PetscCall(PetscOptionsReal("-timeScale", "parameter", "<1>", options->timeScale, &options->timeScale, PETSC_NULL));
   PetscCall(PetscOptionsReal("-particle_perturbation", "Relative perturbation of particles (0,1)", "ex2.c", options->particleRelDx, &options->particleRelDx, NULL));
   PetscOptionsEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreateMesh(MPI_Comm comm, DM *dm, AppCtx *user)
@@ -72,7 +72,7 @@ static PetscErrorCode CreateMesh(MPI_Comm comm, DM *dm, AppCtx *user)
   PetscCall(DMSetType(*dm, DMPLEX));
   PetscCall(DMSetFromOptions(*dm));
   PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static void laplacian_f1(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f1[])
@@ -108,7 +108,7 @@ static PetscErrorCode CreateFEM(DM dm, AppCtx *user)
   PetscCall(DMGetDS(dm, &ds));
   PetscCall(PetscDSSetResidual(ds, 0, NULL, laplacian_f1));
   PetscCall(PetscDSSetJacobian(ds, 0, 0, NULL, NULL, NULL, laplacian));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -196,7 +196,7 @@ static PetscErrorCode CreateParticles(DM dm, DM *sw, AppCtx *user)
   PetscCall(PetscObjectSetName((PetscObject)*sw, "Particles"));
   PetscCall(DMViewFromOptions(*sw, NULL, "-sw_view"));
   PetscCall(DMLocalizeCoordinates(*sw));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Solve for particle position updates */
@@ -219,7 +219,7 @@ static PetscErrorCode RHSFunction1(TS ts, PetscReal t, Vec V, Vec Posres, void *
   }
   PetscCall(VecRestoreArrayRead(V, &v));
   PetscCall(VecRestoreArray(Posres, &posres));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -328,7 +328,7 @@ static PetscErrorCode RHSFunction2(TS ts, PetscReal t, Vec X, Vec Vres, void *ct
   PetscCall(VecRestoreArray(Vres, &vres));
   PetscCall(VecRestoreArrayRead(X, &x));
   PetscCall(VecViewFromOptions(Vres, NULL, "-vel_res_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

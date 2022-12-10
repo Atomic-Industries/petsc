@@ -72,14 +72,14 @@ static PetscErrorCode MatWrapCholmod_SPQR_seqaij(Mat A, PetscBool values, cholmo
   C->packed = 1;
 
   PetscCall(MatDestroy(&AT));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatFactorGetSolverType_seqaij_SPQR(Mat A, MatSolverType *type)
 {
   PetscFunctionBegin;
   *type = MATSOLVERSPQR;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #define GET_ARRAY_READ  0
@@ -105,7 +105,7 @@ static PetscErrorCode MatSolve_SPQR_Internal(Mat F, cholmod_dense *cholB, cholmo
   }
   *_Y_handle = Y_handle;
   PetscCall(!cholmod_l_free_dense(&QTB_handle, chol->common));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatSolve_SPQR(Mat F, Vec B, Vec X)
@@ -124,7 +124,7 @@ static PetscErrorCode MatSolve_SPQR(Mat F, Vec B, Vec X)
   PetscCall(VecRestoreArrayWrite(X, &v));
   PetscCall(!cholmod_l_free_dense(&Y_handle, chol->common));
   PetscCall(VecUnWrapCholmod(B, GET_ARRAY_READ, &cholB));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatMatSolve_SPQR(Mat F, Mat B, Mat X)
@@ -147,7 +147,7 @@ static PetscErrorCode MatMatSolve_SPQR(Mat F, Mat B, Mat X)
   PetscCall(MatDenseRestoreArrayWrite(X, &v));
   PetscCall(!cholmod_l_free_dense(&Y_handle, chol->common));
   PetscCall(MatDenseUnWrapCholmod(B, GET_ARRAY_READ, &cholB));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatSolveTranspose_SPQR_Internal(Mat F, cholmod_dense *cholB, cholmod_dense **_Y_handle)
@@ -162,7 +162,7 @@ static PetscErrorCode MatSolveTranspose_SPQR_Internal(Mat F, cholmod_dense *chol
   PetscCheck(Y_handle, PetscObjectComm((PetscObject)F), PETSC_ERR_LIB, "SuiteSparseQR_C_qmult failed");
   *_Y_handle = Y_handle;
   PetscCall(!cholmod_l_free_dense(&RTB_handle, chol->common));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatSolveTranspose_SPQR(Mat F, Vec B, Vec X)
@@ -181,7 +181,7 @@ static PetscErrorCode MatSolveTranspose_SPQR(Mat F, Vec B, Vec X)
   PetscCall(VecRestoreArrayWrite(X, &v));
   PetscCall(!cholmod_l_free_dense(&Y_handle, chol->common));
   PetscCall(VecUnWrapCholmod(B, GET_ARRAY_READ, &cholB));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatMatSolveTranspose_SPQR(Mat F, Mat B, Mat X)
@@ -204,7 +204,7 @@ static PetscErrorCode MatMatSolveTranspose_SPQR(Mat F, Mat B, Mat X)
   PetscCall(MatDenseRestoreArrayWrite(X, &v));
   PetscCall(!cholmod_l_free_dense(&Y_handle, chol->common));
   PetscCall(MatDenseUnWrapCholmod(B, GET_ARRAY_READ, &cholB));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode MatQRFactorNumeric_SPQR(Mat F, Mat A, const MatFactorInfo *info)
@@ -233,7 +233,7 @@ static PetscErrorCode MatQRFactorNumeric_SPQR(Mat F, Mat A, const MatFactorInfo 
     F->ops->solvetranspose    = MatSolveTranspose_SPQR;
     F->ops->matsolvetranspose = MatMatSolveTranspose_SPQR;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PETSC_INTERN PetscErrorCode MatQRFactorSymbolic_SPQR(Mat F, Mat A, IS perm, const MatFactorInfo *info)
@@ -255,7 +255,7 @@ PETSC_INTERN PetscErrorCode MatQRFactorSymbolic_SPQR(Mat F, Mat A, IS perm, cons
   if (valloc) PetscCall(PetscFree(cholA.x));
 
   PetscCall(PetscObjectComposeFunction((PetscObject)F, "MatQRFactorNumeric_C", MatQRFactorNumeric_SPQR));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*MC
@@ -314,5 +314,5 @@ PETSC_INTERN PetscErrorCode MatGetFactor_seqaij_spqr(Mat A, MatFactorType ftype,
   PetscCall(CholmodStart(B));
   chol->common->itype = CHOLMOD_LONG;
   *F                  = B;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

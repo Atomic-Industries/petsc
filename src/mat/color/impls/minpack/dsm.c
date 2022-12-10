@@ -119,7 +119,7 @@ PetscErrorCode MINPACKdsm(PetscInt *m, PetscInt *n, PetscInt *npairs, PetscInt *
 
   /*     Exit if the smallest-last ordering is optimal. */
 
-  if (*maxgrp == *mingrp) PetscFunctionReturn(0);
+  if (*maxgrp == *mingrp) PetscFunctionReturn(PETSC_SUCCESS);
 
   /*     Color the intersection graph of the columns of A */
   /*     with the incidence-degree (ID) ordering. */
@@ -137,7 +137,7 @@ PetscErrorCode MINPACKdsm(PetscInt *m, PetscInt *n, PetscInt *npairs, PetscInt *
 
     /*        Exit if the incidence-degree ordering is optimal. */
 
-    if (*maxgrp == *mingrp) PetscFunctionReturn(0);
+    if (*maxgrp == *mingrp) PetscFunctionReturn(PETSC_SUCCESS);
   }
 
   /*     Color the intersection graph of the columns of A */
@@ -154,5 +154,5 @@ PetscErrorCode MINPACKdsm(PetscInt *m, PetscInt *n, PetscInt *npairs, PetscInt *
     i__1    = *n;
     for (j = 1; j <= i__1; ++j) ngrp[j] = iwa[j];
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

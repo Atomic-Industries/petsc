@@ -59,5 +59,5 @@ PetscErrorCode PetscMPIAbortErrorHandler(MPI_Comm comm, int line, const char *fu
   else (*PetscErrorPrintf)("%s() at %s:%d\n    %s\n", fun, file, line, mess);
 
   PETSCABORT(PETSC_COMM_WORLD, n);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

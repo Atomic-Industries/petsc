@@ -124,7 +124,7 @@ PetscErrorCode PetscPushErrorHandler(PetscErrorCode (*handler)(MPI_Comm comm, in
   neweh->handler = handler;
   neweh->ctx     = ctx;
   eh             = neweh;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -142,11 +142,11 @@ PetscErrorCode PetscPopErrorHandler(void)
   EH tmp;
 
   PetscFunctionBegin;
-  if (!eh) PetscFunctionReturn(0);
+  if (!eh) PetscFunctionReturn(PETSC_SUCCESS);
   tmp = eh;
   eh  = eh->previous;
   PetscCall(PetscFree(tmp));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -264,7 +264,7 @@ PetscErrorCode PetscErrorMessage(int errnum, const char *text[], char **specific
   } else if (text) *text = NULL;
 
   if (specific) *specific = PetscErrorBaseMessage;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #if defined(PETSC_CLANGUAGE_CXX)
@@ -490,7 +490,7 @@ PetscErrorCode PetscIntView(PetscInt N, const PetscInt idx[], PetscViewer viewer
     PetscCall(PetscObjectGetName((PetscObject)viewer, &tname));
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Cannot handle that PetscViewer of type %s", tname);
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -595,7 +595,7 @@ PetscErrorCode PetscRealView(PetscInt N, const PetscReal idx[], PetscViewer view
     PetscCall(PetscObjectGetName((PetscObject)viewer, &tname));
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Cannot handle that PetscViewer of type %s", tname);
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -704,7 +704,7 @@ PetscErrorCode PetscScalarView(PetscInt N, const PetscScalar idx[], PetscViewer 
     PetscCall(PetscObjectGetName((PetscObject)viewer, &tname));
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Cannot handle that PetscViewer of type %s", tname);
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #if defined(PETSC_HAVE_CUDA)

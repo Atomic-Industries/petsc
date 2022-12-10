@@ -104,7 +104,7 @@ PetscErrorCode MyMatMult(Mat S, Vec x, Vec y)
 
   PetscCall(VecRestoreArrayRead(x, &inptr));
   PetscCall(VecRestoreArrayWrite(y, &outptr));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* this test problem has initial values (1,1,1).                      */

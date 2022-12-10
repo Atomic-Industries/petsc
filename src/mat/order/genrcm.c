@@ -67,8 +67,8 @@ PetscErrorCode SPARSEPACKgenrcm(const PetscInt *neqns, const PetscInt *xadj, con
     SPARSEPACKfnroot(&root, &xadj[1], &adjncy[1], &mask[1], &nlvl, &xls[1], &perm[num]);
     SPARSEPACKrcm(&root, &xadj[1], &adjncy[1], &mask[1], &perm[num], &ccsize, &xls[1]);
     num += ccsize;
-    if (num > *neqns) PetscFunctionReturn(0);
+    if (num > *neqns) PetscFunctionReturn(PETSC_SUCCESS);
   L200:;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

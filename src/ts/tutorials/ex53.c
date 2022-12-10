@@ -1507,7 +1507,7 @@ static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
   PetscCall(PetscOptionsReal("-eps", "Precision value for root finding", "ex53.c", options->eps, &options->eps, NULL));
   PetscCall(PetscOptionsReal("-dt_initial", "Override the initial timestep", "ex53.c", options->dtInitial, &options->dtInitial, NULL));
   PetscOptionsEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode mandelZeros(MPI_Comm comm, AppCtx *ctx, Parameter *param)
@@ -1554,7 +1554,7 @@ static PetscErrorCode mandelZeros(MPI_Comm comm, AppCtx *ctx, Parameter *param)
     }
     ctx->zeroArray[i - 1] = am;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscReal CryerFunction(PetscReal nu_u, PetscReal nu, PetscReal x)
@@ -1602,7 +1602,7 @@ static PetscErrorCode cryerZeros(MPI_Comm comm, AppCtx *ctx, Parameter *param)
     PetscCheck(PetscAbsReal(ym) < tol, comm, PETSC_ERR_PLIB, "Root finding did not converge for root %" PetscInt_FMT " (%g)", n, (double)PetscAbsReal(ym));
     ctx->zeroArray[n - 1] = am;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupParameters(MPI_Comm comm, AppCtx *ctx)
@@ -1693,7 +1693,7 @@ static PetscErrorCode SetupParameters(MPI_Comm comm, AppCtx *ctx)
       PetscCall(PetscPrintf(comm, "  Relaxation time: %g\n", (double)ctx->t_r));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
@@ -1705,7 +1705,7 @@ static PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
   PetscCall(DMSetApplicationContext(*dm, user));
   PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
   PetscCall(DMGetBoundingBox(*dm, user->xmin, user->xmax));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupPrimalProblem(DM dm, AppCtx *user)
@@ -1905,14 +1905,14 @@ static PetscErrorCode SetupPrimalProblem(DM dm, AppCtx *user)
     constants[5] = param->P_0;             /* Magnitude of Vertical Stress, Pa */
     PetscCall(PetscDSSetConstants(ds, 6, constants));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreateElasticityNullSpace(DM dm, PetscInt origField, PetscInt field, MatNullSpace *nullspace)
 {
   PetscFunctionBeginUser;
   PetscCall(DMPlexCreateRigidBody(dm, origField, nullspace));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupFE(DM dm, PetscInt Nf, PetscInt Nc[], const char *name[], PetscErrorCode (*setup)(DM, AppCtx *), void *ctx)
@@ -1947,7 +1947,7 @@ static PetscErrorCode SetupFE(DM dm, PetscInt Nf, PetscInt Nc[], const char *nam
     PetscCall(DMGetCoarseDM(cdm, &cdm));
   }
   PetscCall(PetscFEDestroy(&fe));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetInitialConditions(TS ts, Vec u)
@@ -1998,7 +1998,7 @@ static PetscErrorCode SetInitialConditions(TS ts, Vec u)
   } else {
     PetscCall(DMComputeExactSolution(dm, t, u, NULL));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Need to create Viewer each time because HDF5 can get corrupted */
@@ -2061,7 +2061,7 @@ static PetscErrorCode SolutionMonitor(TS ts, PetscInt steps, PetscReal time, Vec
     PetscCall(PetscFree3(exacts, ectxs, err));
   }
   PetscCall(PetscViewerDestroy(&viewer));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupMonitor(TS ts, AppCtx *ctx)
@@ -2078,7 +2078,7 @@ static PetscErrorCode SetupMonitor(TS ts, AppCtx *ctx)
   PetscCall(PetscOptionsGetViewer(PetscObjectComm((PetscObject)ts), options, prefix, "-monitor_solution", &viewer, &format, &flg));
   if (flg) PetscCall(TSMonitorSet(ts, SolutionMonitor, ctx, NULL));
   PetscCall(PetscViewerDestroy(&viewer));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode TSAdaptChoose_Terzaghi(TSAdapt adapt, TS ts, PetscReal h, PetscInt *next_sc, PetscReal *next_h, PetscBool *accept, PetscReal *wlte, PetscReal *wltea, PetscReal *wlter)
@@ -2112,7 +2112,7 @@ static PetscErrorCode TSAdaptChoose_Terzaghi(TSAdapt adapt, TS ts, PetscReal h, 
   *wlte    = -1; /* Weighted local truncation error was not evaluated */
   *wltea   = -1; /* Weighted absolute local truncation error was not evaluated */
   *wlter   = -1; /* Weighted relative local truncation error was not evaluated */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

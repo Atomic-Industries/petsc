@@ -130,7 +130,7 @@ PetscErrorCode PetscLogView_VecScatter(PetscViewer viewer)
     PetscCall(PetscViewerASCIIPrintf(viewer, "%s %4.2e   -%5.1f %% %5.1f %%   %4.2e %%\n", stageLog->eventLog->eventInfo[event].name, avetime, 100. * (avetime - minstats[1]) / avetime, 100. * (maxstats[1] - avetime) / avetime, 100. * avetime / ksptime));
   }
   PetscCall(PetscViewerFlush(viewer));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

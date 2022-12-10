@@ -474,7 +474,7 @@ PetscErrorCode ConvergenceTest(KSP ksp, PetscInt it, PetscReal nrm, KSPConverged
     *reason = KSP_CONVERGED_ITS;
     PetscCall(PetscInfo(NULL, "User provided convergence test returning after 2 iterations\n"));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode ConvergenceDestroy(void *ctx)
@@ -482,7 +482,7 @@ PetscErrorCode ConvergenceDestroy(void *ctx)
   PetscFunctionBegin;
   PetscCall(PetscInfo(NULL, "User provided convergence destroy called\n"));
   PetscCall(PetscFree(ctx));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode postcheck(SNES snes, Vec x, Vec y, Vec w, PetscBool *changed_y, PetscBool *changed_w, void *ctx)
@@ -496,7 +496,7 @@ PetscErrorCode postcheck(SNES snes, Vec x, Vec y, Vec w, PetscBool *changed_y, P
   PetscCall(VecNorm(tmp, NORM_2, &norm));
   PetscCall(VecDestroy(&tmp));
   PetscCall(PetscPrintf(PETSC_COMM_WORLD, "Norm of search step %g\n", (double)norm));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

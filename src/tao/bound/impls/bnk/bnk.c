@@ -46,7 +46,7 @@ PetscErrorCode TaoBNKInitialize(Tao tao, PetscInt initType, PetscBool *needH)
   PetscCall(TaoLogConvergenceHistory(tao, bnk->f, resnorm, 0.0, tao->ksp_its));
   PetscCall(TaoMonitor(tao, tao->niter, bnk->f, resnorm, 0.0, 1.0));
   PetscUseTypeMethod(tao, convergencetest, tao->cnvP);
-  if (tao->reason != TAO_CONTINUE_ITERATING) PetscFunctionReturn(0);
+  if (tao->reason != TAO_CONTINUE_ITERATING) PetscFunctionReturn(PETSC_SUCCESS);
 
   /* Reset KSP stopping reason counters */
   bnk->ksp_atol = 0;
@@ -233,7 +233,7 @@ PetscErrorCode TaoBNKInitialize(Tao tao, PetscInt initType, PetscBool *needH)
           PetscCall(TaoLogConvergenceHistory(tao, bnk->f, resnorm, 0.0, tao->ksp_its));
           PetscCall(TaoMonitor(tao, tao->niter, bnk->f, resnorm, 0.0, 1.0));
           PetscUseTypeMethod(tao, convergencetest, tao->cnvP);
-          if (tao->reason != TAO_CONTINUE_ITERATING) PetscFunctionReturn(0);
+          if (tao->reason != TAO_CONTINUE_ITERATING) PetscFunctionReturn(PETSC_SUCCESS);
           /* active BNCG recycling early because we have a stepdirection computed */
           PetscCall(TaoSetRecycleHistory(bnk->bncg, PETSC_TRUE));
         }
@@ -251,7 +251,7 @@ PetscErrorCode TaoBNKInitialize(Tao tao, PetscInt initType, PetscBool *needH)
       break;
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -291,7 +291,7 @@ PetscErrorCode TaoBNKComputeHessian(Tao tao)
     }
     if (bnk->bfgs_pre) PetscCall(PCLMVMClearIS(bnk->bfgs_pre));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -342,7 +342,7 @@ PetscErrorCode TaoBNKEstimateActiveSet(Tao tao, PetscInt asType)
     break;
   }
   bnk->resetksp = (PetscBool)(bnk->active_idx || hadactive); /* inactive Hessian size may have changed, need to reset operators */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -366,7 +366,7 @@ PetscErrorCode TaoBNKBoundStep(Tao tao, PetscInt asType, Vec step)
   default:
     break;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -403,7 +403,7 @@ PetscErrorCode TaoBNKTakeCGSteps(Tao tao, PetscBool *terminate)
       PetscCall(TaoBNKEstimateActiveSet(tao, bnk->as_type));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -424,7 +424,7 @@ PetscErrorCode TaoBNKComputeStep(Tao tao, PetscBool shift, KSPConvergedReason *k
   if (!bnk->inactive_idx) {
     PetscCall(VecSet(tao->stepdirection, 0.0));
     PetscCall(TaoBNKBoundStep(tao, bnk->as_type, tao->stepdirection));
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
 
   /* Shift the reduced Hessian matrix */
@@ -529,7 +529,7 @@ PetscErrorCode TaoBNKComputeStep(Tao tao, PetscBool shift, KSPConvergedReason *k
     }
   }
   *step_type = BNK_NEWTON;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -561,7 +561,7 @@ PetscErrorCode TaoBNKRecomputePred(Tao tao, Vec S, PetscReal *prered)
     PetscCall(VecRestoreSubVector(bnk->Xwork, bnk->inactive_idx, &bnk->inactive_work));
     PetscCall(VecRestoreSubVector(bnk->Gwork, bnk->inactive_idx, &bnk->G_inactive));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -697,7 +697,7 @@ PetscErrorCode TaoBNKSafeguardStep(Tao tao, KSPConvergedReason ksp_reason, Petsc
     break;
   }
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -799,7 +799,7 @@ PetscErrorCode TaoBNKPerformLineSearch(Tao tao, PetscInt *stepType, PetscReal *s
     PetscCall(TaoAddLineSearchCounts(tao));
   }
   *reason = ls_reason;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -973,7 +973,7 @@ PetscErrorCode TaoBNKUpdateTrustRadius(Tao tao, PetscReal prered, PetscReal actr
   /* Make sure the radius does not violate min and max settings */
   tao->trust = PetscMin(tao->trust, bnk->max_radius);
   tao->trust = PetscMax(tao->trust, bnk->min_radius);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ---------------------------------------------------------- */
@@ -999,7 +999,7 @@ PetscErrorCode TaoBNKAddStepCounts(Tao tao, PetscInt stepType)
   default:
     break;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ---------------------------------------------------------- */
@@ -1066,7 +1066,7 @@ PetscErrorCode TaoSetUp_BNK(Tao tao)
   bnk->M             = NULL;
   bnk->H_inactive    = NULL;
   bnk->Hpre_inactive = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -1095,7 +1095,7 @@ PetscErrorCode TaoDestroy_BNK(Tao tao)
   PetscCall(TaoDestroy(&bnk->bncg));
   PetscCall(KSPDestroy(&tao->ksp));
   PetscCall(PetscFree(tao->data));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -1166,7 +1166,7 @@ PetscErrorCode TaoSetFromOptions_BNK(Tao tao, PetscOptionItems *PetscOptionsObje
   PetscCall(KSPSetOptionsPrefix(tao->ksp, ((PetscObject)(tao))->prefix));
   PetscCall(KSPAppendOptionsPrefix(tao->ksp, "tao_bnk_"));
   PetscCall(KSPSetFromOptions(tao->ksp));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*------------------------------------------------------------*/
@@ -1201,7 +1201,7 @@ PetscErrorCode TaoView_BNK(Tao tao, PetscViewer viewer)
     PetscCall(PetscViewerASCIIPrintf(viewer, "  othr: %" PetscInt_FMT "\n", bnk->ksp_othr));
     PetscCall(PetscViewerASCIIPopTab(viewer));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ---------------------------------------------------------- */
@@ -1382,5 +1382,5 @@ PetscErrorCode TaoCreate_BNK(Tao tao)
   PetscCall(KSPSetType(tao->ksp, KSPSTCG));
   PetscCall(KSPGetPC(tao->ksp, &pc));
   PetscCall(PCSetType(pc, PCLMVM));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

@@ -45,7 +45,7 @@ PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
   PetscOptionsEnd();
 
   PetscCall(PetscLogEventRegister("CreateMesh", DM_CLASSID, &options->createMeshEvent));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 };
 
 PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user)
@@ -68,7 +68,7 @@ PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user)
   }
   PetscCall(PetscObjectSetName((PetscObject)user->dm, "Coarse Mesh"));
   PetscCall(PetscLogEventEnd(user->createMeshEvent, 0, 0, 0, 0));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

@@ -248,7 +248,7 @@ PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
   PetscCall(PetscOptionsReal("-shear_modulus", "The shear modulus", "ex77.c", options->mu, &options->mu, NULL));
   PetscCall(PetscOptionsReal("-wall_pressure", "The wall pressure", "ex77.c", options->p_wall, &options->p_wall, NULL));
   PetscOptionsEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
@@ -311,7 +311,7 @@ PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
     PetscCall(ISDestroy(&is));
   }
   PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode SetupProblem(DM dm, PetscInt dim, AppCtx *user)
@@ -336,7 +336,7 @@ PetscErrorCode SetupProblem(DM dm, PetscInt dim, AppCtx *user)
   PetscCall(PetscWeakFormSetIndexBdJacobian(wf, label, 1, 0, 0, 0, 0, NULL, 0, g1_bd_uu_3d, 0, NULL, 0, NULL));
 
   PetscCall(DMAddBoundary(dm, DM_BC_ESSENTIAL, "fixed", label, 0, NULL, 0, 0, NULL, (void (*)(void))coordinates, NULL, user, NULL));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode SetupMaterial(DM dm, DM dmAux, AppCtx *user)
@@ -352,7 +352,7 @@ PetscErrorCode SetupMaterial(DM dm, DM dmAux, AppCtx *user)
   PetscCall(DMProjectFunctionLocal(dmAux, 0.0, matFuncs, ctxs, INSERT_ALL_VALUES, A));
   PetscCall(DMSetAuxiliaryVec(dm, NULL, 0, 0, A));
   PetscCall(VecDestroy(&A));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode SetupNearNullSpace(DM dm, AppCtx *user)
@@ -370,7 +370,7 @@ PetscErrorCode SetupNearNullSpace(DM dm, AppCtx *user)
   PetscCall(PetscObjectCompose(deformation, "nearnullspace", (PetscObject)nearNullSpace));
   PetscCall(DMDestroy(&subdm));
   PetscCall(MatNullSpaceDestroy(&nearNullSpace));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupAuxDM(DM dm, PetscInt NfAux, PetscFE feAux[], AppCtx *user)
@@ -381,14 +381,14 @@ static PetscErrorCode SetupAuxDM(DM dm, PetscInt NfAux, PetscFE feAux[], AppCtx 
   PetscFunctionBegin;
   /* MUST call DMGetCoordinateDM() in order to get p4est setup if present */
   PetscCall(DMGetCoordinateDM(dm, &coordDM));
-  if (!feAux) PetscFunctionReturn(0);
+  if (!feAux) PetscFunctionReturn(PETSC_SUCCESS);
   PetscCall(DMClone(dm, &dmAux));
   PetscCall(DMSetCoordinateDM(dmAux, coordDM));
   for (f = 0; f < NfAux; ++f) PetscCall(DMSetField(dmAux, f, NULL, (PetscObject)feAux[f]));
   PetscCall(DMCreateDS(dmAux));
   PetscCall(SetupMaterial(dm, dmAux, user));
   PetscCall(DMDestroy(&dmAux));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode SetupDiscretization(DM dm, AppCtx *user)
@@ -433,7 +433,7 @@ PetscErrorCode SetupDiscretization(DM dm, AppCtx *user)
   PetscCall(PetscFEDestroy(&fe[1]));
   PetscCall(PetscFEDestroy(&feAux[0]));
   PetscCall(PetscFEDestroy(&feAux[1]));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

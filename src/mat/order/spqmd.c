@@ -27,5 +27,5 @@ PETSC_INTERN PetscErrorCode MatGetOrdering_QMD(Mat mat, MatOrderingType type, IS
   for (i = 0; i < nrow; i++) perm[i]--;
   PetscCall(ISCreateGeneral(PETSC_COMM_SELF, nrow, perm, PETSC_COPY_VALUES, row));
   PetscCall(ISCreateGeneral(PETSC_COMM_SELF, nrow, perm, PETSC_OWN_POINTER, col));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

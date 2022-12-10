@@ -46,7 +46,7 @@ PetscErrorCode PetscMallocSetCUDAHost(void)
   PetscTrMalloc   = PetscCUDAHostMalloc;
   PetscTrRealloc  = PetscCUDAHostRealloc;
   PetscTrFree     = PetscCUDAHostFree;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -64,5 +64,5 @@ PetscErrorCode PetscMallocResetCUDAHost(void)
   PetscTrMalloc  = PetscMallocOld;
   PetscTrRealloc = PetscReallocOld;
   PetscTrFree    = PetscFreeOld;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

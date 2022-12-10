@@ -112,7 +112,7 @@ static PetscErrorCode CreateMesh(MPI_Comm comm, UserCtx *user, DM *mesh)
   PetscCall(DMSetFromOptions(*mesh));
   PetscCall(DMSetApplicationContext(*mesh, user));
   PetscCall(DMViewFromOptions(*mesh, NULL, "-dm_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Setup the system of equations that we wish to solve */
@@ -140,7 +140,7 @@ static PetscErrorCode SetupProblem(DM dm, UserCtx *user)
 
   PetscCall(PetscDSSetExactSolution(ds, 0, linear_u, NULL));
   PetscCall(PetscDSSetExactSolution(ds, 1, linear_p, NULL));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Create the finite element spaces we will use for this system */
@@ -197,7 +197,7 @@ static PetscErrorCode SetupDiscretization(DM mesh, DM mesh_sum, PetscErrorCode (
   PetscCall(PetscFEDestroy(&divu_sum));
   PetscCall(DMDestroy(&cdm));
   PetscCall(DMDestroy(&cdm_sum));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

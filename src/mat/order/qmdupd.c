@@ -56,7 +56,7 @@ PetscErrorCode SPARSEPACKqmdupd(const PetscInt *xadj, const PetscInt *adjncy, co
   --adjncy;
   --xadj;
 
-  if (*nlist <= 0) PetscFunctionReturn(0);
+  if (*nlist <= 0) PetscFunctionReturn(PETSC_SUCCESS);
   deg0   = 0;
   nhdsze = 0;
   i__1   = *nlist;
@@ -105,5 +105,5 @@ PetscErrorCode SPARSEPACKqmdupd(const PetscInt *xadj, const PetscInt *adjncy, co
     }
   L600:;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

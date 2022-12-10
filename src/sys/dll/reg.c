@@ -29,7 +29,7 @@ static PetscErrorCode PetscLoadDynamicLibrary(const char *name, PetscBool *found
     PetscCall(PetscDLLibraryRetrieve(PETSC_COMM_WORLD, libs, dlib, 1024, found));
     if (*found) PetscCall(PetscDLLibraryAppend(PETSC_COMM_WORLD, &PetscDLLibrariesLoaded, dlib));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 #endif
 
@@ -154,7 +154,7 @@ PETSC_INTERN PetscErrorCode PetscInitialize_DynamicLibraries(void)
   PetscCall(PetscElementalInitializePackage());
   PetscInitializeCalled = PetscInitialized;
 #endif
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -175,7 +175,7 @@ PETSC_INTERN PetscErrorCode PetscFinalize_DynamicLibraries(void)
 #endif
 
   PetscDLLibrariesLoaded = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------------*/
@@ -198,7 +198,7 @@ static PetscErrorCode PetscFunctionListCreateNode_Private(PetscFunctionList *ent
   PetscCall(PetscStrallocpy(name, &(*entry)->name));
   (*entry)->routine = func;
   (*entry)->next    = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*MC
@@ -248,7 +248,7 @@ PETSC_EXTERN PetscErrorCode PetscFunctionListAdd_Private(PetscFunctionList *fl, 
         /* found duplicate, clear it */
         ne->routine = fnc;
         if (!fnc) PetscCall(PetscFree(ne->name));
-        PetscFunctionReturn(0);
+        PetscFunctionReturn(PETSC_SUCCESS);
       }
 
       if (!empty_node && !ne->routine && !ne->name) {
@@ -268,7 +268,7 @@ PETSC_EXTERN PetscErrorCode PetscFunctionListAdd_Private(PetscFunctionList *fl, 
       /* create new entry at the end of list */
       PetscCall(PetscFunctionListCreateNode_Private(&ne->next, name, fnc));
     }
-    PetscFunctionReturn(0);
+    PetscFunctionReturn(PETSC_SUCCESS);
   }
 
   /* we didn't have a list */
@@ -280,7 +280,7 @@ PETSC_EXTERN PetscErrorCode PetscFunctionListAdd_Private(PetscFunctionList *fl, 
     dlallhead        = *fl;
     (*fl)->next_list = head;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -298,7 +298,7 @@ PetscErrorCode PetscFunctionListDestroy(PetscFunctionList *fl)
   PetscFunctionList next, entry, tmp = dlallhead;
 
   PetscFunctionBegin;
-  if (!*fl) PetscFunctionReturn(0);
+  if (!*fl) PetscFunctionReturn(PETSC_SUCCESS);
 
   /*
        Remove this entry from the main DL list (if it is in it)
@@ -323,7 +323,7 @@ PetscErrorCode PetscFunctionListDestroy(PetscFunctionList *fl)
     entry = next;
   }
   *fl = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -350,7 +350,7 @@ PetscErrorCode PetscFunctionListClear(PetscFunctionList fl)
     fl->routine = NULL;
     fl          = fl->next;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -366,7 +366,7 @@ PetscErrorCode PetscFunctionListPrintAll(void)
     PetscCall(PetscPrintf(PETSC_COMM_SELF, "[%d]   %s\n", PetscGlobalRank, tmp->name));
     tmp = tmp->next_list;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*MC
@@ -387,7 +387,7 @@ PetscErrorCode PetscFunctionListPrintNonEmpty(PetscFunctionList fl)
     if (fl->routine) PetscCall(PetscPrintf(PETSC_COMM_SELF, "[%d] function name: %s\n", PetscGlobalRank, fl->name));
     fl = next;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*MC
@@ -421,12 +421,12 @@ PETSC_EXTERN PetscErrorCode PetscFunctionListFind_Private(PetscFunctionList fl, 
     PetscCall(PetscStrcmp(name, entry->name, &flg));
     if (flg) {
       *r = entry->routine;
-      PetscFunctionReturn(0);
+      PetscFunctionReturn(PETSC_SUCCESS);
     }
     entry = entry->next;
   }
   *r = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -459,7 +459,7 @@ PetscErrorCode PetscFunctionListView(PetscFunctionList list, PetscViewer viewer)
     list = list->next;
   }
   PetscCall(PetscViewerASCIIPrintf(viewer, "\n"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -502,7 +502,7 @@ PetscErrorCode PetscFunctionListGet(PetscFunctionList list, const char ***array,
   }
   (*array)[count] = NULL;
   *n              = count + 1;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -541,7 +541,7 @@ PetscErrorCode PetscFunctionListPrintTypes(MPI_Comm comm, FILE *fd, const char p
     list = list->next;
   }
   PetscCall(PetscFPrintf(comm, fd, " (%s)\n", man));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -564,5 +564,5 @@ PetscErrorCode PetscFunctionListDuplicate(PetscFunctionList fl, PetscFunctionLis
     PetscCall(PetscFunctionListAdd(nl, fl->name, fl->routine));
     fl = fl->next;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

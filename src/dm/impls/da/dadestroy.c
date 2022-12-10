@@ -55,5 +55,5 @@ PetscErrorCode DMDestroy_DA(DM da)
   PetscCall(PetscObjectComposeFunction((PetscObject)da, "DMSetUpGLVisViewer_C", NULL));
 
   PetscCall(PetscFree(dd));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

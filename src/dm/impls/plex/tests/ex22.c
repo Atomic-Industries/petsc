@@ -95,7 +95,7 @@ static PetscErrorCode testIdentity(DM dm, PetscBool dmIsSimplicial, PetscInt cel
   PetscCall(DMRestoreWorkArray(dm, dimR * numPoints, MPIU_REAL, &inverted));
   PetscCall(DMRestoreWorkArray(dm, dimC * numPoints, MPIU_REAL, &mapped));
   PetscCall(DMRestoreWorkArray(dm, dimR * numPoints, MPIU_REAL, &preimage));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode identityEmbedding(PetscInt dim, PetscReal time, const PetscReal *x, PetscInt Nf, PetscScalar *u, void *ctx)

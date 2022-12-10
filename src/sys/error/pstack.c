@@ -67,10 +67,10 @@ PetscErrorCode PetscStackViewSAWs(void)
 PetscErrorCode PetscStackSAWsViewOff(void)
 {
   PetscFunctionBegin;
-  if (!amsmemstack) PetscFunctionReturn(0);
+  if (!amsmemstack) PetscFunctionReturn(PETSC_SUCCESS);
   PetscCallSAWs(SAWs_Delete, ("/PETSc/Stack"));
   amsmemstack = PETSC_FALSE;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 #endif /* PETSC_HAVE_SAWS */
 

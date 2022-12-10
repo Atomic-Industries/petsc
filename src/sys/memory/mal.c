@@ -218,7 +218,7 @@ PetscErrorCode PetscMallocSet(PetscErrorCode (*imalloc)(size_t, PetscBool, int, 
   PetscTrFree           = ifree;
   PetscTrRealloc        = iralloc;
   petscsetmallocvisited = PETSC_TRUE;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -244,7 +244,7 @@ PetscErrorCode PetscMallocClear(void)
   PetscTrFree           = PetscFreeAlign;
   PetscTrRealloc        = PetscReallocAlign;
   petscsetmallocvisited = PETSC_FALSE;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode PetscMemoryTrace(const char label[])
@@ -259,7 +259,7 @@ PetscErrorCode PetscMemoryTrace(const char label[])
   PetscCall(PetscPrintf(PETSC_COMM_WORLD, "%s High water  %8.3f MB increase %8.3f MB Current %8.3f MB increase %8.3f MB\n", label, mem * 1e-6, (mem - oldmem) * 1e-6, mal * 1e-6, (mal - oldmal) * 1e-6));
   oldmem = mem;
   oldmal = mal;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode (*PetscTrMallocOld)(size_t, PetscBool, int, const char[], const char[], void **) = PetscMallocAlign;
@@ -299,7 +299,7 @@ PetscErrorCode PetscMallocSetDRAM(void)
     PetscTrFree       = PetscFreeAlign;
     PetscTrRealloc    = PetscReallocAlign;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -324,7 +324,7 @@ PetscErrorCode PetscMallocResetDRAM(void)
     PetscTrRealloc = PetscTrReallocOld;
     PetscTrFree    = PetscTrFreeOld;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscBool petscmalloccoalesce =
@@ -360,7 +360,7 @@ PetscErrorCode PetscMallocSetCoalesce(PetscBool coalesce)
 {
   PetscFunctionBegin;
   petscmalloccoalesce = coalesce;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -419,7 +419,7 @@ PetscErrorCode PetscMallocA(int n, PetscBool clear, int lineno, const char *func
   } else {
     for (i = 0; i < n; i++) PetscCall((*PetscTrMalloc)(bytes[i], clear, lineno, function, filename, (void **)ptr[i]));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -468,5 +468,5 @@ PetscErrorCode PetscFreeA(int n, int lineno, const char *function, const char *f
       *ptr[n] = NULL;
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

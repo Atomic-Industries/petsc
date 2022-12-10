@@ -32,7 +32,7 @@ static PetscInt edge_node[sizeof(PetscInt) * 32];
 PetscErrorCode PCTFS_comm_init(void)
 {
   PetscFunctionBegin;
-  if (p_init++) PetscFunctionReturn(0);
+  if (p_init++) PetscFunctionReturn(PETSC_SUCCESS);
 
   MPI_Comm_size(MPI_COMM_WORLD, &PCTFS_num_nodes);
   MPI_Comm_rank(MPI_COMM_WORLD, &PCTFS_my_id);
@@ -56,7 +56,7 @@ PetscErrorCode PCTFS_comm_init(void)
   if ((PCTFS_my_id > 0) && (PCTFS_my_id <= modfl_num_nodes)) edge_not_pow_2 = ((PCTFS_my_id | PCTFS_floor_num_nodes) - 1);
   else if (PCTFS_my_id >= PCTFS_floor_num_nodes) edge_not_pow_2 = ((PCTFS_my_id ^ PCTFS_floor_num_nodes) + 1);
   else edge_not_pow_2 = 0;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************comm.c*************************************/
@@ -78,7 +78,7 @@ PetscErrorCode PCTFS_giop(PetscInt *vals, PetscInt *work, PetscInt n, PetscInt *
   if (!p_init) PCTFS_comm_init();
 
   /* if there's nothing to do return */
-  if ((PCTFS_num_nodes < 2) || (!n)) PetscFunctionReturn(0);
+  if ((PCTFS_num_nodes < 2) || (!n)) PetscFunctionReturn(PETSC_SUCCESS);
 
   /* a negative number if items to send ==> fatal */
   PetscCheck(n >= 0, PETSC_COMM_SELF, PETSC_ERR_PLIB, "PCTFS_giop() :: n=%" PetscInt_FMT "<0?", n);
@@ -133,7 +133,7 @@ PetscErrorCode PCTFS_giop(PetscInt *vals, PetscInt *work, PetscInt n, PetscInt *
       PetscCallMPI(MPI_Send(vals, n, MPIU_INT, edge_not_pow_2, MSGTAG5 + PCTFS_my_id, MPI_COMM_WORLD));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************comm.c*************************************/
@@ -155,7 +155,7 @@ PetscErrorCode PCTFS_grop(PetscScalar *vals, PetscScalar *work, PetscInt n, Pets
   if (!p_init) PCTFS_comm_init();
 
   /* if there's nothing to do return */
-  if ((PCTFS_num_nodes < 2) || (!n)) PetscFunctionReturn(0);
+  if ((PCTFS_num_nodes < 2) || (!n)) PetscFunctionReturn(PETSC_SUCCESS);
 
   /* a negative number of items to send ==> fatal */
   PetscCheck(n >= 0, PETSC_COMM_SELF, PETSC_ERR_PLIB, "gdop() :: n=%" PetscInt_FMT "<0?", n);
@@ -209,7 +209,7 @@ PetscErrorCode PCTFS_grop(PetscScalar *vals, PetscScalar *work, PetscInt n, Pets
       PetscCallMPI(MPI_Send(vals, n, MPIU_SCALAR, edge_not_pow_2, MSGTAG5 + PCTFS_my_id, MPI_COMM_WORLD));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************comm.c*************************************/
@@ -231,7 +231,7 @@ PetscErrorCode PCTFS_grop_hc(PetscScalar *vals, PetscScalar *work, PetscInt n, P
   if (!p_init) PCTFS_comm_init();
 
   /* if there's nothing to do return */
-  if ((PCTFS_num_nodes < 2) || (!n) || (dim <= 0)) PetscFunctionReturn(0);
+  if ((PCTFS_num_nodes < 2) || (!n) || (dim <= 0)) PetscFunctionReturn(PETSC_SUCCESS);
 
   /* the error msg says it all!!! */
   PetscCheck(!modfl_num_nodes, PETSC_COMM_SELF, PETSC_ERR_PLIB, "PCTFS_grop_hc() :: PCTFS_num_nodes not a power of 2!?!");
@@ -272,7 +272,7 @@ PetscErrorCode PCTFS_grop_hc(PetscScalar *vals, PetscScalar *work, PetscInt n, P
       PetscCallMPI(MPI_Recv(vals, n, MPIU_SCALAR, MPI_ANY_SOURCE, MSGTAG4 + dest, MPI_COMM_WORLD, &status));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /******************************************************************************/
@@ -322,7 +322,7 @@ PetscErrorCode PCTFS_ssgl_radd(PetscScalar *vals, PetscScalar *work, PetscInt le
     }
     mask >>= 1;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /***********************************comm.c*************************************/
@@ -344,7 +344,7 @@ PetscErrorCode PCTFS_giop_hc(PetscInt *vals, PetscInt *work, PetscInt n, PetscIn
   if (!p_init) PCTFS_comm_init();
 
   /* if there's nothing to do return */
-  if ((PCTFS_num_nodes < 2) || (!n) || (dim <= 0)) PetscFunctionReturn(0);
+  if ((PCTFS_num_nodes < 2) || (!n) || (dim <= 0)) PetscFunctionReturn(PETSC_SUCCESS);
 
   /* the error msg says it all!!! */
   PetscCheck(!modfl_num_nodes, PETSC_COMM_SELF, PETSC_ERR_PLIB, "PCTFS_giop_hc() :: PCTFS_num_nodes not a power of 2!?!");
@@ -385,5 +385,5 @@ PetscErrorCode PCTFS_giop_hc(PetscInt *vals, PetscInt *work, PetscInt n, PetscIn
       PetscCallMPI(MPI_Recv(vals, n, MPIU_INT, MPI_ANY_SOURCE, MSGTAG4 + dest, MPI_COMM_WORLD, &status));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

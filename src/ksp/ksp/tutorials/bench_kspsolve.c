@@ -109,7 +109,7 @@ static PetscErrorCode PreallocateCOO(Mat A, void *ctx)
   if (user->debug)
     PetscCall(PetscPrintf(PETSC_COMM_SELF, "rank %d: xyzstart = %" PetscInt_FMT ",%" PetscInt_FMT ",%" PetscInt_FMT ", xvzend = %" PetscInt_FMT ",%" PetscInt_FMT ",%" PetscInt_FMT ", nnz = %" PetscInt_FMT "\n", user->rank, xstart, ystart, zstart, xend, yend, zend,
                           user->nnz));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode FillCOO(Mat A, void *ctx)
@@ -301,7 +301,7 @@ PetscErrorCode FillCOO(Mat A, void *ctx)
   PetscCall(MatSetPreallocationCOO(A, user->nnz, coo_i, coo_j));
   PetscCall(MatSetValuesCOO(A, coo_v, INSERT_VALUES));
   PetscCall(PetscFree3(coo_i, coo_j, coo_v));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

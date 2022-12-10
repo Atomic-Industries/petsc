@@ -79,7 +79,7 @@ static PetscErrorCode FormInitialGuess(DM da, AppCtx *user, Vec X)
      Restore vector
   */
   PetscCall(DMDAVecRestoreArray(da, X, &x));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -111,7 +111,7 @@ static PetscErrorCode FormExactSolution(DM da, AppCtx *user, Vec U)
   }
   PetscCall(DMDAVecRestoreArray(da, U, &u));
   PetscCall(DMDAVecRestoreArray(coordDA, coordinates, &coords));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode ZeroBCSolution(AppCtx *user, const DMDACoor2d *c, PetscScalar *u)
@@ -253,7 +253,7 @@ static PetscErrorCode FormFunctionLocal(DMDALocalInfo *info, PetscScalar **x, Pe
     }
   }
   PetscCall(PetscLogFlops(11.0 * info->ym * info->xm));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* FormObjectiveLocal - Evaluates nonlinear function, F(x) on local process patch */
@@ -303,7 +303,7 @@ static PetscErrorCode FormObjectiveLocal(DMDALocalInfo *info, PetscScalar **x, P
   }
   PetscCall(PetscLogFlops(12.0 * info->ym * info->xm));
   PetscCallMPI(MPI_Allreduce(&lobj, obj, 1, MPIU_REAL, MPIU_SUM, comm));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -400,7 +400,7 @@ static PetscErrorCode FormJacobianLocal(DMDALocalInfo *info, PetscScalar **x, Ma
      matrix. If we do, it will generate an error.
   */
   PetscCall(MatSetOption(jac, MAT_NEW_NONZERO_LOCATION_ERR, PETSC_TRUE));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode FormFunctionMatlab(SNES snes, Vec X, Vec F, void *ptr)
@@ -445,7 +445,7 @@ static PetscErrorCode FormFunctionMatlab(SNES snes, Vec X, Vec F, void *ptr)
   PetscCall(DMLocalToGlobalEnd(da, localF, INSERT_VALUES, F));
   PetscCall(DMRestoreLocalVector(da, &localX));
   PetscCall(DMRestoreLocalVector(da, &localF));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 #else
   return 0; /* Never called */
 #endif
@@ -552,7 +552,7 @@ static PetscErrorCode NonlinearGS(SNES snes, Vec X, Vec B, void *ctx)
     PetscCall(DMDAVecRestoreArray(da, localB, &b));
     PetscCall(DMRestoreLocalVector(da, &localB));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

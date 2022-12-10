@@ -97,7 +97,7 @@ PetscErrorCode LandauKokkosCreateMatMaps(P4estVertexMaps maps[], pointInterpolat
     maps[grid].d_self = d_maps_k->data();
     maps[grid].vp3    = (void *)d_maps_k;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 PetscErrorCode LandauKokkosDestroyMatMaps(P4estVertexMaps maps[], PetscInt num_grids)
 {
@@ -110,7 +110,7 @@ PetscErrorCode LandauKokkosDestroyMatMaps(P4estVertexMaps maps[], PetscInt num_g
     delete b;
     delete c;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode LandauKokkosStaticDataSet(DM plex, const PetscInt Nq, const PetscInt batch_sz, const PetscInt num_grids, PetscInt a_numCells[], PetscInt a_species_offset[], PetscInt a_mat_offset[], PetscReal a_nu_alpha[], PetscReal a_nu_beta[], PetscReal a_invMass[], PetscReal a_invJ[], PetscReal a_x[], PetscReal a_y[], PetscReal a_z[], PetscReal a_w[], LandauStaticData *SData_d)
@@ -244,7 +244,7 @@ PetscErrorCode LandauKokkosStaticDataSet(DM plex, const PetscInt Nq, const Petsc
     SData_d->coo_vals               = static_cast<void *>(coo_vals);
   }
   SData_d->maps = NULL; // not used
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode LandauKokkosStaticDataClear(LandauStaticData *SData_d)
@@ -307,7 +307,7 @@ PetscErrorCode LandauKokkosStaticDataClear(LandauStaticData *SData_d)
     auto coo_vals                   = static_cast<Kokkos::View<PetscScalar *, Kokkos::LayoutRight, Kokkos::DefaultExecutionSpace> *>((void *)SData_d->coo_vals);
     delete coo_vals;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #define KOKKOS_SHARED_LEVEL 0 // 0 is shared, 1 is global
@@ -846,6 +846,6 @@ PetscErrorCode LandauKokkosJacobian(DM plex[], const PetscInt Nq, const PetscInt
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_PLIB, "CPU assembly not supported");
 #endif
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 } // extern "C"

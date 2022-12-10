@@ -132,7 +132,7 @@ PetscErrorCode PetscOpenHistoryFile(const char filename[], FILE **fd)
     err = fflush(*fd);
     PetscCheck(!err, PETSC_COMM_SELF, PETSC_ERR_SYS, "fflush() failed on file");
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PETSC_INTERN PetscErrorCode PetscCloseHistoryFile(FILE **fd)
@@ -153,7 +153,7 @@ PETSC_INTERN PetscErrorCode PetscCloseHistoryFile(FILE **fd)
     err = fclose(*fd);
     PetscCheck(!err, PETSC_COMM_SELF, PETSC_ERR_SYS, "fclose() failed on file");
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------------*/
@@ -233,7 +233,7 @@ PetscErrorCode PetscSetHelpVersionFunctions(PetscErrorCode (*help)(MPI_Comm), Pe
   PetscFunctionBegin;
   PetscExternalHelpFunction    = help;
   PetscExternalVersionFunction = version;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #if defined(PETSC_USE_LOG)
@@ -636,5 +636,5 @@ PETSC_INTERN PetscErrorCode PetscOptionsCheckInitial_Private(const char help[])
 
   PetscCall(PetscOptionsGetReal(NULL, NULL, "-petsc_sleep", &si, &flg1));
   if (flg1) PetscCall(PetscSleep(si));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

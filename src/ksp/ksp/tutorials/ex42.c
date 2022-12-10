@@ -68,7 +68,7 @@ PetscErrorCode CellPropertiesCreate(DM da_stokes, CellProperties *C)
   PetscCall(PetscMalloc1(mx * my * mz, &cells->gpc));
 
   *C = cells;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode CellPropertiesDestroy(CellProperties *C)
@@ -76,19 +76,19 @@ PetscErrorCode CellPropertiesDestroy(CellProperties *C)
   CellProperties cells;
 
   PetscFunctionBeginUser;
-  if (!C) PetscFunctionReturn(0);
+  if (!C) PetscFunctionReturn(PETSC_SUCCESS);
   cells = *C;
   PetscCall(PetscFree(cells->gpc));
   PetscCall(PetscFree(cells));
   *C = NULL;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode CellPropertiesGetCell(CellProperties C, PetscInt II, PetscInt J, PetscInt K, GaussPointCoefficients **G)
 {
   PetscFunctionBeginUser;
   *G = &C->gpc[(II - C->sex) + (J - C->sey) * C->mx + (K - C->sez) * C->mx * C->my];
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* FEM routines */
@@ -451,7 +451,7 @@ static PetscErrorCode DMDAGetElementEqnums3D_up(MatStencil s_u[], MatStencil s_p
   s_p[n].k = k + 1;
   s_p[n].c = 3;
   n++;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode GetElementCoords3D(DMDACoor3d ***coords, PetscInt i, PetscInt j, PetscInt k, PetscScalar el_coord[])
@@ -489,7 +489,7 @@ static PetscErrorCode GetElementCoords3D(DMDACoor3d ***coords, PetscInt i, Petsc
   el_coord[21] = coords[k + 1][j][i + 1].x;
   el_coord[22] = coords[k + 1][j][i + 1].y;
   el_coord[23] = coords[k + 1][j][i + 1].z;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode StokesDAGetNodalFields3D(StokesDOF ***field, PetscInt i, PetscInt j, PetscInt k, StokesDOF nodal_fields[])
@@ -538,7 +538,7 @@ static PetscErrorCode StokesDAGetNodalFields3D(StokesDOF ***field, PetscInt i, P
   nodal_fields[5].p_dof = field[k + 1][j + 1][i].p_dof;
   nodal_fields[6].p_dof = field[k + 1][j + 1][i + 1].p_dof;
   nodal_fields[7].p_dof = field[k + 1][j][i + 1].p_dof;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscInt ASS_MAP_wIwDI_uJuDJ(PetscInt wi, PetscInt wd, PetscInt w_NPE, PetscInt w_dof, PetscInt ui, PetscInt ud, PetscInt u_NPE, PetscInt u_dof)
@@ -586,7 +586,7 @@ static PetscErrorCode DMDASetValuesLocalStencil3D_ADD_VALUES(StokesDOF ***fields
 
     fields_F[K][J][II].p_dof = fields_F[K][J][II].p_dof + Fe_p[n];
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static void FormStressOperatorQ13D(PetscScalar Ke[], PetscScalar coords[], PetscScalar eta[])
@@ -977,7 +977,7 @@ static PetscErrorCode AssembleA_Stokes(Mat A, DM stokes_da, CellProperties cell_
 
   PetscCall(DMDAVecRestoreArray(cda, coords, &_coords));
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode AssembleA_PCStokes(Mat A, DM stokes_da, CellProperties cell_properties)
@@ -1062,7 +1062,7 @@ static PetscErrorCode AssembleA_PCStokes(Mat A, DM stokes_da, CellProperties cel
   PetscCall(MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY));
 
   PetscCall(DMDAVecRestoreArray(cda, coords, &_coords));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode AssembleF_Stokes(Vec F, DM stokes_da, CellProperties cell_properties)
@@ -1138,7 +1138,7 @@ static PetscErrorCode AssembleF_Stokes(Vec F, DM stokes_da, CellProperties cell_
   PetscCall(DMRestoreLocalVector(stokes_da, &local_F));
 
   PetscCall(DMDAVecRestoreArray(cda, coords, &_coords));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static void evaluate_MS_FrankKamentski_constants(PetscReal *theta, PetscReal *MX, PetscReal *MY, PetscReal *MZ)
@@ -1256,7 +1256,7 @@ static PetscErrorCode DMDACreateManufacturedSolution(PetscInt mx, PetscInt my, P
 
   *_da = da;
   *_X  = X;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode DMDAIntegrateErrors3D(DM stokes_da, Vec X, Vec X_analytic)
@@ -1420,7 +1420,7 @@ static PetscErrorCode DMDAIntegrateErrors3D(DM stokes_da, Vec X, Vec X_analytic)
   PetscCall(VecDestroy(&X_analytic_local));
   PetscCall(DMDAVecRestoreArray(stokes_da, X_local, &stokes));
   PetscCall(VecDestroy(&X_local));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode DAView_3DVTK_StructuredGrid_appended(DM da, Vec FIELD, const char file_prefix[])
@@ -1537,7 +1537,7 @@ PetscErrorCode DAView_3DVTK_StructuredGrid_appended(DM da, Vec FIELD, const char
     vtk_fp = NULL;
   }
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode DAViewVTK_write_PieceExtend(FILE *vtk_fp, PetscInt indent_level, DM da, const char local_file_prefix[])
@@ -1628,7 +1628,7 @@ PetscErrorCode DAViewVTK_write_PieceExtend(FILE *vtk_fp, PetscInt indent_level, 
   PetscCall(PetscFree(oex));
   PetscCall(PetscFree(oey));
   PetscCall(PetscFree(oez));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode DAView_3DVTK_PStructuredGrid(DM da, const char file_prefix[], const char local_file_prefix[])
@@ -1647,7 +1647,7 @@ PetscErrorCode DAView_3DVTK_PStructuredGrid(DM da, const char file_prefix[], con
   MPI_Comm_size(comm, &size);
   MPI_Comm_rank(comm, &rank);
 
-  if (rank != 0) PetscFunctionReturn(0);
+  if (rank != 0) PetscFunctionReturn(PETSC_SUCCESS);
 
   /* create file name */
   PetscCall(PetscSNPrintf(vtk_filename, sizeof(vtk_filename), "%s.pvts", file_prefix));
@@ -1691,7 +1691,7 @@ PetscErrorCode DAView_3DVTK_PStructuredGrid(DM da, const char file_prefix[], con
     fclose(vtk_fp);
     vtk_fp = NULL;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode DAView3DPVTS(DM da, Vec x, const char NAME[])
@@ -1705,7 +1705,7 @@ PetscErrorCode DAView3DPVTS(DM da, Vec x, const char NAME[])
 
   PetscCall(PetscSNPrintf(pvts_filename, sizeof(pvts_filename), "%s-mesh", NAME));
   PetscCall(DAView_3DVTK_PStructuredGrid(da, pvts_filename, vts_filename));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode KSPMonitorStokesBlocks(KSP ksp, PetscInt n, PetscReal rnorm, void *dummy)
@@ -1729,7 +1729,7 @@ PetscErrorCode KSPMonitorStokesBlocks(KSP ksp, PetscInt n, PetscReal rnorm, void
   PetscCall(VecDestroy(&w));
 
   PetscCall(PetscPrintf(PETSC_COMM_WORLD, "%3" PetscInt_FMT " KSP Component U,V,W,P residual norm [ %1.12e, %1.12e, %1.12e, %1.12e ]\n", n, (double)norms[0], (double)norms[1], (double)norms[2], (double)norms[3]));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PCMGSetupViaCoarsen(PC pc, DM da_fine)
@@ -1772,7 +1772,7 @@ static PetscErrorCode PCMGSetupViaCoarsen(PC pc, DM da_fine)
   for (k = 0; k < nlevels; k++) PetscCall(DMDestroy(&da_list[k]));
   PetscCall(PetscFree(da_list));
   PetscCall(PetscFree(daclist));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode solve_stokes_3d_coupled(PetscInt mx, PetscInt my, PetscInt mz)
@@ -2116,7 +2116,7 @@ static PetscErrorCode solve_stokes_3d_coupled(PetscInt mx, PetscInt my, PetscInt
 
   PetscCall(CellPropertiesDestroy(&cell_properties));
   PetscCall(DMDestroy(&da_Stokes));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **args)

@@ -27,7 +27,7 @@ int FormElementStiffness(PetscReal H, PetscScalar *Ke)
   Ke[13] = H / 12.0;
   Ke[14] = -.125 * H;
   Ke[15] = H / 6.0;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 int FormElementRhs(PetscReal x, PetscReal y, PetscReal H, PetscScalar *r)
 {
@@ -36,7 +36,7 @@ int FormElementRhs(PetscReal x, PetscReal y, PetscReal H, PetscScalar *r)
   r[1] = 0.;
   r[2] = 0.;
   r[3] = 0.0;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **args)

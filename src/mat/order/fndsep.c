@@ -63,7 +63,7 @@ PetscErrorCode SPARSEPACKfndsep(PetscInt *root, const PetscInt *inxadj, const Pe
     sep[i]     = node;
     mask[node] = 0;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 /*       FIND THE MIDDLE LEVEL OF THE ROOTED LEVEL STRUCTURE.*/
 L200:
   midlvl = (nlvl + 2) / 2;
@@ -105,5 +105,5 @@ L200:
     node       = ls[i];
     xadj[node] = -xadj[node];
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

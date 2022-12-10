@@ -34,7 +34,7 @@ PetscErrorCode PetscMPIFortranDatatypeToC(MPI_Fint unit, MPI_Datatype *dtype)
   else if (ftype == MPI_COMPLEX16 || ftype == MPI_C_DOUBLE_COMPLEX) *dtype = MPI_C_DOUBLE_COMPLEX;
 #endif
   else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unknown Fortran MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*************************************************************************/
@@ -95,7 +95,7 @@ PetscErrorCode F90Array1dCreate(void *array, MPI_Datatype type, PetscInt start, 
   } else if (type == MPIU_FORTRANADDR) {
     f90array1dcreatefortranaddr_(array, &start, &len, ptr PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode F90Array1dAccess(F90Array1d *ptr, MPI_Datatype type, void **array PETSC_F90_2PTR_PROTO(ptrd))
@@ -113,7 +113,7 @@ PetscErrorCode F90Array1dAccess(F90Array1d *ptr, MPI_Datatype type, void **array
   } else if (type == MPIU_FORTRANADDR) {
     f90array1daccessfortranaddr_(ptr, array PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode F90Array1dDestroy(F90Array1d *ptr, MPI_Datatype type PETSC_F90_2PTR_PROTO(ptrd))
@@ -128,7 +128,7 @@ PetscErrorCode F90Array1dDestroy(F90Array1d *ptr, MPI_Datatype type PETSC_F90_2P
   } else if (type == MPIU_FORTRANADDR) {
     f90array1ddestroyfortranaddr_(ptr PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*************************************************************************/
@@ -186,7 +186,7 @@ PetscErrorCode F90Array2dCreate(void *array, MPI_Datatype type, PetscInt start1,
   } else if (type == MPIU_FORTRANADDR) {
     f90array2dcreatefortranaddr_(array, &start1, &len1, &start2, &len2, ptr PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode F90Array2dAccess(F90Array2d *ptr, MPI_Datatype type, void **array PETSC_F90_2PTR_PROTO(ptrd))
@@ -201,7 +201,7 @@ PetscErrorCode F90Array2dAccess(F90Array2d *ptr, MPI_Datatype type, void **array
   } else if (type == MPIU_FORTRANADDR) {
     f90array2daccessfortranaddr_(ptr, array PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode F90Array2dDestroy(F90Array2d *ptr, MPI_Datatype type PETSC_F90_2PTR_PROTO(ptrd))
@@ -216,7 +216,7 @@ PetscErrorCode F90Array2dDestroy(F90Array2d *ptr, MPI_Datatype type PETSC_F90_2P
   } else if (type == MPIU_FORTRANADDR) {
     f90array2ddestroyfortranaddr_(ptr PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*************************************************************************/
@@ -274,7 +274,7 @@ PetscErrorCode F90Array3dCreate(void *array, MPI_Datatype type, PetscInt start1,
   } else if (type == MPIU_FORTRANADDR) {
     f90array3dcreatefortranaddr_(array, &start1, &len1, &start2, &len2, &start3, &len3, ptr PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode F90Array3dAccess(F90Array3d *ptr, MPI_Datatype type, void **array PETSC_F90_2PTR_PROTO(ptrd))
@@ -289,7 +289,7 @@ PetscErrorCode F90Array3dAccess(F90Array3d *ptr, MPI_Datatype type, void **array
   } else if (type == MPIU_FORTRANADDR) {
     f90array3daccessfortranaddr_(ptr, array PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode F90Array3dDestroy(F90Array3d *ptr, MPI_Datatype type PETSC_F90_2PTR_PROTO(ptrd))
@@ -304,7 +304,7 @@ PetscErrorCode F90Array3dDestroy(F90Array3d *ptr, MPI_Datatype type PETSC_F90_2P
   } else if (type == MPIU_FORTRANADDR) {
     f90array3ddestroyfortranaddr_(ptr PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*************************************************************************/
@@ -355,7 +355,7 @@ PetscErrorCode F90Array4dCreate(void *array, MPI_Datatype type, PetscInt start1,
   if (type == MPIU_SCALAR) {
     f90array4dcreatescalar_(array, &start1, &len1, &start2, &len2, &start3, &len3, &start4, &len4, ptr PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode F90Array4dAccess(F90Array4d *ptr, MPI_Datatype type, void **array PETSC_F90_2PTR_PROTO(ptrd))
@@ -370,7 +370,7 @@ PetscErrorCode F90Array4dAccess(F90Array4d *ptr, MPI_Datatype type, void **array
   } else if (type == MPIU_FORTRANADDR) {
     f90array4daccessfortranaddr_(ptr, array PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode F90Array4dDestroy(F90Array4d *ptr, MPI_Datatype type PETSC_F90_2PTR_PROTO(ptrd))
@@ -379,7 +379,7 @@ PetscErrorCode F90Array4dDestroy(F90Array4d *ptr, MPI_Datatype type PETSC_F90_2P
   if (type == MPIU_SCALAR) {
     f90array4ddestroyscalar_(ptr PETSC_F90_2PTR_PARAM(ptrd));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unsupported MPI_Datatype");
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*************************************************************************/

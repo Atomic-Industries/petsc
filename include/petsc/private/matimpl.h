@@ -760,7 +760,7 @@ static inline PetscErrorCode MatPivotCheck_nz(PETSC_UNUSED Mat mat, const MatFac
   } else {
     sctx->newshift = PETSC_FALSE;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode MatPivotCheck_pd(PETSC_UNUSED Mat mat, const MatFactorInfo *info, FactorShiftCtx *sctx, PETSC_UNUSED PetscInt row)
@@ -783,7 +783,7 @@ static inline PetscErrorCode MatPivotCheck_pd(PETSC_UNUSED Mat mat, const MatFac
   } else {
     sctx->newshift = PETSC_FALSE;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode MatPivotCheck_inblocks(PETSC_UNUSED Mat mat, const MatFactorInfo *info, FactorShiftCtx *sctx, PETSC_UNUSED PetscInt row)
@@ -797,7 +797,7 @@ static inline PetscErrorCode MatPivotCheck_inblocks(PETSC_UNUSED Mat mat, const 
     sctx->nshift++;
   }
   sctx->newshift = PETSC_FALSE;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode MatPivotCheck_none(Mat fact, Mat mat, const MatFactorInfo *info, FactorShiftCtx *sctx, PetscInt row)
@@ -813,7 +813,7 @@ static inline PetscErrorCode MatPivotCheck_none(Mat fact, Mat mat, const MatFact
     fact->factorerror_zeropivot_value = PetscAbsScalar(sctx->pv);
     fact->factorerror_zeropivot_row   = row;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode MatPivotCheck(Mat fact, Mat mat, const MatFactorInfo *info, FactorShiftCtx *sctx, PetscInt row)
@@ -823,7 +823,7 @@ static inline PetscErrorCode MatPivotCheck(Mat fact, Mat mat, const MatFactorInf
   else if (info->shifttype == (PetscReal)MAT_SHIFT_POSITIVE_DEFINITE) PetscCall(MatPivotCheck_pd(mat, info, sctx, row));
   else if (info->shifttype == (PetscReal)MAT_SHIFT_INBLOCKS) PetscCall(MatPivotCheck_inblocks(mat, info, sctx, row));
   else PetscCall(MatPivotCheck_none(fact, mat, info, sctx, row));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #include <petscbt.h>
@@ -859,7 +859,7 @@ static inline PetscErrorCode PetscLLInsertLocation_Private(PetscBool assume_sort
   lnk[entry]    = *lnkdata;
   ++(*nlnk);
   *lnkdata = entry; /* next search starts from here if next_entry > entry */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode PetscLLAdd_Private(PetscInt nidx, const PetscInt *PETSC_RESTRICT indices, PetscInt idx_start, PetscInt *PETSC_RESTRICT nlnk, PetscInt *PETSC_RESTRICT lnk, PetscBT bt, PetscBool assume_sorted)
@@ -871,7 +871,7 @@ static inline PetscErrorCode PetscLLAdd_Private(PetscInt nidx, const PetscInt *P
 
     if (!PetscBTLookupSet(bt, entry)) PetscCall(PetscLLInsertLocation_Private(assume_sorted, k, idx_start, entry, nlnk, &lnkdata, lnk));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -891,7 +891,7 @@ static inline PetscErrorCode PetscLLAdd(PetscInt nidx, const PetscInt *PETSC_RES
 {
   PetscFunctionBegin;
   PetscCall(PetscLLAdd_Private(nidx, indices, idx_start, nlnk, lnk, bt, PETSC_FALSE));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -911,7 +911,7 @@ static inline PetscErrorCode PetscLLAddSorted(PetscInt nidx, const PetscInt *PET
 {
   PetscFunctionBegin;
   PetscCall(PetscLLAdd_Private(nidx, indices, idx_start, nlnk, lnk, bt, PETSC_TRUE));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -937,7 +937,7 @@ static inline PetscErrorCode PetscLLAddPerm(PetscInt nidx, const PetscInt *PETSC
 
     if (!PetscBTLookupSet(bt, entry)) PetscCall(PetscLLInsertLocation_Private(PETSC_FALSE, k, idx_start, entry, nlnk, &lnkdata, lnk));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #if 0
@@ -976,7 +976,7 @@ static inline PetscErrorCode PetscLLAddSorted_new(PetscInt nidx, PetscInt *indic
       if (!PetscBTLookupSet(bt,entry)) PetscCall(PetscLLInsertLocation_Private(PETSC_TRUE,k,idx_start,entry,nlnk,&lnkdata,lnk));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 #endif
 
@@ -1012,7 +1012,7 @@ static inline PetscErrorCode PetscLLAddSortedLU(const PetscInt *PETSC_RESTRICT i
     if (entry == diag) im[idx_start] = nzbd;
     if (!PetscBTLookupSet(bt, entry)) PetscCall(PetscLLInsertLocation_Private(PETSC_TRUE, k, idx_start, entry, nlnk, &lnkdata, lnk));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1037,7 +1037,7 @@ static inline PetscErrorCode PetscLLClean(PetscInt idx_start, PetscInt lnk_max, 
     PetscCall(PetscBTClear(bt, idx));
   }
   lnk[idx_start] = lnk_max;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1064,7 +1064,7 @@ static inline PetscErrorCode PetscIncompleteLLInsertLocation_Private(PetscBool a
   PetscFunctionBegin;
   PetscCall(PetscLLInsertLocation_Private(assume_sorted, k, idx_start, entry, nlnk, lnkdata, lnk));
   lnklvl[entry] = newval;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1092,7 +1092,7 @@ static inline PetscErrorCode PetscIncompleteLLInit(PetscInt nidx, const PetscInt
 
     if (!PetscBTLookupSet(bt, entry)) PetscCall(PetscIncompleteLLInsertLocation_Private(PETSC_FALSE, k, idx_start, entry, nlnk, &lnkdata, lnk, lnklvl, 0));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode PetscIncompleteLLAdd_Private(PetscInt nidx, const PetscInt *PETSC_RESTRICT idx, PetscReal level, const PetscInt *PETSC_RESTRICT idxlvl, PetscInt idx_start, PetscInt *PETSC_RESTRICT nlnk, PetscInt *PETSC_RESTRICT lnk, PetscInt *PETSC_RESTRICT lnklvl, PetscBT bt, PetscInt prow_offset, PetscBool assume_sorted)
@@ -1109,7 +1109,7 @@ static inline PetscErrorCode PetscIncompleteLLAdd_Private(PetscInt nidx, const P
       else if (lnklvl[entry] > incrlev) lnklvl[entry] = incrlev; /* existing entry */
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1136,7 +1136,7 @@ static inline PetscErrorCode PetscICCLLAddSorted(PetscInt nidx, const PetscInt *
 {
   PetscFunctionBegin;
   PetscCall(PetscIncompleteLLAdd_Private(nidx, idx, level, idxlvl, idx_start, nlnk, lnk, lnklvl, bt, idxlvl_prow, PETSC_TRUE));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1164,7 +1164,7 @@ static inline PetscErrorCode PetscILULLAddSorted(PetscInt nidx, const PetscInt *
 {
   PetscFunctionBegin;
   PetscCall(PetscIncompleteLLAdd_Private(nidx, idx, level, idxlvl, idx_start, nlnk, lnk, lnklvl, bt, lnklvl[prow], PETSC_TRUE));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1188,7 +1188,7 @@ static inline PetscErrorCode PetscIncompleteLLAdd(PetscInt nidx, const PetscInt 
 {
   PetscFunctionBegin;
   PetscCall(PetscIncompleteLLAdd_Private(nidx, idx, level, idxlvl, idx_start, nlnk, lnk, lnklvl, bt, 0, PETSC_FALSE));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1212,7 +1212,7 @@ static inline PetscErrorCode PetscIncompleteLLAddSorted(PetscInt nidx, const Pet
 {
   PetscFunctionBegin;
   PetscCall(PetscIncompleteLLAdd_Private(nidx, idx, level, idxlvl, idx_start, nlnk, lnk, lnklvl, bt, 0, PETSC_TRUE));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1241,7 +1241,7 @@ static inline PetscErrorCode PetscIncompleteLLClean(PetscInt idx_start, PetscInt
     PetscCall(PetscBTClear(bt, idx));
   }
   lnk[idx_start] = lnk_max;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1326,7 +1326,7 @@ static inline PetscErrorCode PetscLLCondensedCreate(PetscInt nlnk_max, PetscInt 
   llnk[0] = 0;       /* number of entries on the list */
   llnk[2] = lnk_max; /* value in the head node */
   llnk[3] = 2;       /* next for the head node */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1366,7 +1366,7 @@ static inline PetscErrorCode PetscLLCondensedAddSorted(PetscInt nidx, const Pets
     }
   }
   lnk[0] = _nlnk; /* number of entries in the list */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode PetscLLCondensedClean(PetscInt lnk_max, PETSC_UNUSED PetscInt nidx, PetscInt *indices, PetscInt lnk[], PetscBT bt)
@@ -1383,7 +1383,7 @@ static inline PetscErrorCode PetscLLCondensedClean(PetscInt lnk_max, PETSC_UNUSE
   lnk[0] = 0;       /* num of entries on the list */
   lnk[2] = lnk_max; /* initialize head node */
   lnk[3] = 2;       /* head node */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode PetscLLCondensedView(PetscInt *lnk)
@@ -1391,7 +1391,7 @@ static inline PetscErrorCode PetscLLCondensedView(PetscInt *lnk)
   PetscFunctionBegin;
   PetscCall(PetscPrintf(PETSC_COMM_SELF, "LLCondensed of size %" PetscInt_FMT ", (val,  next)\n", lnk[0]));
   for (PetscInt k = 2; k < lnk[0] + 2; ++k) PetscCall(PetscPrintf(PETSC_COMM_SELF, " %" PetscInt_FMT ": (%" PetscInt_FMT ", %" PetscInt_FMT ")\n", 2 * k, lnk[2 * k], lnk[2 * k + 1]));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -1402,7 +1402,7 @@ static inline PetscErrorCode PetscLLCondensedDestroy(PetscInt *lnk, PetscBT bt)
   PetscFunctionBegin;
   PetscCall(PetscFree(lnk));
   PetscCall(PetscBTDestroy(&bt));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* -------------------------------------------------------------------------------------------------------*/
@@ -1424,7 +1424,7 @@ static inline PetscErrorCode PetscLLCondensedCreate_Scalable(PetscInt nlnk_max, 
   llnk[0] = 0;             /* number of entries on the list */
   llnk[2] = PETSC_MAX_INT; /* value in the head node */
   llnk[3] = 2;             /* next for the head node */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode PetscLLCondensedExpand_Scalable(PetscInt nlnk_max, PetscInt **lnk)
@@ -1434,7 +1434,7 @@ static inline PetscErrorCode PetscLLCondensedExpand_Scalable(PetscInt nlnk_max, 
   PetscFunctionBegin;
   PetscCall(PetscIntMultError(2, nlnk_max + 2, &lsize));
   PetscCall(PetscRealloc(lsize * sizeof(PetscInt), lnk));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode PetscLLCondensedAddSorted_Scalable(PetscInt nidx, const PetscInt indices[], PetscInt lnk[])
@@ -1520,7 +1520,7 @@ static inline PetscErrorCode PetscLLCondensedCreate_fast(PetscInt nlnk_max, Pets
   llnk[6] = PETSC_MAX_INT - 1; /* value in the last node */
   llnk[7] = 1;                 /* count for the last node */
   llnk[8] = 0;                 /* next valid node to be used */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode PetscLLCondensedAddSorted_fast(PetscInt nidx, const PetscInt indices[], PetscInt lnk[])

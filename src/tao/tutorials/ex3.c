@@ -147,7 +147,7 @@ static PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
   }
   PetscCall(DMSetFromOptions(*dm));
   PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 void mass_kernel(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, PetscReal u_tShift, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar g0[])
@@ -271,7 +271,7 @@ PetscErrorCode CreateCtx(DM dm, AppCtx *user)
 
   PetscCall(PetscFEDestroy(&fe));
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode DestroyCtx(AppCtx *user)
@@ -289,7 +289,7 @@ PetscErrorCode DestroyCtx(AppCtx *user)
   PetscCall(PetscFree(user->bc_indices));
   PetscCall(PetscFree(user->bc_values));
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode ReducedFunctionGradient(Tao tao, Vec u, PetscReal *func, Vec g, void *userv)
@@ -329,7 +329,7 @@ PetscErrorCode ReducedFunctionGradient(Tao tao, Vec u, PetscReal *func, Vec g, v
   PetscCall(MatMult(user->mass, user->adjoint, user->tmp1));
   PetscCall(VecAXPY(g, 1.0, user->tmp1)); /* adjoint contribution to the gradient */
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

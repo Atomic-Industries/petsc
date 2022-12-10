@@ -78,7 +78,7 @@ static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
     }
   }
   PetscCheck(options->exactSol, comm, PETSC_ERR_ARG_WRONG, "Invalid test function %s", name);
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* The exact solution is the negative of the f0 contribution */
@@ -116,7 +116,7 @@ static PetscErrorCode SetupProblem(DM dm, AppCtx *user)
   PetscCall(PetscWeakFormSetIndexResidual(wf, NULL, 0, 0, 0, 1, user->exactSol, 0, NULL));
   PetscCall(PetscWeakFormSetIndexJacobian(wf, NULL, 0, 0, 0, 0, 0, g0, 0, NULL, 0, NULL, 0, NULL));
   PetscCall(PetscDSSetExactSolution(ds, 0, exactSolution, user));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupDiscretization(DM dm, const char name[], AppCtx *user)
@@ -138,7 +138,7 @@ static PetscErrorCode SetupDiscretization(DM dm, const char name[], AppCtx *user
     PetscCall(DMGetCoarseDM(cdm, &cdm));
   }
   PetscCall(PetscFEDestroy(&fe));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* This test tells us whether the given function is contained in the approximation space */
@@ -162,7 +162,7 @@ static PetscErrorCode CheckInterpolation(DM dm, AppCtx *user)
   PetscCall(DMRestoreGlobalVector(dm, &u));
   if (error > tol) PetscCall(PetscPrintf(comm, "Interpolation tests FAIL at tolerance %g error %g\n", (double)tol, (double)error));
   else PetscCall(PetscPrintf(comm, "Interpolation tests pass at tolerance %g\n", (double)tol));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* This test tells us whether the element is unisolvent (the mass matrix has full rank), and what rate of convergence we achieve */
@@ -195,7 +195,7 @@ static PetscErrorCode CheckL2Projection(DM dm, AppCtx *user)
   PetscCall(DMRestoreGlobalVector(dm, &u));
   if (error > tol) PetscCall(PetscPrintf(comm, "L2 projection tests FAIL at tolerance %g error %g\n", (double)tol, (double)error));
   else PetscCall(PetscPrintf(comm, "L2 projection tests pass at tolerance %g\n", (double)tol));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Distorts the mesh by shearing in the x-direction and flattening, factors provided in the options. */
@@ -215,7 +215,7 @@ static PetscErrorCode DistortMesh(DM dm, AppCtx *user)
     ca[i * dE + 1] *= user->flatten;
   }
   PetscCall(VecRestoreArray(coordinates, &ca));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

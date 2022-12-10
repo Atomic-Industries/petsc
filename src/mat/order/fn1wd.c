@@ -66,7 +66,7 @@ PetscErrorCode SPARSEPACKfn1wd(PetscInt *root, const PetscInt *inxadj, const Pet
     sep[i]     = node;
     mask[node] = 0;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 /*       FIND THE PARALLEL DISSECTORS.*/
 L300:
   *nsep = 0;
@@ -74,7 +74,7 @@ L300:
 L400:
   ++i;
   lvl = (PetscInt)((PetscReal)i * deltp1 + .5f);
-  if (lvl >= *nlvl) PetscFunctionReturn(0);
+  if (lvl >= *nlvl) PetscFunctionReturn(PETSC_SUCCESS);
   lvlbeg = xls[lvl];
   lp1beg = xls[lvl + 1];
   lvlend = lp1beg - 1;

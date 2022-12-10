@@ -293,7 +293,7 @@ static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
   options->solType = (SolType)sol;
   PetscCall(PetscOptionsBool("-show_error", "Output the error for verification", "ex62.c", options->showError, &options->showError, NULL));
   PetscOptionsEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupParameters(AppCtx *user)
@@ -309,7 +309,7 @@ static PetscErrorCode SetupParameters(AppCtx *user)
   PetscCall(PetscBagRegisterReal(bag, &p->nu, 1.0, "nu", "Kinematic viscosity"));
   PetscCall(PetscBagRegisterReal(bag, &p->alpha, 1.0, "alpha", "Thermal diffusivity"));
   PetscCall(PetscBagRegisterReal(bag, &p->theta, 0.0, "theta", "Angle of pipe wall to x-axis"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
@@ -344,7 +344,7 @@ static PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
     PetscCall(DMSetCoordinates(*dm, coordinates));
   }
   PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupProblem(DM dm, AppCtx *user)
@@ -421,7 +421,7 @@ static PetscErrorCode SetupProblem(DM dm, AppCtx *user)
   PetscCall(PetscDSSetExactSolution(prob, 0, exactFuncs[0], ctx));
   PetscCall(PetscDSSetExactSolution(prob, 1, exactFuncs[1], ctx));
   PetscCall(PetscDSSetExactSolution(prob, 2, exactFuncs[2], ctx));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupDiscretization(DM dm, AppCtx *user)
@@ -464,7 +464,7 @@ static PetscErrorCode SetupDiscretization(DM dm, AppCtx *user)
   PetscCall(PetscFEDestroy(&fe[0]));
   PetscCall(PetscFEDestroy(&fe[1]));
   PetscCall(PetscFEDestroy(&fe[2]));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreatePressureNullSpace(DM dm, PetscInt ofield, PetscInt nfield, MatNullSpace *nullSpace)
@@ -482,7 +482,7 @@ static PetscErrorCode CreatePressureNullSpace(DM dm, PetscInt ofield, PetscInt n
   PetscCall(VecViewFromOptions(vec, NULL, "-pressure_nullspace_view"));
   PetscCall(MatNullSpaceCreate(PetscObjectComm((PetscObject)dm), PETSC_FALSE, 1, &vec, nullSpace));
   PetscCall(VecDestroy(&vec));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

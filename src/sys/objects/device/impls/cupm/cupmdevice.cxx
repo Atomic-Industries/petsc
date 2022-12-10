@@ -50,7 +50,7 @@ template <DeviceType T>
 PetscErrorCode Device<T>::DeviceInternal::initialize() noexcept
 {
   PetscFunctionBegin;
-  if (initialized()) PetscFunctionReturn(0);
+  if (initialized()) PetscFunctionReturn(PETSC_SUCCESS);
   devInitialized_ = true;
   // need to do this BEFORE device has been set, although if the user
   // has already done this then we just ignore it
@@ -85,7 +85,7 @@ PetscErrorCode Device<T>::DeviceInternal::initialize() noexcept
       PETSCABORT(PETSC_COMM_SELF, PETSC_ERR_LIB);
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <DeviceType T>
@@ -100,7 +100,7 @@ PetscErrorCode Device<T>::DeviceInternal::configure() noexcept
   // need to update the device properties
   PetscCallCUPM(cupmGetDeviceProperties(&dprop_, id_));
   PetscCall(PetscInfo(nullptr, "Configured device %d\n", id_));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <DeviceType T>
@@ -111,7 +111,7 @@ PetscErrorCode Device<T>::DeviceInternal::view(PetscViewer viewer) const noexcep
   PetscFunctionBegin;
   PetscAssert(initialized(), PETSC_COMM_SELF, PETSC_ERR_COR, "Device %d being viewed before it was initialized or configured", id());
   // we don't print device-specific info in CI-mode
-  if (PetscUnlikely(PetscCIEnabled)) PetscFunctionReturn(0);
+  if (PetscUnlikely(PetscCIEnabled)) PetscFunctionReturn(PETSC_SUCCESS);
   PetscCall(PetscObjectTypeCompare(PetscObjectCast(viewer), PETSCVIEWERASCII, &iascii));
   if (iascii) {
     MPI_Comm    comm;
@@ -142,7 +142,7 @@ PetscErrorCode Device<T>::DeviceInternal::view(PetscViewer viewer) const noexcep
     PetscCall(PetscViewerRestoreSubViewer(viewer, PETSC_COMM_SELF, &sviewer));
     PetscCall(PetscViewerFlush(viewer));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <DeviceType T>
@@ -156,7 +156,7 @@ PetscErrorCode Device<T>::DeviceInternal::getattribute(PetscDeviceAttribute attr
   case PETSC_DEVICE_ATTR_MAX:
     break;
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static std::jmp_buf cupmMPIAwareJumpBuffer;
@@ -190,18 +190,18 @@ PETSC_CXX_COMPAT_DEFN(PetscErrorCode Device<T>::DeviceInternal::CUPMAwareMPI_(bo
   cupmMPIAwareJumpBufferSet = false;
   PetscCall(PetscPopSignalHandler());
   PetscCallCUPM(cupmFree(dbuf));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <DeviceType T>
 PetscErrorCode Device<T>::finalize_() noexcept
 {
   PetscFunctionBegin;
-  if (PetscUnlikely(!initialized_)) PetscFunctionReturn(0);
+  if (PetscUnlikely(!initialized_)) PetscFunctionReturn(PETSC_SUCCESS);
   for (auto &&device : devices_) device.reset();
   defaultDevice_ = PETSC_CUPM_DEVICE_NONE; // disabled by default
   initialized_   = false;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <DeviceType T>
@@ -226,7 +226,7 @@ PetscErrorCode Device<T>::initialize(MPI_Comm comm, PetscInt *defaultDeviceId, P
   int  ndev     = 0;
 
   PetscFunctionBegin;
-  if (initialized_) PetscFunctionReturn(0);
+  if (initialized_) PetscFunctionReturn(PETSC_SUCCESS);
   initialized_ = true;
   PetscCall(PetscRegisterFinalize(finalize_));
   PetscCall(base_type::PetscOptionDeviceAll(comm, initType, initId, initView));
@@ -269,7 +269,7 @@ PetscErrorCode Device<T>::initialize(MPI_Comm comm, PetscInt *defaultDeviceId, P
   *defaultDeviceId = initId.first;
   *defaultView     = initView.first;
   *defaultInitType = initType.first;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <DeviceType T>
@@ -287,7 +287,7 @@ PetscErrorCode Device<T>::init_device_id_(PetscInt *inid) const noexcept
   PetscAssert(id == devices_[id]->id(), PETSC_COMM_SELF, PETSC_ERR_PLIB, "Entry %" PetscInt_FMT " contains device with mismatching id %d", id, devices_[id]->id());
   PetscCall(devices_[id]->initialize());
   *inid = id;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <DeviceType T>
@@ -295,7 +295,7 @@ PetscErrorCode Device<T>::configure_device_(PetscDevice device) noexcept
 {
   PetscFunctionBegin;
   PetscCall(devices_[device->deviceId]->configure());
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <DeviceType T>
@@ -306,7 +306,7 @@ PetscErrorCode Device<T>::view_device_(PetscDevice device, PetscViewer viewer) n
   // it is being reconfigured
   PetscCall(devices_[device->deviceId]->configure());
   PetscCall(devices_[device->deviceId]->view(viewer));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 template <DeviceType T>
@@ -314,7 +314,7 @@ PetscErrorCode Device<T>::get_attribute_(PetscInt id, PetscDeviceAttribute attr,
 {
   PetscFunctionBegin;
   PetscCall(devices_[id]->getattribute(attr, value));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 // explicitly instantiate the classes
