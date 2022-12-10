@@ -467,6 +467,7 @@ void PetscDefaultFPTrap(int sig)
   int           code;
   PetscBool     matched = PETSC_FALSE;
   #endif
+  PetscErrorCode ierr;
 
   PetscFunctionBegin;
   /* Note: While it is possible for the exception state to be preserved by the
@@ -479,33 +480,34 @@ void PetscDefaultFPTrap(int sig)
   for (node = &error_codes[0]; node->code; node++) {
     if (code & node->code) {
       matched = PETSC_TRUE;
-      (*PetscErrorPrintf)("*** floating point error \"%s\" occurred ***\n", node->name);
+      ierr = (*PetscErrorPrintf)("*** floating point error \"%s\" occurred ***\n", node->name);
       code &= ~node->code; /* Unset this flag since it has been processed */
     }
   }
   if (!matched || code) { /* If any remaining flags are set, or we didn't process any flags */
-    (*PetscErrorPrintf)("*** unknown floating point error occurred ***\n");
-    (*PetscErrorPrintf)("The specific exception can be determined by running in a debugger.  When the\n");
-    (*PetscErrorPrintf)("debugger traps the signal, the exception can be found with fetestexcept(0x%x)\n", FE_ALL_EXCEPT);
-    (*PetscErrorPrintf)("where the result is a bitwise OR of the following flags:\n");
-    (*PetscErrorPrintf)("FE_INVALID=0x%x FE_DIVBYZERO=0x%x FE_OVERFLOW=0x%x FE_UNDERFLOW=0x%x FE_INEXACT=0x%x\n", FE_INVALID, FE_DIVBYZERO, FE_OVERFLOW, FE_UNDERFLOW, FE_INEXACT);
+    ierr = (*PetscErrorPrintf)("*** unknown floating point error occurred ***\n");
+    ierr = (*PetscErrorPrintf)("The specific exception can be determined by running in a debugger.  When the\n");
+    ierr = (*PetscErrorPrintf)("debugger traps the signal, the exception can be found with fetestexcept(0x%x)\n", FE_ALL_EXCEPT);
+    ierr = (*PetscErrorPrintf)("where the result is a bitwise OR of the following flags:\n");
+    ierr = (*PetscErrorPrintf)("FE_INVALID=0x%x FE_DIVBYZERO=0x%x FE_OVERFLOW=0x%x FE_UNDERFLOW=0x%x FE_INEXACT=0x%x\n", FE_INVALID, FE_DIVBYZERO, FE_OVERFLOW, FE_UNDERFLOW, FE_INEXACT);
   }
   #else
-  (*PetscErrorPrintf)("*** unknown floating point error occurred ***\n");
+  ierr = (*PetscErrorPrintf)("*** unknown floating point error occurred ***\n");
   #endif
 
-  (*PetscErrorPrintf)("Try option -start_in_debugger\n");
+  ierr = (*PetscErrorPrintf)("Try option -start_in_debugger\n");
   #if PetscDefined(USE_DEBUG)
     #if !PetscDefined(HAVE_THREADSAFETY)
-  (*PetscErrorPrintf)("likely location of problem given in stack below\n");
-  (*PetscErrorPrintf)("---------------------  Stack Frames ------------------------------------\n");
-  PetscStackView(PETSC_STDOUT);
+  ierr = (*PetscErrorPrintf)("likely location of problem given in stack below\n");
+  ierr = (*PetscErrorPrintf)("---------------------  Stack Frames ------------------------------------\n");
+  ierr = PetscStackView(PETSC_STDOUT);
     #endif
   #else
-  (*PetscErrorPrintf)("configure using --with-debugging=yes, recompile, link, and run \n");
-  (*PetscErrorPrintf)("with -start_in_debugger to get more information on the crash.\n");
+  ierr = (*PetscErrorPrintf)("configure using --with-debugging=yes, recompile, link, and run \n");
+  ierr = (*PetscErrorPrintf)("with -start_in_debugger to get more information on the crash.\n");
   #endif
-  PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_INITIAL, "trapped floating point error");
+  ierr = PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_INITIAL, "trapped floating point error");
+  (void)ierr;
   PETSCABORT(MPI_COMM_WORLD, PETSC_ERR_FP);
 }
 

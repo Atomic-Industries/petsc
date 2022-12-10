@@ -252,12 +252,12 @@ static const char *PetscErrorStrings[] = {
 .seealso: `PetscPushErrorHandler()`, `PetscAttachDebuggerErrorHandler()`, `PetscError()`, `SETERRQ()`, `PetscCall()`
           `PetscAbortErrorHandler()`, `PetscTraceBackErrorHandler()`
  @*/
-PetscErrorCode PetscErrorMessage(int errnum, const char *text[], char **specific)
+PetscErrorCode PetscErrorMessage(PetscErrorCode errnum, const char *text[], char **specific)
 {
-  size_t len;
-
   PetscFunctionBegin;
   if (text && errnum > PETSC_ERR_MIN_VALUE && errnum < PETSC_ERR_MAX_VALUE) {
+    size_t len;
+
     *text = PetscErrorStrings[errnum - PETSC_ERR_MIN_VALUE - 1];
     PetscCall(PetscStrlen(*text, &len));
     if (!len) *text = NULL;
@@ -363,13 +363,13 @@ PetscErrorCode PetscError(MPI_Comm comm, int line, const char *func, const char 
   /* Compose the message evaluating the print format */
   if (mess) {
     va_start(Argp, mess);
-    PetscVSNPrintf(buf, 2048, mess, &fullLength, Argp);
+    ierr = PetscVSNPrintf(buf, 2048, mess, &fullLength, Argp);
     va_end(Argp);
     lbuf = buf;
-    if (p == PETSC_ERROR_INITIAL) PetscStrncpy(PetscErrorBaseMessage, lbuf, 1023);
+    if (p == PETSC_ERROR_INITIAL) ierr = PetscStrncpy(PetscErrorBaseMessage, lbuf, 1023);
   }
 
-  if (p == PETSC_ERROR_INITIAL && n != PETSC_ERR_MEMC) PetscMallocValidate(__LINE__, PETSC_FUNCTION_NAME, __FILE__);
+  if (p == PETSC_ERROR_INITIAL && n != PETSC_ERR_MEMC) ierr = PetscMallocValidate(__LINE__, PETSC_FUNCTION_NAME, __FILE__);
 
   if (!eh) ierr = PetscTraceBackErrorHandler(comm, line, func, file, n, p, lbuf, NULL);
   else ierr = (*eh->handler)(comm, line, func, file, n, p, lbuf, eh->ctx);
@@ -382,9 +382,10 @@ PetscErrorCode PetscError(MPI_Comm comm, int line, const char *func, const char 
     Does not call PETSCABORT() since that would provide the wrong source file and line number information
   */
   if (func) {
-    PetscStrncmp(func, "main", 4, &ismain);
+    PetscErrorCode cmp_ierr = PetscStrncmp(func, "main", 4, &ismain);
     if (ismain) {
-      if (petscwaitonerrorflg) PetscSleep(1000);
+      if (petscwaitonerrorflg) cmp_ierr = PetscSleep(1000);
+      (void)cmp_ierr;
       PETSCABORT(comm, ierr);
     }
   }

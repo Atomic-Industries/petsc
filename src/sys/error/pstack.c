@@ -116,7 +116,7 @@ PetscErrorCode PetscStackView(FILE *file)
     fprintf(file, "PetscStack is definitely corrupted with stack size %d\n", petscstack.currentsize);
   } else if (petscstack.currentsize == 0) {
     if (file == PETSC_STDOUT) {
-      (*PetscErrorPrintf)("No error traceback is available, the problem could be in the main program. \n");
+      PetscCall((*PetscErrorPrintf)("No error traceback is available, the problem could be in the main program. \n"));
     } else {
       fprintf(file, "No error traceback is available, the problem could be in the main program. \n");
     }
@@ -124,13 +124,13 @@ PetscErrorCode PetscStackView(FILE *file)
     char *ptr;
 
     if (file == PETSC_STDOUT) {
-      (*PetscErrorPrintf)("The line numbers in the error traceback are not always exact.\n");
+      PetscCall((*PetscErrorPrintf)("The line numbers in the error traceback are not always exact.\n"));
       for (int i = petscstack.currentsize - 1, j = 1; i >= 0; --i, ++j) {
-        if (petscstack.file[i]) (*PetscErrorPrintf)("#%d %s() at %s:%d\n", j, petscstack.function[i], PetscCIFilename(petscstack.file[i]), PetscCILinenumber(petscstack.line[i]));
+        if (petscstack.file[i]) PetscCall((*PetscErrorPrintf)("#%d %s() at %s:%d\n", j, petscstack.function[i], PetscCIFilename(petscstack.file[i]), PetscCILinenumber(petscstack.line[i])));
         else {
-          PetscStrstr(petscstack.function[i], " ", &ptr);
-          if (!ptr) (*PetscErrorPrintf)("#%d %s()\n", j, petscstack.function[i]);
-          else (*PetscErrorPrintf)("#%d %s\n", j, petscstack.function[i]);
+          PetscCall(PetscStrstr(petscstack.function[i], " ", &ptr));
+          if (!ptr) PetscCall((*PetscErrorPrintf)("#%d %s()\n", j, petscstack.function[i]));
+          else PetscCall((*PetscErrorPrintf)("#%d %s\n", j, petscstack.function[i]));
         }
       }
     } else {
@@ -138,7 +138,7 @@ PetscErrorCode PetscStackView(FILE *file)
       for (int i = petscstack.currentsize - 1, j = 1; i >= 0; --i, ++j) {
         if (petscstack.file[i]) fprintf(file, "[%d] #%d %s() at %s:%d\n", PetscGlobalRank, j, petscstack.function[i], PetscCIFilename(petscstack.file[i]), PetscCILinenumber(petscstack.line[i]));
         else {
-          PetscStrstr(petscstack.function[i], " ", &ptr);
+          PetscCall(PetscStrstr(petscstack.function[i], " ", &ptr));
           if (!ptr) fprintf(file, "[%d] #%d %s()\n", PetscGlobalRank, j, petscstack.function[i]);
           else fprintf(file, "[%d] #%d %s\n", PetscGlobalRank, j, petscstack.function[i]);
         }
