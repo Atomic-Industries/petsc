@@ -37,12 +37,12 @@ PetscViewer PETSC_VIEWER_EXODUSII_(MPI_Comm comm)
   PetscFunctionBegin;
   ierr = PetscViewerExodusIIOpen(comm, "mesh.exo", FILE_MODE_WRITE, &viewer);
   if (ierr) {
-    PetscError(PETSC_COMM_SELF, __LINE__, "PETSC_VIEWER_EXODUSII_", __FILE__, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, " ");
+    ierr = PetscError(PETSC_COMM_SELF, __LINE__, "PETSC_VIEWER_EXODUSII_", __FILE__, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, " ");
     PetscFunctionReturn(NULL);
   }
   ierr = PetscObjectRegisterDestroy((PetscObject)viewer);
   if (ierr) {
-    PetscError(PETSC_COMM_SELF, __LINE__, "PETSC_VIEWER_EXODUSII_", __FILE__, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, " ");
+    ierr = PetscError(PETSC_COMM_SELF, __LINE__, "PETSC_VIEWER_EXODUSII_", __FILE__, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, " ");
     PetscFunctionReturn(NULL);
   }
   PetscFunctionReturn(viewer);
@@ -670,7 +670,7 @@ PetscErrorCode DMView_PlexExodusII(DM dm, PetscViewer viewer)
     }
 
     /* --- Node Sets/Vertex Sets --- */
-    DMHasLabel(dm, "Vertex Sets", &hasLabel);
+    PetscCall(DMHasLabel(dm, "Vertex Sets", &hasLabel));
     if (hasLabel) {
       PetscInt        i, vs, vsSize;
       const PetscInt *vsIdx, *vertices;

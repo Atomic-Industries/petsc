@@ -597,8 +597,7 @@ static PetscErrorCode KSPView_AGMRES(KSP ksp, PetscViewer viewer)
     PetscCall(PetscViewerASCIIPrintf(viewer, " restart=%" PetscInt_FMT " using %s\n", agmres->max_k, cstr));
     PetscCall(PetscViewerASCIIPrintf(viewer, " %s\n", Nstr));
     PetscCall(PetscViewerASCIIPrintf(viewer, " Number of matvecs : %" PetscInt_FMT "\n", agmres->matvecs));
-    if (agmres->force) PetscCall(PetscViewerASCIIPrintf(viewer, " Adaptive strategy is used: FALSE\n"));
-    else PetscViewerASCIIPrintf(viewer, " Adaptive strategy is used: TRUE\n");
+    PetscCall(PetscViewerASCIIPrintf(viewer, " Adaptive strategy is used: %s\n", PetscBools[agmres->force]));
     if (agmres->DeflPrecond) {
       PetscCall(PetscViewerASCIIPrintf(viewer, " STRATEGY OF DEFLATION: PRECONDITIONER \n"));
       PetscCall(PetscViewerASCIIPrintf(viewer, "  Frequency of extracted eigenvalues = %" PetscInt_FMT "\n", agmres->neig));

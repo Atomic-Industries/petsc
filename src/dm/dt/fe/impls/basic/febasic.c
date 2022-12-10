@@ -642,9 +642,9 @@ static PetscErrorCode PetscFEIntegrateHybridResidual_Basic(PetscDS ds, PetscForm
         for (d = 0; d < dE; ++d) f1[(q * NcS + c) * dE + d] *= w;
     }
     if (isCohesiveField) {
-      PetscFEUpdateElementVec_Internal(fe, Tf[field], 0, basisReal, basisDerReal, e, fgeom, f0, f1, &elemVec[cOffset + fOffset]);
+      PetscCall(PetscFEUpdateElementVec_Internal(fe, Tf[field], 0, basisReal, basisDerReal, e, fgeom, f0, f1, &elemVec[cOffset + fOffset]));
     } else {
-      PetscFEUpdateElementVec_Hybrid_Internal(fe, Tf[field], 0, s, basisReal, basisDerReal, fgeom, f0, f1, &elemVec[cOffset + fOffset]);
+      PetscCall(PetscFEUpdateElementVec_Hybrid_Internal(fe, Tf[field], 0, s, basisReal, basisDerReal, fgeom, f0, f1, &elemVec[cOffset + fOffset]));
     }
     cOffset += totDim;
     cOffsetAux += totDimAux;

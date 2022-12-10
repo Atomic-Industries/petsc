@@ -52,7 +52,7 @@ PetscErrorCode SPARSEPACKfndsep(PetscInt *root, const PetscInt *inxadj, const Pe
   --adjncy;
   --xadj;
 
-  SPARSEPACKfnroot(root, &xadj[1], &adjncy[1], &mask[1], &nlvl, &xls[1], &ls[1]);
+  PetscCall(SPARSEPACKfnroot(root, &xadj[1], &adjncy[1], &mask[1], &nlvl, &xls[1], &ls[1]));
   /*       IF THE NUMBER OF LEVELS IS LESS THAN 3, RETURN */
   /*       THE WHOLE COMPONENT AS THE SEPARATOR.*/
   if (nlvl >= 3) goto L200;

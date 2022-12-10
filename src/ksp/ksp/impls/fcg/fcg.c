@@ -265,7 +265,7 @@ static PetscErrorCode KSPDestroy_FCG(KSP ksp)
   PetscFunctionBegin;
 
   /* Destroy "standard" work vecs */
-  VecDestroyVecs(ksp->nwork, &ksp->work);
+  PetscCall(VecDestroyVecs(ksp->nwork, &ksp->work));
 
   /* Destroy P and C vectors and the arrays that manage pointers to them */
   if (fcg->nvecs) {

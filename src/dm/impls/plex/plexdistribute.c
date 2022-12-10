@@ -356,9 +356,9 @@ PetscErrorCode DMPlexCreateTwoSidedProcessSF(DM dm, PetscSF sfPoint, PetscSectio
   }
   PetscCall(ISRestoreIndices(leafRanks, &nranks));
   /* Compute leaf-to-root process connectivity */
-  for (l = 0; l < numLeaves; ++l) PetscBTSet(neighbors, remotePoints[l].rank);
+  for (l = 0; l < numLeaves; ++l) PetscCall(PetscBTSet(neighbors, remotePoints[l].rank));
   /* Calculate edges */
-  PetscBTClear(neighbors, rank);
+  PetscCall(PetscBTClear(neighbors, rank));
   for (proc = 0, numNeighbors = 0; proc < size; ++proc) {
     if (PetscBTLookup(neighbors, proc)) ++numNeighbors;
   }
@@ -714,10 +714,10 @@ PetscErrorCode DMPlexCreateOverlapLabelFromLabels(DM dm, PetscInt numLabels, con
           }
         }
         /* Some leaves share a root with other leaves on different processes */
-        HandlePoint_Private(dm, p, leafSection, nrank, numExLabels, exLabel, exValue, ovAdjByRank);
+        PetscCall(HandlePoint_Private(dm, p, leafSection, nrank, numExLabels, exLabel, exValue, ovAdjByRank));
       }
       /* Roots are shared with leaves */
-      HandlePoint_Private(dm, p, rootSection, rrank, numExLabels, exLabel, exValue, ovAdjByRank);
+      PetscCall(HandlePoint_Private(dm, p, rootSection, rrank, numExLabels, exLabel, exValue, ovAdjByRank));
     }
     PetscCall(ISRestoreIndices(valIS, &points));
     PetscCall(ISDestroy(&valIS));

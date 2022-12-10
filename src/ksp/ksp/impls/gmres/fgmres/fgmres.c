@@ -145,7 +145,7 @@ PetscErrorCode KSPFGMRESCycle(PetscInt *itcount, KSP ksp)
     /* CHANGE THE PRECONDITIONER? */
     /* ModifyPC is the callback function that can be used to
        change the PC or its attributes before its applied */
-    (*fgmres->modifypc)(ksp, ksp->its, loc_it, res_norm, fgmres->modifyctx);
+    PetscCall((*fgmres->modifypc)(ksp, ksp->its, loc_it, res_norm, fgmres->modifyctx));
 
     /* apply PRECONDITIONER to direction vector and store with
        preconditioned vectors in prevec */

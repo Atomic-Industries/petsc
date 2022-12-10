@@ -6590,7 +6590,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
           const PetscInt     point = points[2 * p];
           const PetscInt    *perm  = perms ? perms[p] : NULL;
           const PetscScalar *flip  = flips ? flips[p] : NULL;
-          updatePointFields_private(section, point, perm, flip, f, insert, PETSC_FALSE, clperm, values, &offset, array);
+          PetscCall(updatePointFields_private(section, point, perm, flip, f, insert, PETSC_FALSE, clperm, values, &offset, array));
         }
         break;
       case INSERT_ALL_VALUES:
@@ -6598,7 +6598,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
           const PetscInt     point = points[2 * p];
           const PetscInt    *perm  = perms ? perms[p] : NULL;
           const PetscScalar *flip  = flips ? flips[p] : NULL;
-          updatePointFields_private(section, point, perm, flip, f, insert, PETSC_TRUE, clperm, values, &offset, array);
+          PetscCall(updatePointFields_private(section, point, perm, flip, f, insert, PETSC_TRUE, clperm, values, &offset, array));
         }
         break;
       case INSERT_BC_VALUES:
@@ -6606,7 +6606,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
           const PetscInt     point = points[2 * p];
           const PetscInt    *perm  = perms ? perms[p] : NULL;
           const PetscScalar *flip  = flips ? flips[p] : NULL;
-          updatePointFieldsBC_private(section, point, perm, flip, f, -1, NULL, insert, clperm, values, &offset, array);
+          PetscCall(updatePointFieldsBC_private(section, point, perm, flip, f, -1, NULL, insert, clperm, values, &offset, array));
         }
         break;
       case ADD_VALUES:
@@ -6614,7 +6614,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
           const PetscInt     point = points[2 * p];
           const PetscInt    *perm  = perms ? perms[p] : NULL;
           const PetscScalar *flip  = flips ? flips[p] : NULL;
-          updatePointFields_private(section, point, perm, flip, f, add, PETSC_FALSE, clperm, values, &offset, array);
+          PetscCall(updatePointFields_private(section, point, perm, flip, f, add, PETSC_FALSE, clperm, values, &offset, array));
         }
         break;
       case ADD_ALL_VALUES:
@@ -6622,7 +6622,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
           const PetscInt     point = points[2 * p];
           const PetscInt    *perm  = perms ? perms[p] : NULL;
           const PetscScalar *flip  = flips ? flips[p] : NULL;
-          updatePointFields_private(section, point, perm, flip, f, add, PETSC_TRUE, clperm, values, &offset, array);
+          PetscCall(updatePointFields_private(section, point, perm, flip, f, add, PETSC_TRUE, clperm, values, &offset, array));
         }
         break;
       case ADD_BC_VALUES:
@@ -6630,7 +6630,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
           const PetscInt     point = points[2 * p];
           const PetscInt    *perm  = perms ? perms[p] : NULL;
           const PetscScalar *flip  = flips ? flips[p] : NULL;
-          updatePointFieldsBC_private(section, point, perm, flip, f, -1, NULL, add, clperm, values, &offset, array);
+          PetscCall(updatePointFieldsBC_private(section, point, perm, flip, f, -1, NULL, add, clperm, values, &offset, array));
         }
         break;
       default:
@@ -6651,7 +6651,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
         const PetscInt    *perm  = perms ? perms[p] : NULL;
         const PetscScalar *flip  = flips ? flips[p] : NULL;
         PetscCall(PetscSectionGetDof(section, point, &dof));
-        updatePoint_private(section, point, dof, insert, PETSC_FALSE, perm, flip, clperm, values, off, array);
+        PetscCall(updatePoint_private(section, point, dof, insert, PETSC_FALSE, perm, flip, clperm, values, off, array));
       }
       break;
     case INSERT_ALL_VALUES:
@@ -6660,7 +6660,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
         const PetscInt    *perm  = perms ? perms[p] : NULL;
         const PetscScalar *flip  = flips ? flips[p] : NULL;
         PetscCall(PetscSectionGetDof(section, point, &dof));
-        updatePoint_private(section, point, dof, insert, PETSC_TRUE, perm, flip, clperm, values, off, array);
+        PetscCall(updatePoint_private(section, point, dof, insert, PETSC_TRUE, perm, flip, clperm, values, off, array));
       }
       break;
     case INSERT_BC_VALUES:
@@ -6669,7 +6669,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
         const PetscInt    *perm  = perms ? perms[p] : NULL;
         const PetscScalar *flip  = flips ? flips[p] : NULL;
         PetscCall(PetscSectionGetDof(section, point, &dof));
-        updatePointBC_private(section, point, dof, insert, perm, flip, clperm, values, off, array);
+        PetscCall(updatePointBC_private(section, point, dof, insert, perm, flip, clperm, values, off, array));
       }
       break;
     case ADD_VALUES:
@@ -6678,7 +6678,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
         const PetscInt    *perm  = perms ? perms[p] : NULL;
         const PetscScalar *flip  = flips ? flips[p] : NULL;
         PetscCall(PetscSectionGetDof(section, point, &dof));
-        updatePoint_private(section, point, dof, add, PETSC_FALSE, perm, flip, clperm, values, off, array);
+        PetscCall(updatePoint_private(section, point, dof, add, PETSC_FALSE, perm, flip, clperm, values, off, array));
       }
       break;
     case ADD_ALL_VALUES:
@@ -6687,7 +6687,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
         const PetscInt    *perm  = perms ? perms[p] : NULL;
         const PetscScalar *flip  = flips ? flips[p] : NULL;
         PetscCall(PetscSectionGetDof(section, point, &dof));
-        updatePoint_private(section, point, dof, add, PETSC_TRUE, perm, flip, clperm, values, off, array);
+        PetscCall(updatePoint_private(section, point, dof, add, PETSC_TRUE, perm, flip, clperm, values, off, array));
       }
       break;
     case ADD_BC_VALUES:
@@ -6696,7 +6696,7 @@ PetscErrorCode DMPlexVecSetClosure(DM dm, PetscSection section, Vec v, PetscInt 
         const PetscInt    *perm  = perms ? perms[p] : NULL;
         const PetscScalar *flip  = flips ? flips[p] : NULL;
         PetscCall(PetscSectionGetDof(section, point, &dof));
-        updatePointBC_private(section, point, dof, add, perm, flip, clperm, values, off, array);
+        PetscCall(updatePointBC_private(section, point, dof, add, perm, flip, clperm, values, off, array));
       }
       break;
     default:
@@ -8819,7 +8819,7 @@ PetscErrorCode DMPlexCheckFaces(DM dm, PetscInt cellHeight)
   PetscCall(DMPlexIsInterpolatedCollective(dm, &interpEnum));
   if (interpEnum == DMPLEX_INTERPOLATED_NONE) PetscFunctionReturn(PETSC_SUCCESS);
   if (interpEnum != DMPLEX_INTERPOLATED_FULL) {
-    PetscPrintf(PetscObjectComm((PetscObject)dm), "DMPlexCheckFaces() warning: Mesh is only partially interpolated, this is currently not supported");
+    PetscCall(PetscPrintf(PetscObjectComm((PetscObject)dm), "DMPlexCheckFaces() warning: Mesh is only partially interpolated, this is currently not supported"));
     PetscFunctionReturn(PETSC_SUCCESS);
   }
 

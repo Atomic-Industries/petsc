@@ -265,7 +265,7 @@ PetscErrorCode DMAdaptInterpolator(DM dmc, DM dmf, Mat In, KSP smoother, Mat MF,
     PetscCall(MatRestoreRow(In, r, &ncols, NULL, NULL));
   }
 #endif
-  if (Nc < maxcols) PetscPrintf(PETSC_COMM_SELF, "The number of input vectors %" PetscInt_FMT " < %" PetscInt_FMT " the maximum number of column entries\n", Nc, maxcols);
+  if (Nc < maxcols) PetscCall(PetscPrintf(PETSC_COMM_SELF, "The number of input vectors %" PetscInt_FMT " < %" PetscInt_FMT " the maximum number of column entries\n", Nc, maxcols));
   for (k = 0; k < Nc && debug; ++k) {
     char        name[PETSC_MAX_PATH_LEN];
     const char *prefix;

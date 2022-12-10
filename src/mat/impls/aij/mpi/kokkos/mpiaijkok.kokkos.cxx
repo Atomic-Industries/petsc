@@ -152,32 +152,31 @@ struct MatMatStruct {
   Mat                 C1, C2, B_local;
   KokkosCsrMatrix     C1_global, C2_global, C_global;
   KernelHandle        kh;
-  MatMatStruct()
-  {
-    C1 = C2 = B_local = NULL;
-    sf                = NULL;
-  }
+  MatMatStruct() noexcept : sf(nullptr), C1(nullptr), C2(nullptr), B_local(nullptr) { }
 
   ~MatMatStruct()
   {
-    MatDestroy(&C1);
-    MatDestroy(&C2);
-    MatDestroy(&B_local);
-    PetscSFDestroy(&sf);
+    PetscFunctionBegin;
+    PetscCallAbort(PETSC_COMM_SELF, MatDestroy(&C1));
+    PetscCallAbort(PETSC_COMM_SELF, MatDestroy(&C2));
+    PetscCallAbort(PETSC_COMM_SELF, MatDestroy(&B_local));
+    PetscCallAbort(PETSC_COMM_SELF, PetscSFDestroy(&sf));
     kh.destroy_spadd_handle();
+    PetscFunctionReturnVoid();
   }
 };
 
 struct MatMatStruct_AB : public MatMatStruct {
-  MatColIdxKokkosView rows;
-  MatRowMapKokkosView rowoffset;
-  Mat                 B_other, C_petsc; /* SEQAIJKOKKOS matrices. TODO: have a better var name than C_petsc */
+  MatColIdxKokkosView rows{};
+  MatRowMapKokkosView rowoffset{};
+  Mat                 B_other{}, C_petsc{}; /* SEQAIJKOKKOS matrices. TODO: have a better var name than C_petsc */
 
-  MatMatStruct_AB() : B_other(NULL), C_petsc(NULL) { }
-  ~MatMatStruct_AB()
+  ~MatMatStruct_AB() noexcept
   {
-    MatDestroy(&B_other);
-    MatDestroy(&C_petsc);
+    PetscFunctionBegin;
+    PetscCallAbort(PETSC_COMM_SELF, MatDestroy(&B_other));
+    PetscCallAbort(PETSC_COMM_SELF, MatDestroy(&C_petsc));
+    PetscFunctionReturnVoid();
   }
 };
 
@@ -186,11 +185,10 @@ struct MatMatStruct_AtB : public MatMatStruct {
 };
 
 struct MatProductData_MPIAIJKokkos {
-  MatMatStruct_AB  *mmAB;
-  MatMatStruct_AtB *mmAtB;
-  PetscBool         reusesym;
+  MatMatStruct_AB  *mmAB     = nullptr;
+  MatMatStruct_AtB *mmAtB    = nullptr;
+  PetscBool         reusesym = PETSC_FALSE;
 
-  MatProductData_MPIAIJKokkos() : mmAB(NULL), mmAtB(NULL), reusesym(PETSC_FALSE) { }
   ~MatProductData_MPIAIJKokkos()
   {
     delete mmAB;

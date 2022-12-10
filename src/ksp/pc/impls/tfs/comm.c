@@ -34,12 +34,12 @@ PetscErrorCode PCTFS_comm_init(void)
   PetscFunctionBegin;
   if (p_init++) PetscFunctionReturn(PETSC_SUCCESS);
 
-  MPI_Comm_size(MPI_COMM_WORLD, &PCTFS_num_nodes);
-  MPI_Comm_rank(MPI_COMM_WORLD, &PCTFS_my_id);
+  PetscCallMPI(MPI_Comm_size(MPI_COMM_WORLD, &PCTFS_num_nodes));
+  PetscCallMPI(MPI_Comm_rank(MPI_COMM_WORLD, &PCTFS_my_id));
 
   PetscCheck(PCTFS_num_nodes <= (INT_MAX >> 1), PETSC_COMM_SELF, PETSC_ERR_PLIB, "Can't have more then MAX_INT/2 nodes!!!");
 
-  PCTFS_ivec_zero((PetscInt *)edge_node, sizeof(PetscInt) * 32);
+  PetscCall(PCTFS_ivec_zero((PetscInt *)edge_node, sizeof(PetscInt) * 32));
 
   PCTFS_floor_num_nodes  = 1;
   PCTFS_i_log2_num_nodes = modfl_num_nodes = 0;
@@ -75,7 +75,7 @@ PetscErrorCode PCTFS_giop(PetscInt *vals, PetscInt *work, PetscInt n, PetscInt *
   PetscCheck(!(oprs[0] == NON_UNIFORM) || !(n < 2), PETSC_COMM_SELF, PETSC_ERR_PLIB, "PCTFS_giop() :: non_uniform and n=0,1?");
 
   /* check to make sure comm package has been initialized */
-  if (!p_init) PCTFS_comm_init();
+  if (!p_init) PetscCall(PCTFS_comm_init());
 
   /* if there's nothing to do return */
   if ((PCTFS_num_nodes < 2) || (!n)) PetscFunctionReturn(PETSC_SUCCESS);
@@ -96,7 +96,7 @@ PetscErrorCode PCTFS_giop(PetscInt *vals, PetscInt *work, PetscInt n, PetscInt *
       PetscCallMPI(MPI_Send(vals, n, MPIU_INT, edge_not_pow_2, MSGTAG0 + PCTFS_my_id, MPI_COMM_WORLD));
     } else {
       PetscCallMPI(MPI_Recv(work, n, MPIU_INT, MPI_ANY_SOURCE, MSGTAG0 + edge_not_pow_2, MPI_COMM_WORLD, &status));
-      (*fp)(vals, work, n, oprs);
+      PetscCall((*fp)(vals, work, n, oprs));
     }
   }
 
@@ -108,7 +108,7 @@ PetscErrorCode PCTFS_giop(PetscInt *vals, PetscInt *work, PetscInt n, PetscInt *
         PetscCallMPI(MPI_Send(vals, n, MPIU_INT, dest, MSGTAG2 + PCTFS_my_id, MPI_COMM_WORLD));
       } else {
         PetscCallMPI(MPI_Recv(work, n, MPIU_INT, MPI_ANY_SOURCE, MSGTAG2 + dest, MPI_COMM_WORLD, &status));
-        (*fp)(vals, work, n, oprs);
+        PetscCall((*fp)(vals, work, n, oprs));
       }
     }
 
@@ -152,7 +152,7 @@ PetscErrorCode PCTFS_grop(PetscScalar *vals, PetscScalar *work, PetscInt n, Pets
   PetscCheck(!(oprs[0] == NON_UNIFORM) || !(n < 2), PETSC_COMM_SELF, PETSC_ERR_PLIB, "PCTFS_grop() :: non_uniform and n=0,1?");
 
   /* check to make sure comm package has been initialized */
-  if (!p_init) PCTFS_comm_init();
+  if (!p_init) PetscCall(PCTFS_comm_init());
 
   /* if there's nothing to do return */
   if ((PCTFS_num_nodes < 2) || (!n)) PetscFunctionReturn(PETSC_SUCCESS);
@@ -163,7 +163,7 @@ PetscErrorCode PCTFS_grop(PetscScalar *vals, PetscScalar *work, PetscInt n, Pets
   /* advance to list of n operations for custom */
   if ((type = oprs[0]) == NON_UNIFORM) oprs++;
 
-  PetscCheck(fp = (vfp)PCTFS_rvec_fct_addr(type), PETSC_COMM_SELF, PETSC_ERR_PLIB, "PCTFS_grop() :: Could not retrieve function pointer!");
+  PetscCheck((fp = (vfp)PCTFS_rvec_fct_addr(type)), PETSC_COMM_SELF, PETSC_ERR_PLIB, "PCTFS_grop() :: Could not retrieve function pointer!");
 
   /* all msgs will be of the same length */
   /* if not a hypercube must colapse partial dim */
@@ -172,7 +172,7 @@ PetscErrorCode PCTFS_grop(PetscScalar *vals, PetscScalar *work, PetscInt n, Pets
       PetscCallMPI(MPI_Send(vals, n, MPIU_SCALAR, edge_not_pow_2, MSGTAG0 + PCTFS_my_id, MPI_COMM_WORLD));
     } else {
       PetscCallMPI(MPI_Recv(work, n, MPIU_SCALAR, MPI_ANY_SOURCE, MSGTAG0 + edge_not_pow_2, MPI_COMM_WORLD, &status));
-      (*fp)(vals, work, n, oprs);
+      PetscCall((*fp)(vals, work, n, oprs));
     }
   }
 
@@ -184,7 +184,7 @@ PetscErrorCode PCTFS_grop(PetscScalar *vals, PetscScalar *work, PetscInt n, Pets
         PetscCallMPI(MPI_Send(vals, n, MPIU_SCALAR, dest, MSGTAG2 + PCTFS_my_id, MPI_COMM_WORLD));
       } else {
         PetscCallMPI(MPI_Recv(work, n, MPIU_SCALAR, MPI_ANY_SOURCE, MSGTAG2 + dest, MPI_COMM_WORLD, &status));
-        (*fp)(vals, work, n, oprs);
+        PetscCall((*fp)(vals, work, n, oprs));
       }
     }
 
@@ -228,7 +228,7 @@ PetscErrorCode PCTFS_grop_hc(PetscScalar *vals, PetscScalar *work, PetscInt n, P
   PetscCheck(!(oprs[0] == NON_UNIFORM) || !(n < 2), PETSC_COMM_SELF, PETSC_ERR_PLIB, "PCTFS_grop_hc() :: non_uniform and n=0,1?");
 
   /* check to make sure comm package has been initialized */
-  if (!p_init) PCTFS_comm_init();
+  if (!p_init) PetscCall(PCTFS_comm_init());
 
   /* if there's nothing to do return */
   if ((PCTFS_num_nodes < 2) || (!n) || (dim <= 0)) PetscFunctionReturn(PETSC_SUCCESS);
@@ -253,7 +253,7 @@ PetscErrorCode PCTFS_grop_hc(PetscScalar *vals, PetscScalar *work, PetscInt n, P
       PetscCallMPI(MPI_Send(vals, n, MPIU_SCALAR, dest, MSGTAG2 + PCTFS_my_id, MPI_COMM_WORLD));
     } else {
       PetscCallMPI(MPI_Recv(work, n, MPIU_SCALAR, MPI_ANY_SOURCE, MSGTAG2 + dest, MPI_COMM_WORLD, &status));
-      (*fp)(vals, work, n, oprs);
+      PetscCall((*fp)(vals, work, n, oprs));
     }
   }
 
@@ -285,7 +285,7 @@ PetscErrorCode PCTFS_ssgl_radd(PetscScalar *vals, PetscScalar *work, PetscInt le
 
   PetscFunctionBegin;
   /* check to make sure comm package has been initialized */
-  if (!p_init) PCTFS_comm_init();
+  if (!p_init) PetscCall(PCTFS_comm_init());
 
   /* all msgs are *NOT* the same length */
   /* implement the mesh fan in/out exchange algorithm */
@@ -299,7 +299,7 @@ PetscErrorCode PCTFS_ssgl_radd(PetscScalar *vals, PetscScalar *work, PetscInt le
       } else {
         type = type - PCTFS_my_id + dest;
         PetscCallMPI(MPI_Recv(work, stage_n, MPIU_SCALAR, MPI_ANY_SOURCE, type, MPI_COMM_WORLD, &status));
-        PCTFS_rvec_add(vals + segs[edge], work, stage_n);
+        PetscCall(PCTFS_rvec_add(vals + segs[edge], work, stage_n));
       }
     }
     mask <<= 1;
@@ -341,7 +341,7 @@ PetscErrorCode PCTFS_giop_hc(PetscInt *vals, PetscInt *work, PetscInt n, PetscIn
   PetscCheck(!(oprs[0] == NON_UNIFORM) || !(n < 2), PETSC_COMM_SELF, PETSC_ERR_PLIB, "PCTFS_giop_hc() :: non_uniform and n=0,1?");
 
   /* check to make sure comm package has been initialized */
-  if (!p_init) PCTFS_comm_init();
+  if (!p_init) PetscCall(PCTFS_comm_init());
 
   /* if there's nothing to do return */
   if ((PCTFS_num_nodes < 2) || (!n) || (dim <= 0)) PetscFunctionReturn(PETSC_SUCCESS);
@@ -366,7 +366,7 @@ PetscErrorCode PCTFS_giop_hc(PetscInt *vals, PetscInt *work, PetscInt n, PetscIn
       PetscCallMPI(MPI_Send(vals, n, MPIU_INT, dest, MSGTAG2 + PCTFS_my_id, MPI_COMM_WORLD));
     } else {
       PetscCallMPI(MPI_Recv(work, n, MPIU_INT, MPI_ANY_SOURCE, MSGTAG2 + dest, MPI_COMM_WORLD, &status));
-      (*fp)(vals, work, n, oprs);
+      PetscCall((*fp)(vals, work, n, oprs));
     }
   }
 

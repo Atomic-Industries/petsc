@@ -124,7 +124,7 @@ static PetscErrorCode KSPView_GCR(KSP ksp, PetscViewer viewer)
   PetscBool iascii;
 
   PetscFunctionBegin;
-  PetscObjectTypeCompare((PetscObject)viewer, PETSCVIEWERASCII, &iascii);
+  PetscCall(PetscObjectTypeCompare((PetscObject)viewer, PETSCVIEWERASCII, &iascii));
   if (iascii) {
     PetscCall(PetscViewerASCIIPrintf(viewer, "  restart = %" PetscInt_FMT " \n", ctx->restart));
     PetscCall(PetscViewerASCIIPrintf(viewer, "  restarts performed = %" PetscInt_FMT " \n", ctx->n_restarts));

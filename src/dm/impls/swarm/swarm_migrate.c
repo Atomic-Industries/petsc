@@ -448,12 +448,12 @@ PETSC_EXTERN PetscErrorCode DMSwarmCollect_DMDABoundingBox(DM dm, PetscInt *glob
   PetscCall(DMSwarmGetCellDM(dm, &dmcell));
   PetscCheck(dmcell, PetscObjectComm((PetscObject)dm), PETSC_ERR_SUP, "Only valid if cell DM provided");
   isdmda = PETSC_FALSE;
-  PetscObjectTypeCompare((PetscObject)dmcell, DMDA, &isdmda);
+  PetscCall(PetscObjectTypeCompare((PetscObject)dmcell, DMDA, &isdmda));
   PetscCheck(isdmda, PetscObjectComm((PetscObject)dm), PETSC_ERR_SUP, "Only DMDA support for CollectBoundingBox");
 
   PetscCall(DMGetDimension(dm, &dim));
   sizeof_bbox_ctx = sizeof(CollectBBox);
-  PetscMalloc1(1, &bbox);
+  PetscCall(PetscMalloc1(1, &bbox));
   bbox->owner_rank = rank;
 
   /* compute the bounding box based on the overlapping / stenctil size */
@@ -598,7 +598,7 @@ PETSC_EXTERN PetscErrorCode DMSwarmCollect_General(DM dm, PetscErrorCode (*colle
   PetscCall(DMSwarmDataBucketGetSizes(swarm->db, &npoints, NULL, NULL));
   *globalsize = npoints;
   /* Broadcast user context */
-  PetscMalloc(ctx_size * size, &ctxlist);
+  PetscCall(PetscMalloc1(ctx_size * size, &ctxlist));
   PetscCallMPI(MPI_Allgather(ctx, ctx_size, MPI_CHAR, ctxlist, ctx_size, MPI_CHAR, PetscObjectComm((PetscObject)dm)));
   PetscCall(PetscMalloc1(size, &n2collect));
   PetscCall(PetscMalloc1(size, &collectlist));

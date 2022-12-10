@@ -181,41 +181,41 @@ static PetscErrorCode DMCreateFieldDecomposition_Stag(DM dm, PetscInt *len, char
     cnt = 0;
     if (dim == 1) {
       if (dof0 != 0) {
-        PetscStrallocpy("vertex", &(*namelist)[cnt]);
+        PetscCall(PetscStrallocpy("vertex", &(*namelist)[cnt]));
         ++cnt;
       }
       if (dof1 != 0) {
-        PetscStrallocpy("element", &(*namelist)[cnt]);
+        PetscCall(PetscStrallocpy("element", &(*namelist)[cnt]));
         ++cnt;
       }
     } else if (dim == 2) {
       if (dof0 != 0) {
-        PetscStrallocpy("vertex", &(*namelist)[cnt]);
+        PetscCall(PetscStrallocpy("vertex", &(*namelist)[cnt]));
         ++cnt;
       }
       if (dof1 != 0) {
-        PetscStrallocpy("face", &(*namelist)[cnt]);
+        PetscCall(PetscStrallocpy("face", &(*namelist)[cnt]));
         ++cnt;
       }
       if (dof2 != 0) {
-        PetscStrallocpy("element", &(*namelist)[cnt]);
+        PetscCall(PetscStrallocpy("element", &(*namelist)[cnt]));
         ++cnt;
       }
     } else if (dim == 3) {
       if (dof0 != 0) {
-        PetscStrallocpy("vertex", &(*namelist)[cnt]);
+        PetscCall(PetscStrallocpy("vertex", &(*namelist)[cnt]));
         ++cnt;
       }
       if (dof1 != 0) {
-        PetscStrallocpy("edge", &(*namelist)[cnt]);
+        PetscCall(PetscStrallocpy("edge", &(*namelist)[cnt]));
         ++cnt;
       }
       if (dof2 != 0) {
-        PetscStrallocpy("face", &(*namelist)[cnt]);
+        PetscCall(PetscStrallocpy("face", &(*namelist)[cnt]));
         ++cnt;
       }
       if (dof3 != 0) {
-        PetscStrallocpy("element", &(*namelist)[cnt]);
+        PetscCall(PetscStrallocpy("element", &(*namelist)[cnt]));
         ++cnt;
       }
     }

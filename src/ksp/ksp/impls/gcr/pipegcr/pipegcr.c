@@ -396,7 +396,7 @@ static PetscErrorCode KSPDestroy_PIPEGCR(KSP ksp)
   KSP_PIPEGCR *pipegcr = (KSP_PIPEGCR *)ksp->data;
 
   PetscFunctionBegin;
-  VecDestroyVecs(ksp->nwork, &ksp->work); /* Destroy "standard" work vecs */
+  PetscCall(VecDestroyVecs(ksp->nwork, &ksp->work)); /* Destroy "standard" work vecs */
 
   /* Destroy vectors for old directions and the arrays that manage pointers to them */
   if (pipegcr->nvecs) {

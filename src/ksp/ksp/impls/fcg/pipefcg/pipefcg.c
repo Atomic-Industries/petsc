@@ -339,7 +339,7 @@ static PetscErrorCode KSPDestroy_PIPEFCG(KSP ksp)
   pipefcg = (KSP_PIPEFCG *)ksp->data;
 
   /* Destroy "standard" work vecs */
-  VecDestroyVecs(ksp->nwork, &ksp->work);
+  PetscCall(VecDestroyVecs(ksp->nwork, &ksp->work));
 
   /* Destroy vectors of old directions and the arrays that manage pointers to them */
   if (pipefcg->nvecs) {

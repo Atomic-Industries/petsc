@@ -477,7 +477,7 @@ PetscErrorCode KSPView_DGMRES(KSP ksp, PetscViewer viewer)
   PetscCall(KSPView_GMRES(ksp, viewer));
   PetscCall(PetscObjectTypeCompare((PetscObject)viewer, PETSCVIEWERASCII, &iascii));
   if (iascii) {
-    PetscViewerASCIIPrintf(viewer, "    Adaptive strategy is used: %s\n", PetscBools[dgmres->force]);
+    PetscCall(PetscViewerASCIIPrintf(viewer, "    Adaptive strategy is used: %s\n", PetscBools[dgmres->force]));
     PetscCall(PetscOptionsHasName(((PetscObject)ksp)->options, ((PetscObject)ksp)->prefix, "-ksp_dgmres_harmonic_ritz", &isharmonic));
     if (isharmonic) {
       PetscCall(PetscViewerASCIIPrintf(viewer, "   Frequency of extracted eigenvalues = %" PetscInt_FMT " using Harmonic Ritz values \n", dgmres->neig));
