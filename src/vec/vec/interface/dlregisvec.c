@@ -106,7 +106,7 @@ static void MPIAPI MPIU_MaxIndex_Local(void *in, void *out, PetscMPIInt *cnt, MP
 
   PetscFunctionBegin;
   if (*datatype != MPIU_REAL_INT) {
-    (*PetscErrorPrintf)("Can only handle MPIU_REAL_INT data types");
+    PetscCallAbort(MPI_COMM_SELF, (*PetscErrorPrintf)("Can only handle MPIU_REAL_INT data types"));
     PETSCABORT(MPI_COMM_SELF, PETSC_ERR_ARG_WRONG);
   }
   for (c = 0; c < *cnt; c++) {
@@ -132,7 +132,7 @@ static void MPIAPI MPIU_MinIndex_Local(void *in, void *out, PetscMPIInt *cnt, MP
 
   PetscFunctionBegin;
   if (*datatype != MPIU_REAL_INT) {
-    (*PetscErrorPrintf)("Can only handle MPIU_REAL_INT data types");
+    PetscCallAbort(MPI_COMM_SELF, (*PetscErrorPrintf)("Can only handle MPIU_REAL_INT data types"));
     PETSCABORT(MPI_COMM_SELF, PETSC_ERR_ARG_WRONG);
   }
   for (c = 0; c < *cnt; c++) {

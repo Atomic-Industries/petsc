@@ -186,7 +186,7 @@ PETSC_INTERN PetscErrorCode PetscLogInitialize(void)
 
   /* All processors sync here for more consistent logging */
   PetscCallMPI(MPI_Barrier(PETSC_COMM_WORLD));
-  PetscTime(&petsc_BaseTime);
+  PetscCall(PetscTime(&petsc_BaseTime));
   PetscCall(PetscLogStagePush(stage));
   #if defined(PETSC_HAVE_TAU_PERFSTUBS)
   PetscStackCallExternalVoid("ps_initialize_", ps_initialize_());
@@ -1331,7 +1331,7 @@ PetscErrorCode PetscLogDump(const char sname[])
 
   PetscFunctionBegin;
   /* Calculate the total elapsed time */
-  PetscTime(&_TotalTime);
+  PetscCall(PetscTime(&_TotalTime));
   _TotalTime -= petsc_BaseTime;
   /* Open log file */
   PetscCallMPI(MPI_Comm_rank(PETSC_COMM_WORLD, &rank));
@@ -1400,7 +1400,7 @@ PetscErrorCode PetscLogView_Detailed(PetscViewer viewer)
   /* Must preserve reduction count before we go on */
   numRed = petsc_allreduce_ct + petsc_gather_ct + petsc_scatter_ct;
   /* Get the total elapsed time */
-  PetscTime(&locTotalTime);
+  PetscCall(PetscTime(&locTotalTime));
   locTotalTime -= petsc_BaseTime;
   PetscCall(PetscViewerASCIIPrintf(viewer, "size = %d\n", size));
   PetscCall(PetscViewerASCIIPrintf(viewer, "LocalTimes = {}\n"));
@@ -1480,7 +1480,7 @@ PetscErrorCode PetscLogView_CSV(PetscViewer viewer)
   PetscCallMPI(MPI_Comm_rank(comm, &rank));
   /* Must preserve reduction count before we go on */
   /* Get the total elapsed time */
-  PetscTime(&locTotalTime);
+  PetscCall(PetscTime(&locTotalTime));
   locTotalTime -= petsc_BaseTime;
   PetscCall(PetscLogGetStageLog(&stageLog));
   PetscCallMPI(MPI_Allreduce(&stageLog->numStages, &numStages, 1, MPI_INT, MPI_MAX, comm));
@@ -1651,7 +1651,7 @@ PetscErrorCode PetscLogView_Default(PetscViewer viewer)
   PetscCallMPI(MPI_Comm_size(comm, &size));
   PetscCallMPI(MPI_Comm_rank(comm, &rank));
   /* Get the total elapsed time */
-  PetscTime(&locTotalTime);
+  PetscCall(PetscTime(&locTotalTime));
   locTotalTime -= petsc_BaseTime;
 
   PetscCall(PetscFPrintf(comm, fd, "****************************************************************************************************************************************************************\n"));
@@ -2095,18 +2095,18 @@ PetscErrorCode PetscLogView_Default(PetscViewer viewer)
 
   /* Information unrelated to this particular run */
   PetscCall(PetscFPrintf(comm, fd, "========================================================================================================================\n"));
-  PetscTime(&y);
-  PetscTime(&x);
-  PetscTime(&y);
-  PetscTime(&y);
-  PetscTime(&y);
-  PetscTime(&y);
-  PetscTime(&y);
-  PetscTime(&y);
-  PetscTime(&y);
-  PetscTime(&y);
-  PetscTime(&y);
-  PetscTime(&y);
+  PetscCall(PetscTime(&y));
+  PetscCall(PetscTime(&x));
+  PetscCall(PetscTime(&y));
+  PetscCall(PetscTime(&y));
+  PetscCall(PetscTime(&y));
+  PetscCall(PetscTime(&y));
+  PetscCall(PetscTime(&y));
+  PetscCall(PetscTime(&y));
+  PetscCall(PetscTime(&y));
+  PetscCall(PetscTime(&y));
+  PetscCall(PetscTime(&y));
+  PetscCall(PetscTime(&y));
   PetscCall(PetscFPrintf(comm, fd, "Average time to get PetscTime(): %g\n", (y - x) / 10.0));
   /* MPI information */
   if (size > 1) {
@@ -2115,13 +2115,13 @@ PetscErrorCode PetscLogView_Default(PetscViewer viewer)
     MPI_Comm    newcomm;
 
     PetscCallMPI(MPI_Barrier(comm));
-    PetscTime(&x);
+    PetscCall(PetscTime(&x));
     PetscCallMPI(MPI_Barrier(comm));
     PetscCallMPI(MPI_Barrier(comm));
     PetscCallMPI(MPI_Barrier(comm));
     PetscCallMPI(MPI_Barrier(comm));
     PetscCallMPI(MPI_Barrier(comm));
-    PetscTime(&y);
+    PetscCall(PetscTime(&y));
     PetscCall(PetscFPrintf(comm, fd, "Average time for MPI_Barrier(): %g\n", (y - x) / 5.0));
     PetscCall(PetscCommDuplicate(comm, &newcomm, &tag));
     PetscCallMPI(MPI_Barrier(comm));
@@ -2129,10 +2129,10 @@ PetscErrorCode PetscLogView_Default(PetscViewer viewer)
       PetscCallMPI(MPI_Recv(NULL, 0, MPI_INT, rank - 1, tag, newcomm, &status));
       PetscCallMPI(MPI_Send(NULL, 0, MPI_INT, (rank + 1) % size, tag, newcomm));
     } else {
-      PetscTime(&x);
+      PetscCall(PetscTime(&x));
       PetscCallMPI(MPI_Send(NULL, 0, MPI_INT, 1, tag, newcomm));
       PetscCallMPI(MPI_Recv(NULL, 0, MPI_INT, size - 1, tag, newcomm, &status));
-      PetscTime(&y);
+      PetscCall(PetscTime(&y));
       PetscCall(PetscFPrintf(comm, fd, "Average time for zero size MPI_Send(): %g\n", (y - x) / size));
     }
     PetscCall(PetscCommDestroy(&newcomm));

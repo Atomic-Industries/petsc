@@ -137,7 +137,7 @@ PetscErrorCode PetscSignalHandlerDefault(int sig, void *ptr)
 #endif
 
   signal(sig, SIG_DFL);
-  PetscSleep(PetscGlobalRank % 4); /* prevent some jumbling of error messages from different ranks */
+  ierr = PetscSleep(PetscGlobalRank % 4); /* prevent some jumbling of error messages from different ranks */
   ierr = (*PetscErrorPrintf)("------------------------------------------------------------------------\n");
   if (sig >= 0 && sig <= 20) ierr = (*PetscErrorPrintf)("Caught signal number %d %s\n", sig, SIGNAME[sig]);
   else ierr = (*PetscErrorPrintf)("Caught signal\n");

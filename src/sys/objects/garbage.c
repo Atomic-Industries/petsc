@@ -114,7 +114,7 @@ void PetscGarbageKeySortedIntersect(void *inset, void *inoutset, PetscMPIInt *le
   seta = (PetscInt64 *)inoutset;
   setb = (PetscInt64 *)inset;
 
-  GarbageKeySortedIntersect_Private(&seta[1], (PetscInt *)&seta[0], &setb[1], (PetscInt)setb[0]);
+  PetscCallAbort(PETSC_COMM_SELF, GarbageKeySortedIntersect_Private(&seta[1], (PetscInt *)&seta[0], &setb[1], (PetscInt)setb[0]));
 }
 
 /* Performs a collective allreduce intersection of one array per rank */

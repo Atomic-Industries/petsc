@@ -169,15 +169,20 @@ PETSC_INTERN PetscErrorCode PetscCloseHistoryFile(FILE **fd)
 
 void Petsc_MPI_AbortOnError(MPI_Comm *comm, PetscMPIInt *flag, ...)
 {
+  PetscErrorCode ierr;
   PetscFunctionBegin;
-  (*PetscErrorPrintf)("MPI error %d\n", *flag);
+  ierr = (*PetscErrorPrintf)("MPI error %d\n", *flag);
+  (void)ierr;
   abort();
 }
 
 void Petsc_MPI_DebuggerOnError(MPI_Comm *comm, PetscMPIInt *flag, ...)
 {
+  PetscErrorCode ierr;
+
   PetscFunctionBegin;
-  (*PetscErrorPrintf)("MPI error %d\n", *flag);
+  ierr = (*PetscErrorPrintf)("MPI error %d\n", *flag);
+  (void)ierr;
   if (PetscAttachDebugger()) PETSCABORT(*comm, *flag); /* hopeless so get out */
 }
 
@@ -199,9 +204,9 @@ void Petsc_MPI_DebuggerOnError(MPI_Comm *comm, PetscMPIInt *flag, ...)
 PetscErrorCode PetscEnd(void)
 {
   PetscFunctionBegin;
-  PetscFinalize();
+  PetscCall(PetscFinalize());
   exit(0);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscBool                   PetscOptionsPublish = PETSC_FALSE;
@@ -540,7 +545,7 @@ PETSC_INTERN PetscErrorCode PetscOptionsCheckInitial_Private(const char help[])
     char  name[PETSC_MAX_PATH_LEN], fname[PETSC_MAX_PATH_LEN];
     FILE *file;
     if (mname[0]) {
-      PetscSNPrintf(name, PETSC_MAX_PATH_LEN, "%s.%d", mname, rank);
+      PetscCall(PetscSNPrintf(name, PETSC_MAX_PATH_LEN, "%s.%d", mname, rank));
       PetscCall(PetscFixFilename(name, fname));
       file = fopen(fname, "w");
       PetscCheck(file, PETSC_COMM_SELF, PETSC_ERR_FILE_OPEN, "Unable to open trace file: %s", fname);

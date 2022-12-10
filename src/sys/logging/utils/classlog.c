@@ -303,21 +303,21 @@ PetscErrorCode PetscLogObjCreateDefault(PetscObject obj)
   classPerfLog->classInfo[oclass].creations++;
   /* Dynamically enlarge logging structures */
   if (petsc_numActions >= petsc_maxActions) {
-    PetscTime(&start);
+    PetscCall(PetscTime(&start));
     PetscCall(PetscMalloc1(petsc_maxActions * 2, &tmpAction));
     PetscCall(PetscArraycpy(tmpAction, petsc_actions, petsc_maxActions));
     PetscCall(PetscFree(petsc_actions));
 
     petsc_actions = tmpAction;
     petsc_maxActions *= 2;
-    PetscTime(&end);
+    PetscCall(PetscTime(&end));
     petsc_BaseTime += (end - start);
   }
 
   petsc_numObjects = obj->id;
   /* Record the creation action */
   if (petsc_logActions) {
-    PetscTime(&petsc_actions[petsc_numActions].time);
+    PetscCall(PetscTime(&petsc_actions[petsc_numActions].time));
     petsc_actions[petsc_numActions].time -= petsc_BaseTime;
     petsc_actions[petsc_numActions].action  = CREATE;
     petsc_actions[petsc_numActions].classid = obj->classid;
@@ -340,14 +340,14 @@ PetscErrorCode PetscLogObjCreateDefault(PetscObject obj)
 
     /* Dynamically enlarge logging structures */
     if (petsc_numObjects >= petsc_maxObjects) {
-      PetscTime(&start);
+      PetscCall(PetscTime(&start));
       PetscCall(PetscMalloc1(petsc_maxObjects * 2, &tmpObjects));
       PetscCall(PetscArraycpy(tmpObjects, petsc_objects, petsc_maxObjects));
       PetscCall(PetscFree(petsc_objects));
 
       petsc_objects = tmpObjects;
       petsc_maxObjects *= 2;
-      PetscTime(&end);
+      PetscCall(PetscTime(&end));
       petsc_BaseTime += (end - start);
     }
   }
@@ -382,19 +382,19 @@ PetscErrorCode PetscLogObjDestroyDefault(PetscObject obj)
   petsc_numObjectsDestroyed++;
   /* Dynamically enlarge logging structures */
   if (petsc_numActions >= petsc_maxActions) {
-    PetscTime(&start);
+    PetscCall(PetscTime(&start));
     PetscCall(PetscMalloc1(petsc_maxActions * 2, &tmpAction));
     PetscCall(PetscArraycpy(tmpAction, petsc_actions, petsc_maxActions));
     PetscCall(PetscFree(petsc_actions));
 
     petsc_actions = tmpAction;
     petsc_maxActions *= 2;
-    PetscTime(&end);
+    PetscCall(PetscTime(&end));
     petsc_BaseTime += (end - start);
   }
   /* Record the destruction action */
   if (petsc_logActions) {
-    PetscTime(&petsc_actions[petsc_numActions].time);
+    PetscCall(PetscTime(&petsc_actions[petsc_numActions].time));
     petsc_actions[petsc_numActions].time -= petsc_BaseTime;
     petsc_actions[petsc_numActions].action  = DESTROY;
     petsc_actions[petsc_numActions].classid = obj->classid;

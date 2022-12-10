@@ -768,9 +768,9 @@ PetscErrorCode PetscLogEventSynchronize(PetscLogEvent event, MPI_Comm comm)
   PetscCall(PetscStageLogGetEventPerfLog(stageLog, stage, &eventLog));
   if (eventLog->eventInfo[event].depth > 0) PetscFunctionReturn(PETSC_SUCCESS);
 
-  PetscTimeSubtract(&time);
+  PetscCall(PetscTimeSubtract(&time));
   PetscCallMPI(MPI_Barrier(comm));
-  PetscTimeAdd(&time);
+  PetscCall(PetscTimeAdd(&time));
   eventLog->eventInfo[event].syncTime += time;
   PetscFunctionReturn(PETSC_SUCCESS);
 }
@@ -842,7 +842,7 @@ PetscErrorCode PetscLogEventBeginDefault(PetscLogEvent event, int t, PetscObject
 #endif
   eventInfo->count++;
   eventInfo->timeTmp = 0.0;
-  PetscTimeSubtract(&eventInfo->timeTmp);
+  PetscCall(PetscTimeSubtract(&eventInfo->timeTmp));
   eventInfo->flopsTmp = -petsc_TotalFlops_th;
   eventInfo->numMessages -= petsc_irecv_ct_th + petsc_isend_ct_th + petsc_recv_ct_th + petsc_send_ct_th;
   eventInfo->messageLength -= petsc_irecv_len_th + petsc_isend_len_th + petsc_recv_len_th + petsc_send_len_th;
@@ -897,7 +897,7 @@ PetscErrorCode PetscLogEventEndDefault(PetscLogEvent event, int t, PetscObject o
     if (regLog->eventInfo[event].timer != NULL) PetscStackCallExternalVoid("ps_timer_stop_", ps_timer_stop_(regLog->eventInfo[event].timer));
   }
 #endif
-  PetscTimeAdd(&eventInfo->timeTmp);
+  PetscCall(PetscTimeAdd(&eventInfo->timeTmp));
   eventInfo->flopsTmp += petsc_TotalFlops_th;
   eventInfo->time += eventInfo->timeTmp;
   eventInfo->time2 += eventInfo->timeTmp * eventInfo->timeTmp;
@@ -949,14 +949,14 @@ PetscErrorCode PetscLogEventBeginComplete(PetscLogEvent event, int t, PetscObjec
   PetscFunctionBegin;
   /* Dynamically enlarge logging structures */
   if (petsc_numActions >= petsc_maxActions) {
-    PetscTime(&start);
+    PetscCall(PetscTime(&start));
     PetscCall(PetscCalloc1(petsc_maxActions * 2, &tmpAction));
     PetscCall(PetscArraycpy(tmpAction, petsc_actions, petsc_maxActions));
     PetscCall(PetscFree(petsc_actions));
 
     petsc_actions = tmpAction;
     petsc_maxActions *= 2;
-    PetscTime(&end);
+    PetscCall(PetscTime(&end));
     petsc_BaseTime += (end - start);
   }
   /* Record the event */
@@ -964,7 +964,7 @@ PetscErrorCode PetscLogEventBeginComplete(PetscLogEvent event, int t, PetscObjec
   PetscCall(PetscStageLogGetCurrent(stageLog, &stage));
   PetscCall(PetscStageLogGetEventRegLog(stageLog, &eventRegLog));
   PetscCall(PetscStageLogGetEventPerfLog(stageLog, stage, &eventPerfLog));
-  PetscTime(&curTime);
+  PetscCall(PetscTime(&curTime));
   if (petsc_logActions) {
     petsc_actions[petsc_numActions].time    = curTime - petsc_BaseTime;
     petsc_actions[petsc_numActions].action  = ACTIONBEGIN;
@@ -1008,14 +1008,14 @@ PetscErrorCode PetscLogEventEndComplete(PetscLogEvent event, int t, PetscObject 
   PetscFunctionBegin;
   /* Dynamically enlarge logging structures */
   if (petsc_numActions >= petsc_maxActions) {
-    PetscTime(&start);
+    PetscCall(PetscTime(&start));
     PetscCall(PetscCalloc1(petsc_maxActions * 2, &tmpAction));
     PetscCall(PetscArraycpy(tmpAction, petsc_actions, petsc_maxActions));
     PetscCall(PetscFree(petsc_actions));
 
     petsc_actions = tmpAction;
     petsc_maxActions *= 2;
-    PetscTime(&end);
+    PetscCall(PetscTime(&end));
     petsc_BaseTime += (end - start);
   }
   /* Record the event */
@@ -1023,7 +1023,7 @@ PetscErrorCode PetscLogEventEndComplete(PetscLogEvent event, int t, PetscObject 
   PetscCall(PetscStageLogGetCurrent(stageLog, &stage));
   PetscCall(PetscStageLogGetEventRegLog(stageLog, &eventRegLog));
   PetscCall(PetscStageLogGetEventPerfLog(stageLog, stage, &eventPerfLog));
-  PetscTime(&curTime);
+  PetscCall(PetscTime(&curTime));
   if (petsc_logActions) {
     petsc_actions[petsc_numActions].time    = curTime - petsc_BaseTime;
     petsc_actions[petsc_numActions].action  = ACTIONEND;
@@ -1065,7 +1065,7 @@ PetscErrorCode PetscLogEventBeginTrace(PetscLogEvent event, int t, PetscObject o
   int               stage, err;
 
   PetscFunctionBegin;
-  if (!petsc_tracetime) PetscTime(&petsc_tracetime);
+  if (!petsc_tracetime) PetscCall(PetscTime(&petsc_tracetime));
 
   petsc_tracelevel++;
   PetscCallMPI(MPI_Comm_rank(PETSC_COMM_WORLD, &rank));
@@ -1077,7 +1077,7 @@ PetscErrorCode PetscLogEventBeginTrace(PetscLogEvent event, int t, PetscObject o
   eventPerfLog->eventInfo[event].depth++;
   if (eventPerfLog->eventInfo[event].depth > 1) PetscFunctionReturn(PETSC_SUCCESS);
   /* Log performance info */
-  PetscTime(&cur_time);
+  PetscCall(PetscTime(&cur_time));
   PetscCall(PetscFPrintf(PETSC_COMM_SELF, petsc_tracefile, "%s[%d] %g Event begin: %s\n", petsc_tracespace, rank, cur_time - petsc_tracetime, eventRegLog->eventInfo[event].name));
   PetscCall(PetscStrncpy(petsc_tracespace, petsc_traceblanks, 2 * petsc_tracelevel));
 
@@ -1112,7 +1112,7 @@ PetscErrorCode PetscLogEventEndTrace(PetscLogEvent event, int t, PetscObject o1,
   /* Log performance info */
   if (petsc_tracelevel) PetscCall(PetscStrncpy(petsc_tracespace, petsc_traceblanks, 2 * petsc_tracelevel));
   petsc_tracespace[2 * petsc_tracelevel] = 0;
-  PetscTime(&cur_time);
+  PetscCall(PetscTime(&cur_time));
   PetscCall(PetscFPrintf(PETSC_COMM_SELF, petsc_tracefile, "%s[%d] %g Event end: %s\n", petsc_tracespace, rank, cur_time - petsc_tracetime, eventRegLog->eventInfo[event].name));
   err = fflush(petsc_tracefile);
   PetscCheck(!err, PETSC_COMM_SELF, PETSC_ERR_SYS, "fflush() failed on file");

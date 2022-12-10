@@ -88,7 +88,7 @@ PETSC_EXTERN PetscMPIInt PETSC_MPI_ERROR_CODE;
 
 .seealso: `SETERRQ()`, `PetscCall()`, `PetscCallMPI()`, `PetscTraceBackErrorHandler()`, `PetscPushErrorHandler()`, `PetscError()`, `CHKMEMQ`
 M*/
-#define SETERRMPI(comm, ierr, ...) return (PetscError(comm, __LINE__, PETSC_FUNCTION_NAME, __FILE__, ierr, PETSC_ERROR_INITIAL, __VA_ARGS__), PETSC_MPI_ERROR_CODE)
+#define SETERRMPI(comm, ierr, ...) return ((void)PetscError(comm, __LINE__, PETSC_FUNCTION_NAME, __FILE__, ierr, PETSC_ERROR_INITIAL, __VA_ARGS__), PETSC_MPI_ERROR_CODE)
 
 /*MC
    SETERRA - Fortran-only macro that can be called when an error has been detected from the main program
@@ -580,7 +580,7 @@ void PetscCallContinue(PetscErrorCode);
       PetscErrorCode ierr_petsc_abort_ = __VA_ARGS__; \
       if (PetscUnlikely(ierr_petsc_abort_)) { \
         ierr_petsc_abort_ = PetscError(PETSC_COMM_SELF, __LINE__, PETSC_FUNCTION_NAME, __FILE__, ierr_petsc_abort_, PETSC_ERROR_REPEAT, " "); \
-        MPI_Abort(comm, ierr_petsc_abort_); \
+        MPI_Abort(comm, (PetscMPIInt)ierr_petsc_abort_); \
       } \
     } while (0)
   #define PetscCallContinue(...) \

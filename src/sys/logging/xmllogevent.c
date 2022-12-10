@@ -1427,12 +1427,12 @@ static PetscErrorCode PetscLogNestedTreePrintFlamegraph(PetscViewer viewer, Pets
   }
 
   /* Add the current event to the parent stack and write the child events */
-  PetscIntStackPush(eventStack, iStart);
+  PetscCall(PetscIntStackPush(eventStack, iStart));
   for (i = 0; i < nChildren; i++) PetscCall(PetscLogNestedTreePrintFlamegraph(viewer, tree, nTimers, children[i].id, totalTime, eventStack));
   /* Pop the top item from the stack and immediately discard it */
   {
     int tmp;
-    PetscIntStackPop(eventStack, &tmp);
+    PetscCall(PetscIntStackPop(eventStack, &tmp));
   }
   PetscFunctionReturn(PETSC_SUCCESS);
 }

@@ -81,7 +81,7 @@ PETSC_EXTERN void MPIAPI PetscSplitReduction_Local(void *in, void *out, PetscMPI
 
   PetscFunctionBegin;
   if (*datatype != MPIU_SCALAR_INT) {
-    (*PetscErrorPrintf)("Can only handle MPIU_SCALAR_INT data types");
+    PetscCallAbort(MPI_COMM_SELF, (*PetscErrorPrintf)("Can only handle MPIU_SCALAR_INT data types"));
     PETSCABORT(MPI_COMM_SELF, PETSC_ERR_ARG_WRONG);
   }
   for (i = 0; i < count; i++) {
@@ -89,7 +89,7 @@ PETSC_EXTERN void MPIAPI PetscSplitReduction_Local(void *in, void *out, PetscMPI
     else if (xin[i].i == PETSC_SR_REDUCE_MAX) xout[i].v = PetscMax(PetscRealPart(xout[i].v), PetscRealPart(xin[i].v));
     else if (xin[i].i == PETSC_SR_REDUCE_MIN) xout[i].v = PetscMin(PetscRealPart(xout[i].v), PetscRealPart(xin[i].v));
     else {
-      (*PetscErrorPrintf)("Reduction type input is not PETSC_SR_REDUCE_SUM, PETSC_SR_REDUCE_MAX, or PETSC_SR_REDUCE_MIN");
+      PetscCallAbort(MPI_COMM_SELF, (*PetscErrorPrintf)("Reduction type input is not PETSC_SR_REDUCE_SUM, PETSC_SR_REDUCE_MAX, or PETSC_SR_REDUCE_MIN"));
       PETSCABORT(MPI_COMM_SELF, PETSC_ERR_ARG_WRONG);
     }
   }

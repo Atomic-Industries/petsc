@@ -502,6 +502,7 @@ PetscErrorCode PetscAttachDebuggerErrorHandler(MPI_Comm comm, int line, const ch
   else ierr = (*PetscErrorPrintf)("%s:%d %s\n", file, line, mess);
 
   ierr = PetscAttachDebugger();
+  (void)ierr;
   abort(); /* call abort because don't want to kill other MPI ranks that may successfully attach to debugger */
   PetscFunctionReturn(PETSC_SUCCESS);
 }

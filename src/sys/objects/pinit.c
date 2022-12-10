@@ -181,7 +181,8 @@ PETSC_INTERN void MPIAPI MPIU_MaxSum_Local(void *in, void *out, int *cnt, MPI_Da
 
   PetscFunctionBegin;
   if (*datatype != MPIU_2INT) {
-    (*PetscErrorPrintf)("Can only handle MPIU_2INT data types");
+    PetscErrorCode ierr = (*PetscErrorPrintf)("Can only handle MPIU_2INT data types");
+    (void)ierr;
     PETSCABORT(MPI_COMM_SELF, PETSC_ERR_ARG_WRONG);
   }
 
@@ -273,13 +274,13 @@ PETSC_EXTERN void MPIAPI PetscSum_Local(void *in, void *out, PetscMPIInt *cnt, M
   #endif
   else {
   #if !defined(PETSC_HAVE_REAL___FLOAT128) && !defined(PETSC_HAVE_REAL___FP16)
-    (*PetscErrorPrintf)("Can only handle MPIU_REAL or MPIU_COMPLEX data types");
+    PetscCallAbort(MPI_COMM_SElF, (*PetscErrorPrintf)("Can only handle MPIU_REAL or MPIU_COMPLEX data types"));
   #elif !defined(PETSC_HAVE_REAL___FP16)
-    (*PetscErrorPrintf)("Can only handle MPIU_REAL, MPIU_COMPLEX, MPIU___FLOAT128, or MPIU___COMPLEX128 data types");
+    PetscCallAbort(MPI_COMM_SELF, (*PetscErrorPrintf)("Can only handle MPIU_REAL, MPIU_COMPLEX, MPIU___FLOAT128, or MPIU___COMPLEX128 data types"));
   #elif !defined(PETSC_HAVE_REAL___FLOAT128)
-    (*PetscErrorPrintf)("Can only handle MPIU_REAL, MPIU_COMPLEX, or MPIU___FP16 data types");
+    PetscCallAbort(MPI_COMM_SELF, (*PetscErrorPrintf)("Can only handle MPIU_REAL, MPIU_COMPLEX, or MPIU___FP16 data types"));
   #else
-    (*PetscErrorPrintf)("Can only handle MPIU_REAL, MPIU_COMPLEX, MPIU___FLOAT128, MPIU___COMPLEX128, or MPIU___FP16 data types");
+    PetscCallAbort(MPI_COMM_SELF, (*PetscErrorPrintf)("Can only handle MPIU_REAL, MPIU_COMPLEX, MPIU___FLOAT128, MPIU___COMPLEX128, or MPIU___FP16 data types"));
   #endif
     PETSCABORT(MPI_COMM_SELF, PETSC_ERR_ARG_WRONG);
   }
@@ -307,7 +308,7 @@ PETSC_EXTERN void MPIAPI PetscMax_Local(void *in, void *out, PetscMPIInt *cnt, M
   }
   #endif
   else {
-    (*PetscErrorPrintf)("Can only handle MPIU_REAL or MPIU_COMPLEX data types");
+    PetscCallAbort((*PetscErrorPrintf)("Can only handle MPIU_REAL or MPIU_COMPLEX data types"));
     PETSCABORT(MPI_COMM_SELF, PETSC_ERR_ARG_WRONG);
   }
   PetscFunctionReturnVoid();
@@ -329,7 +330,7 @@ PETSC_EXTERN void MPIAPI PetscMin_Local(void *in, void *out, PetscMPIInt *cnt, M
   }
   #endif
   else {
-    (*PetscErrorPrintf)("Can only handle MPIU_REAL or MPIU_SCALAR data (i.e. double or complex) types");
+    PetscCallAbort(MPI_COMM_SELF, (*PetscErrorPrintf)("Can only handle MPIU_REAL or MPIU_SCALAR data (i.e. double or complex) types"));
     PETSCABORT(MPI_COMM_SELF, PETSC_ERR_ARG_WRONG);
   }
   PetscFunctionReturnVoid();
@@ -825,7 +826,7 @@ PETSC_INTERN PetscErrorCode PetscInitialize_Common(const char *prog, const char 
         }
       }
       if (!flg) {
-        PetscInfo(NULL, "PETSc warning --- Open MPI library version \n%s does not match what PETSc was compiled with %d.%d.\n", mpilibraryversion, OMPI_MAJOR_VERSION, OMPI_MINOR_VERSION);
+        PetscCall(PetscInfo(NULL, "PETSc warning --- Open MPI library version \n%s does not match what PETSc was compiled with %d.%d.\n", mpilibraryversion, OMPI_MAJOR_VERSION, OMPI_MINOR_VERSION));
         flg = PETSC_TRUE;
       }
     }
@@ -1642,7 +1643,7 @@ PetscErrorCode PetscFinalize(void)
     fname[0] = 0;
     PetscCall(PetscOptionsGetString(NULL, NULL, "-malloc_dump", fname, sizeof(fname), &flg1));
     if (flg1 && fname[0]) {
-      PetscSNPrintf(sname, sizeof(sname), "%s_%d", fname, rank);
+      PetscCall(PetscSNPrintf(sname, sizeof(sname), "%s_%d", fname, rank));
       fd = fopen(sname, "w");
       PetscCheck(fd, PETSC_COMM_SELF, PETSC_ERR_FILE_OPEN, "Cannot open log file: %s", sname);
       PetscCall(PetscMallocDump(fd));
@@ -1660,7 +1661,7 @@ PetscErrorCode PetscFinalize(void)
     fname[0] = 0;
     PetscCall(PetscOptionsGetString(NULL, NULL, "-malloc_view", fname, sizeof(fname), &flg1));
     if (flg1 && fname[0]) {
-      PetscSNPrintf(sname, sizeof(sname), "%s_%d", fname, rank);
+      PetscCall(PetscSNPrintf(sname, sizeof(sname), "%s_%d", fname, rank));
       fd = fopen(sname, "w");
       PetscCheck(fd, PETSC_COMM_SELF, PETSC_ERR_FILE_OPEN, "Cannot open log file: %s", sname);
       PetscCall(PetscMallocView(fd));

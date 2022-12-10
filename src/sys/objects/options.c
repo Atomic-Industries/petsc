@@ -399,7 +399,7 @@ static char *Petscgetline(FILE *f)
     /* Actually do the read. Note that fgets puts a terminal '\0' on the
     end of the string, so we make sure we overwrite this */
     if (!fgets(buf + len, 1024, f)) buf[len] = 0;
-    PetscStrlen(buf, &len);
+    PetscCallAbort(PETSC_COMM_SELF, PetscStrlen(buf, &len));
     last = len - 1;
   } while (!feof(f) && buf[last] != '\n' && buf[last] != '\r');
   if (len) return buf;
@@ -932,7 +932,7 @@ static PetscBool PetscCIOption(const char *name)
   PetscBool found;
 
   if (!PetscCIEnabled) return PETSC_FALSE;
-  PetscEListFind(PETSC_STATIC_ARRAY_LENGTH(PetscCIOptions), PetscCIOptions, name, &idx, &found);
+  PetscCallAbort(PETSC_COMM_SELF, PetscEListFind(PETSC_STATIC_ARRAY_LENGTH(PetscCIOptions), PetscCIOptions, name, &idx, &found));
   return found;
 }
 
@@ -1007,12 +1007,12 @@ PetscErrorCode PetscOptionsLeftError(void)
     }
   }
   if (nopt) {
-    (*PetscErrorPrintf)("WARNING! There are option(s) set that were not used! Could be the program crashed before they were used or a spelling mistake, etc!\n");
+    PetscCall((*PetscErrorPrintf)("WARNING! There are option(s) set that were not used! Could be the program crashed before they were used or a spelling mistake, etc!\n"));
     for (i = 0; i < defaultoptions->N; i++) {
       if (!defaultoptions->used[i]) {
         if (PetscCIOption(defaultoptions->names[i])) continue;
-        if (defaultoptions->values[i]) (*PetscErrorPrintf)("Option left: name:-%s value: %s source: %s\n", defaultoptions->names[i], defaultoptions->values[i], PetscOptionSources[defaultoptions->source[i]]);
-        else (*PetscErrorPrintf)("Option left: name:-%s (no value) source: %s\n", defaultoptions->names[i], PetscOptionSources[defaultoptions->source[i]]);
+        if (defaultoptions->values[i]) PetscCall((*PetscErrorPrintf)("Option left: name:-%s value: %s source: %s\n", defaultoptions->names[i], defaultoptions->values[i], PetscOptionSources[defaultoptions->source[i]]));
+        else PetscCall((*PetscErrorPrintf)("Option left: name:-%s (no value) source: %s\n", defaultoptions->names[i], PetscOptionSources[defaultoptions->source[i]]));
       }
     }
   }
@@ -1030,16 +1030,16 @@ PETSC_EXTERN PetscErrorCode PetscOptionsViewError(void)
   }
 
   if (N) {
-    (*PetscErrorPrintf)("PETSc Option Table entries:\n");
+    PetscCall((*PetscErrorPrintf)("PETSc Option Table entries:\n"));
   } else {
-    (*PetscErrorPrintf)("No PETSc Option Table entries\n");
+    PetscCall((*PetscErrorPrintf)("No PETSc Option Table entries\n"));
   }
   for (i = 0; i < options->N; i++) {
     if (PetscCIOption(options->names[i])) continue;
     if (options->values[i]) {
-      (*PetscErrorPrintf)("-%s %s (source: %s)\n", options->names[i], options->values[i], PetscOptionSources[options->source[i]]);
+      PetscCall((*PetscErrorPrintf)("-%s %s (source: %s)\n", options->names[i], options->values[i], PetscOptionSources[options->source[i]]));
     } else {
-      (*PetscErrorPrintf)("-%s (source: %s)\n", options->names[i], PetscOptionSources[options->source[i]]);
+      PetscCall((*PetscErrorPrintf)("-%s (source: %s)\n", options->names[i], PetscOptionSources[options->source[i]]));
     }
   }
   return 0;
