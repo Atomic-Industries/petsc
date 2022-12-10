@@ -1342,43 +1342,44 @@ static inline PetscErrorCode PetscLLCondensedCreate(PetscInt nlnk_max, PetscInt 
 */
 static inline PetscErrorCode PetscLLCondensedAddSorted(PetscInt nidx, const PetscInt indices[], PetscInt lnk[], PetscBT bt)
 {
-  PetscInt _k, _entry, _location, _next, _lnkdata, _nlnk, _newnode;
+  PetscInt location = 2;      /* head */
+  PetscInt nlnk     = lnk[0]; /* num of entries on the input lnk */
 
   PetscFunctionBegin;
-  _nlnk     = lnk[0]; /* num of entries on the input lnk */
-  _location = 2;      /* head */
-  for (_k = 0; _k < nidx; _k++) {
-    _entry = indices[_k];
-    if (!PetscBTLookupSet(bt, _entry)) { /* new entry */
+  for (PetscInt k = 0; k < nidx; k++) {
+    const PetscInt entry = indices[k];
+    if (!PetscBTLookupSet(bt, entry)) { /* new entry */
+      PetscInt next, lnkdata;
+
       /* search for insertion location */
       do {
-        _next     = _location + 1;  /* link from previous node to next node */
-        _location = lnk[_next];     /* idx of next node */
-        _lnkdata  = lnk[_location]; /* value of next node */
-      } while (_entry > _lnkdata);
+        next     = location + 1;  /* link from previous node to next node */
+        location = lnk[next];     /* idx of next node */
+        lnkdata  = lnk[location]; /* value of next node */
+      } while (entry > lnkdata);
       /* insertion location is found, add entry into lnk */
-      _newnode          = 2 * (_nlnk + 2); /* index for this new node */
-      lnk[_next]        = _newnode;        /* connect previous node to the new node */
-      lnk[_newnode]     = _entry;          /* set value of the new node */
-      lnk[_newnode + 1] = _location;       /* connect new node to next node */
-      _location         = _newnode;        /* next search starts from the new node */
-      _nlnk++;
+      const PetscInt newnode = 2 * (nlnk + 2); /* index for this new node */
+      lnk[next]              = newnode;        /* connect previous node to the new node */
+      lnk[newnode]           = entry;          /* set value of the new node */
+      lnk[newnode + 1]       = location;       /* connect new node to next node */
+      location               = newnode;        /* next search starts from the new node */
+      nlnk++;
     }
   }
-  lnk[0] = _nlnk; /* number of entries in the list */
+  lnk[0] = nlnk; /* number of entries in the list */
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static inline PetscErrorCode PetscLLCondensedClean(PetscInt lnk_max, PETSC_UNUSED PetscInt nidx, PetscInt *indices, PetscInt lnk[], PetscBT bt)
 {
-  PetscInt _next = lnk[3]; /* head node */
-  PetscInt _nlnk = lnk[0]; /* num of entries on the list */
+  const PetscInt nlnk = lnk[0]; /* num of entries on the list */
+  PetscInt       next = lnk[3]; /* head node */
 
   PetscFunctionBegin;
-  for (PetscInt _k = 0; _k < _nlnk; _k++) {
-    indices[_k] = lnk[_next];
-    _next       = lnk[_next + 1];
-    PetscCall(PetscBTClear(bt, indices[_k]));
+  for (PetscInt k = 0; k < nlnk; k++) {
+    indices[k] = lnk[next];
+    next       = lnk[next + 1];
+    PetscCall(PetscBTClear(bt, indices[k]));
   }
   lnk[0] = 0;       /* num of entries on the list */
   lnk[2] = lnk_max; /* initialize head node */
@@ -1439,43 +1440,45 @@ static inline PetscErrorCode PetscLLCondensedExpand_Scalable(PetscInt nlnk_max, 
 
 static inline PetscErrorCode PetscLLCondensedAddSorted_Scalable(PetscInt nidx, const PetscInt indices[], PetscInt lnk[])
 {
-  PetscInt _k, _entry, _location, _next, _lnkdata, _nlnk, _newnode;
-  _nlnk     = lnk[0]; /* num of entries on the input lnk */
-  _location = 2;      /* head */
-  for (_k = 0; _k < nidx; _k++) {
-    _entry = indices[_k];
+  PetscInt location = 2;      /* head */
+  PetscInt nlnk     = lnk[0]; /* num of entries on the input lnk */
+
+  for (PetscInt k = 0; k < nidx; k++) {
+    const PetscInt entry = indices[k];
+    PetscInt       next, lnkdata;
+
     /* search for insertion location */
     do {
-      _next     = _location + 1;  /* link from previous node to next node */
-      _location = lnk[_next];     /* idx of next node */
-      _lnkdata  = lnk[_location]; /* value of next node */
-    } while (_entry > _lnkdata);
-    if (_entry < _lnkdata) {
+      next     = location + 1;  /* link from previous node to next node */
+      location = lnk[next];     /* idx of next node */
+      lnkdata  = lnk[location]; /* value of next node */
+    } while (entry > lnkdata);
+    if (entry < lnkdata) {
       /* insertion location is found, add entry into lnk */
-      _newnode          = 2 * (_nlnk + 2); /* index for this new node */
-      lnk[_next]        = _newnode;        /* connect previous node to the new node */
-      lnk[_newnode]     = _entry;          /* set value of the new node */
-      lnk[_newnode + 1] = _location;       /* connect new node to next node */
-      _location         = _newnode;        /* next search starts from the new node */
-      _nlnk++;
+      const PetscInt newnode = 2 * (nlnk + 2); /* index for this new node */
+      lnk[next]              = newnode;        /* connect previous node to the new node */
+      lnk[newnode]           = entry;          /* set value of the new node */
+      lnk[newnode + 1]       = location;       /* connect new node to next node */
+      location               = newnode;        /* next search starts from the new node */
+      nlnk++;
     }
   }
-  lnk[0] = _nlnk; /* number of entries in the list */
-  return 0;
+  lnk[0] = nlnk; /* number of entries in the list */
+  return PETSC_SUCCESS;
 }
 
 static inline PetscErrorCode PetscLLCondensedClean_Scalable(PETSC_UNUSED PetscInt nidx, PetscInt *indices, PetscInt *lnk)
 {
-  PetscInt _k, _next, _nlnk;
-  _next = lnk[3]; /* head node */
-  _nlnk = lnk[0];
-  for (_k = 0; _k < _nlnk; _k++) {
-    indices[_k] = lnk[_next];
-    _next       = lnk[_next + 1];
+  const PetscInt nlnk = lnk[0];
+  PetscInt       next = lnk[3]; /* head node */
+
+  for (PetscInt k = 0; k < nlnk; k++) {
+    indices[k] = lnk[next];
+    next       = lnk[next + 1];
   }
   lnk[0] = 0; /* num of entries on the list */
   lnk[3] = 2; /* head node */
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static inline PetscErrorCode PetscLLCondensedDestroy_Scalable(PetscInt *lnk)
@@ -1506,7 +1509,8 @@ static inline PetscErrorCode PetscLLCondensedDestroy_Scalable(PetscInt *lnk)
 
 static inline PetscErrorCode PetscLLCondensedCreate_fast(PetscInt nlnk_max, PetscInt **lnk)
 {
-  PetscInt *llnk, lsize = 0;
+  PetscInt *llnk;
+  PetscInt  lsize = 0;
 
   PetscFunctionBegin;
   PetscCall(PetscIntMultError(3, nlnk_max + 3, &lsize));
@@ -1525,11 +1529,10 @@ static inline PetscErrorCode PetscLLCondensedCreate_fast(PetscInt nlnk_max, Pets
 
 static inline PetscErrorCode PetscLLCondensedAddSorted_fast(PetscInt nidx, const PetscInt indices[], PetscInt lnk[])
 {
-  PetscInt k, entry, prev, next;
-  prev = 3; /* first value */
-  next = lnk[prev + 2];
-  for (k = 0; k < nidx; k++) {
-    entry = indices[k];
+  for (PetscInt k = 0, prev = 3 /* first value */; k < nidx; k++) {
+    const PetscInt entry = indices[k];
+    PetscInt       next  = lnk[prev + 2];
+
     /* search for insertion location */
     while (entry >= lnk[next]) {
       prev = next;
@@ -1565,18 +1568,17 @@ static inline PetscErrorCode PetscLLCondensedAddSorted_fast(PetscInt nidx, const
     lnk[prev + 2] = next;  /* connect new node to next node */
     lnk[0]++;
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static inline PetscErrorCode PetscLLCondensedClean_fast(PETSC_UNUSED PetscInt nidx, PetscInt *indices, PetscInt *lnk)
 {
-  PetscInt _k, _next, _nlnk, cnt, j;
-  _next = lnk[5]; /* first node */
-  _nlnk = lnk[0];
-  cnt   = 0;
-  for (_k = 0; _k < _nlnk; _k++) {
-    for (j = 0; j < lnk[_next + 1]; j++) indices[cnt++] = lnk[_next] + j;
-    _next = lnk[_next + 2];
+  const PetscInt nlnk = lnk[0];
+  PetscInt       next = lnk[5]; /* first node */
+
+  for (PetscInt k = 0, cnt = 0; k < nlnk; k++) {
+    for (PetscInt j = 0; j < lnk[next + 1]; j++) indices[cnt++] = lnk[next] + j;
+    next = lnk[next + 2];
   }
   lnk[0] = 0;                 /* nlnk: number of links */
   lnk[1] = 0;                 /* number of integer entries represented in list */
@@ -1586,21 +1588,21 @@ static inline PetscErrorCode PetscLLCondensedClean_fast(PETSC_UNUSED PetscInt ni
   lnk[6] = PETSC_MAX_INT - 1; /* value in the last node */
   lnk[7] = 1;                 /* count for the last node */
   lnk[8] = 0;                 /* next valid location to make link */
-  return 0;
+  return PETSC_SUCCESS;
 }
 
-static inline PetscErrorCode PetscLLCondensedView_fast(PetscInt *lnk)
+static inline PetscErrorCode PetscLLCondensedView_fast(const PetscInt *lnk)
 {
-  PetscInt k, next, nlnk;
-  next = lnk[5]; /* first node */
-  nlnk = lnk[0];
-  for (k = 0; k < nlnk; k++) {
+  const PetscInt nlnk = lnk[0];
+  PetscInt       next = lnk[5]; /* first node */
+
+  for (PetscInt k = 0; k < nlnk; k++) {
 #if 0 /* Debugging code */
-    printf("%d value %d len %d next %d\n",next,lnk[next],lnk[next+1],lnk[next+2]);
+    printf("%d value %d len %d next %d\n", next, lnk[next], lnk[next + 1], lnk[next + 2]);
 #endif
     next = lnk[next + 2];
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static inline PetscErrorCode PetscLLCondensedDestroy_fast(PetscInt *lnk)

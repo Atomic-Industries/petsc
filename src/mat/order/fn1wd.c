@@ -51,7 +51,7 @@ PetscErrorCode SPARSEPACKfn1wd(PetscInt *root, const PetscInt *inxadj, const Pet
   --adjncy;
   --xadj;
 
-  SPARSEPACKfnroot(root, &xadj[1], &adjncy[1], &mask[1], nlvl, &xls[1], &ls[1]);
+  PetscCall(SPARSEPACKfnroot(root, &xadj[1], &adjncy[1], &mask[1], nlvl, &xls[1], &ls[1]));
   fnlvl  = (PetscReal)(*nlvl);
   *nsep  = xls[*nlvl + 1] - 1;
   width  = (PetscReal)(*nsep) / fnlvl;

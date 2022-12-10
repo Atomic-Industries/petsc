@@ -19,7 +19,7 @@ PETSC_INTERN PetscErrorCode MatGetOrdering_QMD(Mat mat, MatOrderingType type, IS
   PetscCall(PetscMalloc5(nrow, &iperm, nrow, &deg, nrow, &marker, nrow, &rchset, nrow, &nbrhd));
   PetscCall(PetscMalloc2(nrow, &qsize, nrow, &qlink));
   /* WARNING - genqmd trashes ja */
-  SPARSEPACKgenqmd(&nrow, ia, ja, perm, iperm, deg, marker, rchset, nbrhd, qsize, qlink, &nofsub);
+  PetscCall(SPARSEPACKgenqmd(&nrow, ia, ja, perm, iperm, deg, marker, rchset, nbrhd, qsize, qlink, &nofsub));
   PetscCall(MatRestoreRowIJ(mat, 1, PETSC_TRUE, PETSC_TRUE, NULL, &ia, &ja, &done));
 
   PetscCall(PetscFree2(qsize, qlink));

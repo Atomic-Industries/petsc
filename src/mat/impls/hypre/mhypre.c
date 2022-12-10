@@ -1749,19 +1749,19 @@ static PetscErrorCode MatMissingDiagonal_HYPRE(Mat A, PetscBool *missing, PetscI
       for (j = ii[i]; j < ii[i + 1] && !found; j++) found = (jj[j] == i) ? PETSC_TRUE : PETSC_FALSE;
 
       if (!found) {
-        PetscInfo(A, "Matrix is missing local diagonal entry %" PetscInt_FMT "\n", i);
+        PetscCall(PetscInfo(A, "Matrix is missing local diagonal entry %" PetscInt_FMT "\n", i));
         if (missing) *missing = PETSC_TRUE;
         if (dd) *dd = i + rst;
         PetscFunctionReturn(PETSC_SUCCESS);
       }
     }
     if (!size) {
-      PetscInfo(A, "Matrix has no diagonal entries therefore is missing diagonal\n");
+      PetscCall(PetscInfo(A, "Matrix has no diagonal entries therefore is missing diagonal\n"));
       if (missing) *missing = PETSC_TRUE;
       if (dd) *dd = rst;
     }
   } else {
-    PetscInfo(A, "Matrix has no diagonal entries therefore is missing diagonal\n");
+    PetscCall(PetscInfo(A, "Matrix has no diagonal entries therefore is missing diagonal\n"));
     if (missing) *missing = PETSC_TRUE;
     if (dd) *dd = rst;
   }

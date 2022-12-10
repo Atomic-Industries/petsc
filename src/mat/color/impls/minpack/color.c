@@ -19,7 +19,7 @@ PETSC_INTERN PetscErrorCode MatFDColoringDegreeSequence_Minpack(PetscInt m, cons
   PetscCall(PetscMalloc1(m, &work));
   PetscCall(PetscMalloc1(m, seq));
 
-  MINPACKdegr(&m, cja, cia, rja, ria, *seq, work);
+  PetscCall(MINPACKdegr(&m, cja, cia, rja, ria, *seq, work));
 
   PetscCall(PetscFree(work));
   PetscFunctionReturn(PETSC_SUCCESS);
@@ -77,10 +77,10 @@ static PetscErrorCode MatColoringApply_SL(MatColoring mc, ISColoring *iscoloring
 
   PetscCall(PetscMalloc2(n, &list, 4 * n, &work));
 
-  MINPACKslo(&n, cja, cia, rja, ria, seq, list, &clique, work, work + n, work + 2 * n, work + 3 * n);
+  PetscCall(MINPACKslo(&n, cja, cia, rja, ria, seq, list, &clique, work, work + n, work + 2 * n, work + 3 * n));
 
   PetscCall(PetscMalloc1(n, &coloring));
-  MINPACKseq(&n, cja, cia, rja, ria, list, coloring, &ncolors, work);
+  PetscCall(MINPACKseq(&n, cja, cia, rja, ria, list, coloring, &ncolors, work));
 
   PetscCall(PetscFree2(list, work));
   PetscCall(PetscFree(seq));
@@ -183,9 +183,9 @@ static PetscErrorCode MatColoringApply_LF(MatColoring mc, ISColoring *iscoloring
 
   n1   = n - 1;
   none = -1;
-  MINPACKnumsrt(&n, &n1, seq, &none, list, work + 2 * n, work + n);
+  PetscCall(MINPACKnumsrt(&n, &n1, seq, &none, list, work + 2 * n, work + n));
   PetscCall(PetscMalloc1(n, &coloring));
-  MINPACKseq(&n, cja, cia, rja, ria, list, coloring, &ncolors, work);
+  PetscCall(MINPACKseq(&n, cja, cia, rja, ria, list, coloring, &ncolors, work));
 
   PetscCall(PetscFree2(list, work));
   PetscCall(PetscFree(seq));
@@ -288,10 +288,10 @@ static PetscErrorCode MatColoringApply_ID(MatColoring mc, ISColoring *iscoloring
 
   PetscCall(PetscMalloc2(n, &list, 4 * n, &work));
 
-  MINPACKido(&n, &n, cja, cia, rja, ria, seq, list, &clique, work, work + n, work + 2 * n, work + 3 * n);
+  PetscCall(MINPACKido(&n, &n, cja, cia, rja, ria, seq, list, &clique, work, work + n, work + 2 * n, work + 3 * n));
 
   PetscCall(PetscMalloc1(n, &coloring));
-  MINPACKseq(&n, cja, cia, rja, ria, list, coloring, &ncolors, work);
+  PetscCall(MINPACKseq(&n, cja, cia, rja, ria, list, coloring, &ncolors, work));
 
   PetscCall(PetscFree2(list, work));
   PetscCall(PetscFree(seq));

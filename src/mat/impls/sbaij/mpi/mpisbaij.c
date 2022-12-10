@@ -1,4 +1,3 @@
-
 #include <../src/mat/impls/baij/mpi/mpibaij.h> /*I "petscmat.h" I*/
 #include <../src/mat/impls/sbaij/mpi/mpisbaij.h>
 #include <../src/mat/impls/sbaij/seq/sbaij.h>
@@ -981,7 +980,7 @@ PetscErrorCode MatDestroy_MPISBAIJ(Mat mat)
 
   PetscFunctionBegin;
 #if defined(PETSC_USE_LOG)
-  PetscLogObjectState((PetscObject)mat, "Rows=%" PetscInt_FMT ",Cols=%" PetscInt_FMT, mat->rmap->N, mat->cmap->N);
+  PetscCall(PetscLogObjectState((PetscObject)mat, "Rows=%" PetscInt_FMT ",Cols=%" PetscInt_FMT, mat->rmap->N, mat->cmap->N));
 #endif
   PetscCall(MatStashDestroy_Private(&mat->stash));
   PetscCall(MatStashDestroy_Private(&mat->bstash));

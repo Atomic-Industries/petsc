@@ -125,10 +125,10 @@ PetscErrorCode MatCholeskyFactorNumeric_SeqAIJ_Bas(Mat B, Mat A, const MatFactor
 
   if (info->usedt) droptol = info->dt;
 
-  for (PetscErrorCode ierr = NEGATIVE_DIAGONAL; ierr == NEGATIVE_DIAGONAL;) {
+  for (int ierr = NEGATIVE_DIAGONAL; ierr == NEGATIVE_DIAGONAL;) {
     PetscBool success;
 
-    ierr = spbas_incomplete_cholesky(A, rip, riip, Pattern, droptol, shiftnz, &matrix_LT, &success);
+    ierr = (int)spbas_incomplete_cholesky(A, rip, riip, Pattern, droptol, shiftnz, &matrix_LT, &success);
     if (!success) {
       shiftnz *= 1.5;
       if (shiftnz < 1e-5) shiftnz = 1e-5;

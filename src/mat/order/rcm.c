@@ -59,7 +59,7 @@ PetscErrorCode SPARSEPACKrcm(const PetscInt *root, const PetscInt *xadj, const P
   --adjncy;
   --xadj;
 
-  SPARSEPACKdegree(root, &xadj[1], &adjncy[1], &mask[1], &deg[1], ccsize, &perm[1]);
+  PetscCall(SPARSEPACKdegree(root, &xadj[1], &adjncy[1], &mask[1], &deg[1], ccsize, &perm[1]));
   mask[*root] = 0;
   if (*ccsize <= 1) PetscFunctionReturn(PETSC_SUCCESS);
   lvlend = 0;

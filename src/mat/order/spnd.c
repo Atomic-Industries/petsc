@@ -20,7 +20,7 @@ PETSC_INTERN PetscErrorCode MatGetOrdering_ND(Mat mat, MatOrderingType type, IS 
   }
 
   PetscCall(PetscMalloc4(nrow, &mask, nrow, &perm, nrow + 1, &xls, nrow, &ls));
-  SPARSEPACKgennd(&nrow, ia, ja, mask, perm, xls, ls);
+  PetscCall(SPARSEPACKgennd(&nrow, ia, ja, mask, perm, xls, ls));
   if (B) {
     PetscCall(MatRestoreRowIJ(B, 1, PETSC_TRUE, PETSC_TRUE, NULL, &ia, &ja, &done));
     PetscCall(MatDestroy(&B));

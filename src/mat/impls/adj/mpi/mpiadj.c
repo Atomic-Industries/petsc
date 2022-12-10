@@ -273,7 +273,7 @@ static PetscErrorCode MatDestroy_MPIAdj(Mat mat)
 
   PetscFunctionBegin;
 #if defined(PETSC_USE_LOG)
-  PetscLogObjectState((PetscObject)mat, "Rows=%" PetscInt_FMT ", Cols=%" PetscInt_FMT ", NZ=%" PetscInt_FMT, mat->rmap->n, mat->cmap->n, a->nz);
+  PetscCall(PetscLogObjectState((PetscObject)mat, "Rows=%" PetscInt_FMT ", Cols=%" PetscInt_FMT ", NZ=%" PetscInt_FMT, mat->rmap->n, mat->cmap->n, a->nz));
 #endif
   PetscCall(PetscFree(a->diag));
   if (a->freeaij) {

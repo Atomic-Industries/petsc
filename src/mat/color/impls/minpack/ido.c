@@ -79,7 +79,7 @@ PetscErrorCode MINPACKido(PetscInt *m, PetscInt *n, const PetscInt *indrow, cons
 
   /* Function Body */
   i__1 = *n - 1;
-  MINPACKnumsrt(n, &i__1, &ndeg[1], &c_n1, &iwa4[1], &iwa2[1], &iwa3[1]);
+  PetscCall(MINPACKnumsrt(n, &i__1, &ndeg[1], &c_n1, &iwa4[1], &iwa2[1], &iwa3[1]));
 
   /*     Initialization block. */
   /*     Create a doubly-linked list to access the incidences of the */

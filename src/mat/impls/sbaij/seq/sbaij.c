@@ -161,7 +161,7 @@ PetscErrorCode MatDestroy_SeqSBAIJ(Mat A)
 
   PetscFunctionBegin;
 #if defined(PETSC_USE_LOG)
-  PetscLogObjectState((PetscObject)A, "Rows=%" PetscInt_FMT ", NZ=%" PetscInt_FMT, A->rmap->N, a->nz);
+  PetscCall(PetscLogObjectState((PetscObject)A, "Rows=%" PetscInt_FMT ", NZ=%" PetscInt_FMT, A->rmap->N, a->nz));
 #endif
   PetscCall(MatSeqXAIJFreeAIJ(A, &a->a, &a->j, &a->i));
   if (a->free_diag) PetscCall(PetscFree(a->diag));

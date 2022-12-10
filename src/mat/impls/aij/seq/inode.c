@@ -4447,7 +4447,7 @@ PetscErrorCode MatSeqAIJCheckInode_FactorLU(Mat A)
     nzl1 = ai[i + 1] - ai[i];           /* Number of nonzeros in L */
     nzu1 = adiag[i] - adiag[i + 1] - 1; /* Number of nonzeros in U excluding diagonal*/
     nzx  = nzl1 + nzu1 + 1;
-    MatGetRow_FactoredLU(cols1, nzl1, nzu1, nzx, ai, aj, adiag, i);
+    PetscCall(MatGetRow_FactoredLU(cols1, nzl1, nzu1, nzx, ai, aj, adiag, i));
 
     /* Limits the number of elements in a node to 'a->inode.limit' */
     for (j = i + 1, blk_size = 1; j < m && blk_size < a->inode.limit; ++j, ++blk_size) {

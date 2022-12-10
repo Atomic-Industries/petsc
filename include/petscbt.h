@@ -56,7 +56,7 @@ static inline PetscErrorCode PetscBTMemzero(PetscInt m, PetscBT array)
 
 static inline PetscErrorCode PetscBTDestroy(PetscBT *array)
 {
-  return (*array) ? PetscFree(*array) : 0;
+  return (*array) ? PetscFree(*array) : PETSC_SUCCESS;
 }
 
 static inline PetscErrorCode PetscBTCreate(PetscInt m, PetscBT *array)

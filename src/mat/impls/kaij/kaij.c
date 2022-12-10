@@ -1176,10 +1176,10 @@ PetscErrorCode MatInvertBlockDiagonal_MPIKAIJ(Mat A, const PetscScalar **values)
 
 PetscErrorCode MatGetRow_SeqKAIJ(Mat A, PetscInt row, PetscInt *ncols, PetscInt **cols, PetscScalar **values)
 {
-  Mat_SeqKAIJ   *b    = (Mat_SeqKAIJ *)A->data;
-  PetscErrorCode diag = PETSC_FALSE;
-  PetscInt       nzaij, nz, *colsaij, *idx, i, j, p = b->p, q = b->q, r = row / p, s = row % p, c;
-  PetscScalar   *vaij, *v, *S = b->S, *T = b->T;
+  Mat_SeqKAIJ *b    = (Mat_SeqKAIJ *)A->data;
+  PetscBool    diag = PETSC_FALSE;
+  PetscInt     nzaij, nz, *colsaij, *idx, i, j, p = b->p, q = b->q, r = row / p, s = row % p, c;
+  PetscScalar *vaij, *v, *S = b->S, *T = b->T;
 
   PetscFunctionBegin;
   PetscCheck(!b->getrowactive, PETSC_COMM_SELF, PETSC_ERR_ARG_WRONGSTATE, "Already active");
