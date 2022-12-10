@@ -13,13 +13,74 @@
 /* SUBMANSEC = Sys */
 
 /*MC
-    PetscErrorCode - datatype used for return error code from almost all PETSc functions
+  PetscErrorCode - datatype used for return error code from almost all PETSc functions
 
-    Level: beginner
+  Level: beginner
+
+  Developer Notes:
+  These are the generic error codes. These error codes are used many different places in the
+  PETSc source code. The string versions are at `src/sys/error/err.c` and the fortran versions
+  are defined in `src/sys/f90-mod/petscerror.h`. Any changes here must also be made in both
+  locations.
 
 .seealso: `PetscCall()`, `SETERRQ()`
 M*/
-typedef int PetscErrorCode;
+typedef enum PETSC_NODISCARD {
+  PETSC_SUCCESS = 0,
+
+  PETSC_ERR_MIN_VALUE = 54, /* should always be one less then the smallest value */
+
+  PETSC_ERR_MEM            = 55, /* unable to allocate requested memory */
+  PETSC_ERR_SUP            = 56, /* no support for requested operation */
+  PETSC_ERR_SUP_SYS        = 57, /* no support for requested operation on this computer system */
+  PETSC_ERR_ORDER          = 58, /* operation done in wrong order */
+  PETSC_ERR_SIG            = 59, /* signal received */
+  PETSC_ERR_FP             = 72, /* floating point exception */
+  PETSC_ERR_COR            = 74, /* corrupted PETSc object */
+  PETSC_ERR_LIB            = 76, /* error in library called by PETSc */
+  PETSC_ERR_PLIB           = 77, /* PETSc library generated inconsistent data */
+  PETSC_ERR_MEMC           = 78, /* memory corruption */
+  PETSC_ERR_CONV_FAILED    = 82, /* iterative method (KSP or SNES) failed */
+  PETSC_ERR_USER           = 83, /* user has not provided needed function */
+  PETSC_ERR_SYS            = 88, /* error in system call */
+  PETSC_ERR_POINTER        = 70, /* pointer does not point to valid address */
+  PETSC_ERR_MPI_LIB_INCOMP = 87, /* MPI library at runtime is not compatible with MPI user compiled with */
+
+  PETSC_ERR_ARG_SIZ          = 60, /* nonconforming object sizes used in operation */
+  PETSC_ERR_ARG_IDN          = 61, /* two arguments not allowed to be the same */
+  PETSC_ERR_ARG_WRONG        = 62, /* wrong argument (but object probably ok) */
+  PETSC_ERR_ARG_CORRUPT      = 64, /* null or corrupted PETSc object as argument */
+  PETSC_ERR_ARG_OUTOFRANGE   = 63, /* input argument, out of range */
+  PETSC_ERR_ARG_BADPTR       = 68, /* invalid pointer argument */
+  PETSC_ERR_ARG_NOTSAMETYPE  = 69, /* two args must be same object type */
+  PETSC_ERR_ARG_NOTSAMECOMM  = 80, /* two args must be same communicators */
+  PETSC_ERR_ARG_WRONGSTATE   = 73, /* object in argument is in wrong state, e.g. unassembled mat */
+  PETSC_ERR_ARG_TYPENOTSET   = 89, /* the type of the object has not yet been set */
+  PETSC_ERR_ARG_INCOMP       = 75, /* two arguments are incompatible */
+  PETSC_ERR_ARG_NULL         = 85, /* argument is null that should not be */
+  PETSC_ERR_ARG_UNKNOWN_TYPE = 86, /* type name doesn't match any registered type */
+
+  PETSC_ERR_FILE_OPEN       = 65, /* unable to open file */
+  PETSC_ERR_FILE_READ       = 66, /* unable to read from file */
+  PETSC_ERR_FILE_WRITE      = 67, /* unable to write to file */
+  PETSC_ERR_FILE_UNEXPECTED = 79, /* unexpected data in file */
+
+  PETSC_ERR_MAT_LU_ZRPVT = 71, /* detected a zero pivot during LU factorization */
+  PETSC_ERR_MAT_CH_ZRPVT = 81, /* detected a zero pivot during Cholesky factorization */
+
+  PETSC_ERR_INT_OVERFLOW   = 84,
+  PETSC_ERR_FLOP_COUNT     = 90,
+  PETSC_ERR_NOT_CONVERGED  = 91, /* solver did not converge */
+  PETSC_ERR_MISSING_FACTOR = 92, /* MatGetFactor() failed */
+  PETSC_ERR_OPT_OVERWRITE  = 93, /* attempted to over write options which should not be changed */
+  PETSC_ERR_WRONG_MPI_SIZE = 94, /* example/application run with number of MPI ranks it does not support */
+  PETSC_ERR_USER_INPUT     = 95, /* missing or incorrect user input */
+  PETSC_ERR_GPU_RESOURCE   = 96, /* unable to load a GPU resource, for example cuBLAS */
+  PETSC_ERR_GPU            = 97, /* An error from a GPU call, this may be due to lack of resources on the GPU or a true error in the call */
+  PETSC_ERR_MPI            = 98, /* general MPI error */
+  PETSC_ERR_RETURN         = 99, /* PetscError() incorrectly returned an error code of 0 */
+  PETSC_ERR_MAX_VALUE      = 100 /* this is always the one more than the largest error code */
+} PetscErrorCode;
 
 /*MC
 
