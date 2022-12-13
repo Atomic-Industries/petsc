@@ -4,6 +4,7 @@
 
 #include <petsc/private/matimpl.h>
 #include <petsc/private/hashmapi.h>
+#include <petsc/private/hashmapijv.h>
 
 /*
  Used by MatCreateSubMatrices_MPIXAIJ_Local()
@@ -164,6 +165,11 @@ typedef struct {
   PetscCount  Atot;  /* Total number of valid (i.e., w/ non-negative indices) entries in the COO array */
   PetscCount *jmap;  /* perm[jmap[i]..jmap[i+1]) give indices of entries in v[] associated with i-th nonzero of the matrix */
   PetscCount *perm;  /* The permutation array in sorting (i,j) by row and then by col */
+
+  /* MatSetValues() via hash related fields */
+  PetscHMapIJV   ht;
+  PetscInt      *dnz;
+  struct _MatOps cops;
 } Mat_SeqAIJ;
 
 /*

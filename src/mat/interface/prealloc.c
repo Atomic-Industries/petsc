@@ -15,7 +15,7 @@ typedef struct {
    Code currently only works for AIJ matrix, for BAIJ if there are calls to MatSetValues() (not the block version) the indexing
    needs to be converted to block indexing below to get the correct preallocation
 */
-PetscErrorCode MatSetValues_Hash(Mat A, PetscInt m, const PetscInt *rows, PetscInt n, const PetscInt *cols, const PetscScalar *values, InsertMode addv)
+static PetscErrorCode MatSetValues_Hash(Mat A, PetscInt m, const PetscInt *rows, PetscInt n, const PetscInt *cols, const PetscScalar *values, InsertMode addv)
 {
   Mat_Hash *p = (Mat_Hash *)A->hash_ctx;
   PetscInt  rStart, rEnd, r, cStart, cEnd, c;
@@ -64,7 +64,7 @@ PetscErrorCode MatSetValues_Hash(Mat A, PetscInt m, const PetscInt *rows, PetscI
   PetscFunctionReturn(0);
 }
 
-PetscErrorCode MatAssemblyBegin_Hash(Mat A, MatAssemblyType type)
+static PetscErrorCode MatAssemblyBegin_Hash(Mat A, MatAssemblyType type)
 {
   PetscInt nstash, reallocs;
 
@@ -157,7 +157,7 @@ static PetscErrorCode MatAssemblyEnd_Hash(Mat A, MatAssemblyType type)
   PetscFunctionReturn(0);
 }
 
-PETSC_INTERN PetscErrorCode MatSetUp_Default(Mat A)
+PETSC_INTERN PetscErrorCode MatSetUp_Hash(Mat A)
 {
   Mat_Hash *p;
   PetscInt  m;
@@ -193,14 +193,18 @@ PETSC_INTERN PetscErrorCode MatSetUp_Default(Mat A)
  Input Parameter:
 .  A - the matrix
 
- Level: beginnger
+ Level: beginner
 
-.seealso: `Mat`, `MatCreate()`, `MatXAIJSetNoPreallocation()`
+.seealso: `Mat`, `MatCreate()`, `MatXAIJSetPreallocation()`
 @*/
 PetscErrorCode MatXAIJSetNoPreallocation(Mat A)
 {
+  PetscErrorCode (*f)(Mat);
+
   PetscFunctionBegin;
   PetscCall(PetscInfo(A, "Requesting hash-based MatSetValues()\n"));
-  A->ops->setup = MatSetUp_Default;
+  PetscCall(PetscObjectQueryFunction((PetscObject)A, "MatSetUp_Hash_C", &f));
+  if (f) A->ops->setup = f;
+  else A->ops->setup = MatSetUp_Hash;
   PetscFunctionReturn(0);
 }

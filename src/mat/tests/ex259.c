@@ -4,19 +4,24 @@ static char help[] = "Test of setting values in a matrix without preallocation\n
 
 PetscErrorCode ex1_nonsquare_bs1(void)
 {
-  Mat      A;
-  PetscInt M, N, m, n, bs;
+  Mat       A;
+  PetscInt  M, N, m, n, bs = 1;
+  char      type[16];
+  PetscBool flg;
 
   /*
-     Create the Jacobian matrix
+     Create the matrix
   */
   PetscFunctionBegin;
   M = 10;
-  N = 8;
+  N = 12;
   PetscCall(MatCreate(PETSC_COMM_WORLD, &A));
-  PetscCall(MatSetType(A, MATAIJ));
+  PetscCall(PetscOptionsGetString(NULL, NULL, "-type", type, sizeof(type), &flg));
+  if (flg) PetscCall(MatSetType(A, type));
+  else PetscCall(MatSetType(A, MATAIJ));
   PetscCall(MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, M, N));
-  PetscCall(MatSetBlockSize(A, 1));
+  PetscCall(PetscOptionsGetInt(NULL, NULL, "-bs", &bs, NULL));
+  PetscCall(MatSetBlockSize(A, bs));
   PetscCall(MatSetFromOptions(A));
   PetscCall(MatXAIJSetNoPreallocation(A));
   PetscCall(MatSetUp(A));
@@ -25,7 +30,6 @@ PetscErrorCode ex1_nonsquare_bs1(void)
      Get the sizes of the matrix
   */
   PetscCall(MatGetLocalSize(A, &m, &n));
-  PetscCall(MatGetBlockSize(A, &bs));
 
   /*
      Insert non-zero pattern (e.g. perform a sweep over the grid).
@@ -37,19 +41,22 @@ PetscErrorCode ex1_nonsquare_bs1(void)
 
     ii = 3;
     jj = 3;
-    PetscCall(MatSetValues(A, 1, &ii, 1, &jj, &vv, INSERT_VALUES));
+    PetscCall(MatSetValue(A, ii, jj, vv, INSERT_VALUES));
 
     ii = 7;
     jj = 4;
-    PetscCall(MatSetValues(A, 1, &ii, 1, &jj, &vv, INSERT_VALUES));
+    PetscCall(MatSetValue(A, ii, jj, vv, INSERT_VALUES));
+    PetscCall(MatSetValue(A, jj, ii, vv, INSERT_VALUES));
 
     ii = 9;
     jj = 7;
     PetscCall(MatSetValue(A, ii, jj, vv, INSERT_VALUES));
+    PetscCall(MatSetValue(A, jj, ii, vv, INSERT_VALUES));
   }
   PetscCall(MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY));
   PetscCall(MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY));
 
+  PetscCall(PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_COMMON));
   PetscCall(MatView(A, PETSC_VIEWER_STDOUT_WORLD));
 
   /*
@@ -67,12 +74,14 @@ PetscErrorCode ex1_nonsquare_bs1(void)
     ii = 7;
     jj = 4;
     vv = 3.3;
-    PetscCall(MatSetValues(A, 1, &ii, 1, &jj, &vv, INSERT_VALUES));
+    PetscCall(MatSetValue(A, ii, jj, vv, INSERT_VALUES));
+    PetscCall(MatSetValue(A, jj, ii, vv, INSERT_VALUES));
 
     ii = 9;
     jj = 7;
     vv = 4.3;
-    PetscCall(MatSetValues(A, 1, &ii, 1, &jj, &vv, INSERT_VALUES));
+    PetscCall(MatSetValue(A, ii, jj, vv, INSERT_VALUES));
+    PetscCall(MatSetValue(A, jj, ii, vv, INSERT_VALUES));
   }
   PetscCall(MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY));
   PetscCall(MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY));
@@ -94,10 +103,12 @@ int main(int argc, char **args)
 
 /*TEST
 
-   test:
-
-   test:
-     suffix: 2
-     nsize: 2
+   testset:
+     args: -bs {{1 2}} -type {{aij baij sbaij}}
+     filter: grep -v "type:"
+     test:
+     test:
+       suffix: 2
+       nsize: 2
 
 TEST*/

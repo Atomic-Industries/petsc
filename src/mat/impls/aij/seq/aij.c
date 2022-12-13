@@ -1291,6 +1291,7 @@ PetscErrorCode MatDestroy_SeqAIJ(Mat A)
   PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatConvert_seqaij_seqaijviennacl_C", NULL));
   PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatProductSetFromOptions_seqaijviennacl_seqdense_C", NULL));
   PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatProductSetFromOptions_seqaijviennacl_seqaij_C", NULL));
+  PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatSetUp_Hash_C", NULL));
   PetscFunctionReturn(0);
 }
 
@@ -4736,6 +4737,103 @@ static PetscErrorCode MatSetValuesCOO_SeqAIJ(Mat A, const PetscScalar v[], Inser
   PetscFunctionReturn(0);
 }
 
+static PetscErrorCode MatSetValues_Hash_SeqAIJ(Mat A, PetscInt m, const PetscInt *rows, PetscInt n, const PetscInt *cols, const PetscScalar *values, InsertMode addv)
+{
+  Mat_SeqAIJ *a = (Mat_SeqAIJ *)A->data;
+
+  PetscFunctionBegin;
+  for (PetscInt r = 0; r < m; ++r) {
+    PetscHashIJKey key;
+    PetscBool      missing;
+
+    key.i = rows[r];
+    if (key.i < 0) continue;
+    for (PetscInt c = 0; c < n; ++c) {
+      key.j = cols[c];
+      if (key.j < 0) continue;
+      switch (addv) {
+      case INSERT_VALUES:
+        PetscCall(PetscHMapIJVQuerySet(a->ht, key, values[r + c * n], &missing));
+        break;
+      case ADD_VALUES:
+        PetscCall(PetscHMapIJVQueryAdd(a->ht, key, values[r + c * n], &missing));
+        break;
+      default:
+        SETERRQ(PETSC_COMM_SELF, PETSC_ERR_ARG_WRONG, "InsertMode not supported");
+      }
+      if (missing) ++a->dnz[key.i];
+    }
+  }
+  PetscFunctionReturn(0);
+}
+
+static PetscErrorCode MatAssemblyEnd_Hash_SeqAIJ(Mat A, MatAssemblyType type)
+{
+  Mat_SeqAIJ    *a = (Mat_SeqAIJ *)A->data;
+  PetscHashIter  hi;
+  PetscHashIJKey key;
+  PetscScalar    value, *values;
+  PetscInt       m, n, *cols, *rowstarts;
+
+  PetscFunctionBegin;
+  A->preallocated = PETSC_FALSE; /* this was set to true for the MatSetValues_Hash() to work */
+
+  PetscCall(PetscMemcpy(&A->ops, &a->cops, sizeof(struct _MatOps)));
+
+  /* move values from hash format to matrix type format */
+  PetscCall(MatGetSize(A, &m, NULL));
+  PetscCall(MatSeqAIJSetPreallocation(A, PETSC_DETERMINE, a->dnz));
+  PetscCall(MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_TRUE));
+  PetscCall(PetscHMapIJVGetSize(a->ht, &n));
+  PetscCall(PetscMalloc3(n, &cols, m + 1, &rowstarts, n, &values));
+  rowstarts[0] = 0;
+  for (PetscInt i = 0; i < m; i++) rowstarts[i + 1] = rowstarts[i] + a->dnz[i];
+
+  PetscHashIterBegin(a->ht, hi);
+  while (!PetscHashIterAtEnd(a->ht, hi)) {
+    PetscHashIterGetKey(a->ht, hi, key);
+    PetscHashIterGetVal(a->ht, hi, value);
+    cols[rowstarts[key.i]]     = key.j;
+    values[rowstarts[key.i]++] = value;
+    PetscHashIterNext(a->ht, hi);
+  }
+  PetscCall(PetscHMapIJVDestroy(&a->ht));
+
+  for (PetscInt i = 0, start = 0; i < m; i++) {
+    PetscCall(MatSetValues(A, 1, &i, a->dnz[i], &cols[start], &values[start], A->insertmode));
+    start += a->dnz[i];
+  }
+  PetscCall(PetscFree3(cols, rowstarts, values));
+  PetscCall(PetscFree(a->dnz));
+  PetscCall(MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY));
+  PetscCall(MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY));
+  PetscFunctionReturn(0);
+}
+
+static PetscErrorCode MatSetUp_Hash_SeqAIJ(Mat A)
+{
+  Mat_SeqAIJ *a = (Mat_SeqAIJ *)A->data;
+  PetscInt    m;
+
+  PetscFunctionBegin;
+  PetscCall(PetscInfo(A, "Using hash-based MatSetValues() for MATSEQAIJ because no preallocation provided\n"));
+  PetscCall(PetscLayoutSetUp(A->rmap));
+  PetscCall(PetscLayoutSetUp(A->cmap));
+
+  PetscCall(MatGetLocalSize(A, &m, NULL));
+  PetscCall(PetscHMapIJVCreate(&a->ht));
+  PetscCall(PetscCalloc1(m, &a->dnz));
+
+  PetscCall(PetscMemcpy(&a->cops, &A->ops, sizeof(struct _MatOps)));
+  PetscCall(PetscMemzero(&A->ops, sizeof(struct _MatOps)));
+
+  A->ops->assemblybegin = NULL;
+  A->ops->assemblyend   = MatAssemblyEnd_Hash_SeqAIJ;
+  A->ops->setvalues     = MatSetValues_Hash_SeqAIJ;
+  A->preallocated       = PETSC_TRUE;
+  PetscFunctionReturn(0);
+}
+
 #if defined(PETSC_HAVE_CUDA)
 PETSC_INTERN PetscErrorCode MatConvert_SeqAIJ_SeqAIJCUSPARSE(Mat, MatType, MatReuse, Mat *);
 #endif
@@ -4836,6 +4934,7 @@ PETSC_EXTERN PetscErrorCode MatCreate_SeqAIJ(Mat B)
   PetscCall(PetscObjectComposeFunction((PetscObject)B, "MatSeqAIJKron_C", MatSeqAIJKron_SeqAIJ));
   PetscCall(PetscObjectComposeFunction((PetscObject)B, "MatSetPreallocationCOO_C", MatSetPreallocationCOO_SeqAIJ));
   PetscCall(PetscObjectComposeFunction((PetscObject)B, "MatSetValuesCOO_C", MatSetValuesCOO_SeqAIJ));
+  PetscCall(PetscObjectComposeFunction((PetscObject)B, "MatSetUp_Hash_C", MatSetUp_Hash_SeqAIJ));
   PetscCall(MatCreate_SeqAIJ_Inode(B));
   PetscCall(PetscObjectChangeTypeName((PetscObject)B, MATSEQAIJ));
   PetscCall(MatSeqAIJSetTypeFromOptions(B)); /* this allows changing the matrix subtype to say MATSEQAIJPERM */
