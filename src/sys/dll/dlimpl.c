@@ -155,7 +155,7 @@ PetscErrorCode PetscDLClose(PetscDLHandle *handle)
     ierr = PetscErrorPrintf("Error closing dynamic library:\n  Error message from FreeLibrary() %s\n", buff);
     LocalFree(buff);
     #else
-    SETERRQ(PETSC_COMM_SELF, PETSC_ERR_LIB, "Error closing dynamic library:\n  Error message from FreeLibrary() %s\n", "unavailable");
+    SETERRQ(PETSC_COMM_SELF, PETSC_ERR_LIB, "Error closing dynamic library:\n  Error message from FreeLibrary() %s", "unavailable");
     #endif
   }
   #endif /* !PETSC_HAVE_FREELIBRARY */
@@ -174,7 +174,7 @@ PetscErrorCode PetscDLClose(PetscDLHandle *handle)
     #else
     const char *errmsg = "unavailable";
     #endif
-    SETERRQ(PETSC_COMM_SELF, PETSC_ERR_LIB, "Error closing dynamic library:\n  Error message from dlclose() %s\n", errmsg);
+    SETERRQ(PETSC_COMM_SELF, PETSC_ERR_LIB, "Error closing dynamic library:\n  Error message from dlclose() %s", errmsg);
   }
   #endif /* !PETSC_HAVE_DLCLOSE */
 
