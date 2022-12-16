@@ -258,10 +258,10 @@ static inline PetscErrorCode PetscDeviceDereference_Internal(PetscDevice device)
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 #else /* PETSC_HAVE_CXX for PetscDevice Internal Functions */
-  #define PetscDeviceInitializeFromOptions_Internal(comm)     0
-  #define PetscDeviceGetDefaultForType_Internal(Type, device) 0
-  #define PetscDeviceReference_Internal(device)               0
-  #define PetscDeviceDereference_Internal(device)             0
+  #define PetscDeviceInitializeFromOptions_Internal(comm)     PETSC_SUCCESS
+  #define PetscDeviceGetDefaultForType_Internal(Type, device) PETSC_SUCCESS
+  #define PetscDeviceReference_Internal(device)               PETSC_SUCCESS
+  #define PetscDeviceDereference_Internal(device)             PETSC_SUCCESS
 #endif /* PETSC_HAVE_CXX for PetscDevice Internal Functions */
 
 static inline PetscErrorCode PetscDeviceCheckDeviceCount_Internal(PetscInt count)
@@ -356,12 +356,12 @@ static inline PetscErrorCode PetscDeviceContextEndTimer_Internal(PetscDeviceCont
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 #else /* PETSC_HAVE_CXX for PetscDeviceContext Internal Functions */
-  #define PetscDeviceContextGetNullContext_Internal(dctx)          (*(dctx) = PETSC_NULLPTR, 0)
-  #define PetscDeviceContextGetBLASHandle_Internal(dctx, handle)   (*(handle) = PETSC_NULLPTR, 0)
-  #define PetscDeviceContextGetSOLVERHandle_Internal(dctx, handle) (*(handle) = PETSC_NULLPTR, 0)
-  #define PetscDeviceContextGetStreamHandle_Internal(dctx, handle) (*(handle) = PETSC_NULLPTR, 0)
-  #define PetscDeviceContextBeginTimer_Internal(dctx)              0
-  #define PetscDeviceContextEndTimer_Internal(dctx, elapsed)       0
+  #define PetscDeviceContextGetNullContext_Internal(dctx)          (*(dctx) = PETSC_NULLPTR, PETSC_SUCCESS)
+  #define PetscDeviceContextGetBLASHandle_Internal(dctx, handle)   (*(handle) = PETSC_NULLPTR, PETSC_SUCCESS)
+  #define PetscDeviceContextGetSOLVERHandle_Internal(dctx, handle) (*(handle) = PETSC_NULLPTR, PETSC_SUCCESS)
+  #define PetscDeviceContextGetStreamHandle_Internal(dctx, handle) (*(handle) = PETSC_NULLPTR, PETSC_SUCCESS)
+  #define PetscDeviceContextBeginTimer_Internal(dctx)              PETSC_SUCCESS
+  #define PetscDeviceContextEndTimer_Internal(dctx, elapsed)       PETSC_SUCCESS
 #endif /* PETSC_HAVE_CXX for PetscDeviceContext Internal Functions */
 
 /* note, only does assertion checking in debug mode */
@@ -407,9 +407,9 @@ PETSC_NODISCARD inline PetscErrorCode PetscDeviceContextMarkIntentFromID(PetscDe
 } // anonymous namespace
   #endif // __cplusplus
 #else
-  #define PetscDeviceRegisterMemory(void_ptr, PetscMemType, size)                                           0
-  #define PetscDeviceGetAttribute(PetscDevice, PetscDeviceAttribute, void_star)                             ((*((int *)(void_star)) = 0), 0)
-  #define PetscDeviceContextMarkIntentFromID(PetscDeviceContext, PetscObjectId, PetscMemoryAccessMode, ptr) 0
+  #define PetscDeviceRegisterMemory(void_ptr, PetscMemType, size)                                           PETSC_SUCCESS
+  #define PetscDeviceGetAttribute(PetscDevice, PetscDeviceAttribute, void_star)                             ((*((int *)(void_star)) = 0), PETSC_SUCCESS)
+  #define PetscDeviceContextMarkIntentFromID(PetscDeviceContext, PetscObjectId, PetscMemoryAccessMode, ptr) PETSC_SUCCESS
 #endif
 
 PETSC_INTERN PetscErrorCode PetscDeviceContextCreate_HOST(PetscDeviceContext);

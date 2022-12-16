@@ -12,7 +12,24 @@
 
 /* SUBMANSEC = Sys */
 
-/*MC
+// cannot just blindly use PETSC_NODISCARD, since gcc complains that
+// __attribute__((warn_unused_result)) (which PETSC_NODISCARD may expand to) can only be
+// applied to functions...
+#if defined(PETSC_SKIP_NODISCARD_PETSCERRORCODE)
+  #define PETSC_ERROR_CODE_NODISCARD
+#elif defined(__clang__)
+  // clang allows both [[nodiscard]] and __attribute__((warn_unused_result)) on type
+  // definitions
+  #define PETSC_ERROR_CODE_NODISCARD PETSC_NODISCARD
+#elif PETSC_CPP_VERSION >= 17
+  // #if defined(__GNUC__) implied by being here, check that we are using the C++17
+  // #[[nodiscard]] instead of __attribute__((warn_unused_result))
+  #define PETSC_ERROR_CODE_NODISCARD PETSC_NODISCARD
+#else
+  #define PETSC_ERROR_CODE_NODISCARD
+#endif
+
+/*EC
   PetscErrorCode - datatype used for return error code from almost all PETSc functions
 
   Level: beginner
@@ -24,12 +41,8 @@
   locations.
 
 .seealso: `PetscCall()`, `SETERRQ()`
-M*/
-typedef enum
-#if !defined(PETSC_SKIP_NODISCARD_PETSCERRORCODE)
-  PETSC_NODISCARD
-#endif
-{
+E*/
+typedef enum PETSC_ERROR_CODE_NODISCARD {
   PETSC_SUCCESS                   = 0,
   PETSC_ERR_BOOLEAN_MACRO_FAILURE = 1,
 
@@ -86,6 +99,8 @@ typedef enum
   PETSC_ERR_RETURN         = 99, /* PetscError() incorrectly returned an error code of 0 */
   PETSC_ERR_MAX_VALUE      = 100 /* this is always the one more than the largest error code */
 } PetscErrorCode;
+
+#undef PETSC_ERROR_CODE_NODISCARD
 
 /*MC
 

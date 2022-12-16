@@ -13,7 +13,7 @@
   #define PETSC_USE_DEBUG_AND_INFO  1
   #define PetscDebugInfo(dctx, ...) PetscInfo(dctx, __VA_ARGS__)
 #else
-  #define PetscDebugInfo(dctx, ...) 0
+  #define PetscDebugInfo(dctx, ...) PETSC_SUCCESS
 #endif
 
 // this file contains functions needed to bridge the gap between dcontext.cxx and device.cxx
