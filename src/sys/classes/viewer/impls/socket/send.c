@@ -206,7 +206,7 @@ PETSC_INTERN PetscErrorCode PetscSocketEstablish(int portnum, int *ss)
 #if defined(PETSC_HAVE_SO_REUSEADDR)
   {
     int optval = 1; /* Turn on the option */
-    int ret = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&optval, sizeof(optval));
+    int ret    = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&optval, sizeof(optval));
     PetscCheck(!ret, PETSC_COMM_SELF, PETSC_ERR_LIB, "setsockopt() failed with error code %d", ret);
   }
 #endif
