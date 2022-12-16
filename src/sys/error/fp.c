@@ -463,9 +463,9 @@ static const FPNode error_codes[] = {
 void PetscDefaultFPTrap(int sig)
 {
   #if defined(PETSC_HAVE_FE_VALUES)
-  const FPNode *node;
-  int           code;
-  PetscBool     matched = PETSC_FALSE;
+  const FPNode  *node;
+  int            code;
+  PetscBool      matched = PETSC_FALSE;
   #endif
   PetscErrorCode ierr;
 
@@ -480,7 +480,7 @@ void PetscDefaultFPTrap(int sig)
   for (node = &error_codes[0]; node->code; node++) {
     if (code & node->code) {
       matched = PETSC_TRUE;
-      ierr = (*PetscErrorPrintf)("*** floating point error \"%s\" occurred ***\n", node->name);
+      ierr    = (*PetscErrorPrintf)("*** floating point error \"%s\" occurred ***\n", node->name);
       code &= ~node->code; /* Unset this flag since it has been processed */
     }
   }

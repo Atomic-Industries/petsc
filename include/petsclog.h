@@ -98,7 +98,7 @@ PETSC_EXTERN PetscErrorCode PetscAddLogDoubleCnt(PetscLogDouble *, PetscLogDoubl
 #else
   #define PETSC_EXTERN_TLS PETSC_EXTERN
   #define PETSC_TLS
-#define PetscAddLogDouble(a, b, c)          (PetscErrorCode)((*(a) += (c), 0) || ((*(b) += (c)), 0))
+  #define PetscAddLogDouble(a, b, c)          (PetscErrorCode)((*(a) += (c), 0) || ((*(b) += (c)), 0))
   #define PetscAddLogDoubleCnt(a, b, c, d, e) PetscAddLogDouble(a, c, 1) || PetscAddLogDouble(b, d, e)
 #endif
 

@@ -71,7 +71,7 @@ static void PetscSignalHandler_Private(int sig)
 PetscErrorCode PetscSignalHandlerDefault(int sig, void *ptr)
 {
   PetscErrorCode ierr;
-  const char *SIGNAME[64];
+  const char    *SIGNAME[64];
 
   if (sig == SIGSEGV) PetscSignalSegvCheckPointerOrMpi();
   SIGNAME[0] = "Unknown signal";

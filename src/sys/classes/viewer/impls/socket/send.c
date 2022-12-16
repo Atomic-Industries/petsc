@@ -137,9 +137,13 @@ PetscErrorCode PetscOpenSocket(const char hostname[], int portnum, int *t)
         SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SYS, "system error");
       }
 #else
-      if (errno == EADDRINUSE) {PetscErrorCode ierr = (*PetscErrorPrintf)("SEND: address is in use\n"); (void)ierr;}
-      else if (errno == EALREADY) {PetscErrorCode ierr = (*PetscErrorPrintf)("SEND: socket is non-blocking \n"); (void)ierr;}
-      else if (errno == EISCONN) {
+      if (errno == EADDRINUSE) {
+        PetscErrorCode ierr = (*PetscErrorPrintf)("SEND: address is in use\n");
+        (void)ierr;
+      } else if (errno == EALREADY) {
+        PetscErrorCode ierr = (*PetscErrorPrintf)("SEND: socket is non-blocking \n");
+        (void)ierr;
+      } else if (errno == EISCONN) {
         PetscErrorCode ierr = (*PetscErrorPrintf)("SEND: socket already connected\n");
         (void)ierr;
         sleep((unsigned)1);
