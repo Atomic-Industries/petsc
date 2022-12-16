@@ -26,8 +26,8 @@
 .seealso: `PetscCall()`, `SETERRQ()`
 M*/
 typedef enum PETSC_NODISCARD {
-  PETSC_SUCCESS     = 0,
-  PETSC_ERR_UNKNOWN = 1,
+  PETSC_SUCCESS                   = 0,
+  PETSC_ERR_BOOLEAN_MACRO_FAILURE = 1,
 
   PETSC_ERR_MIN_VALUE = 54, /* should always be one less then the smallest value */
 

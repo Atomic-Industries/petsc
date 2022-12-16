@@ -255,14 +255,28 @@ static const char *PetscErrorStrings[] = {
 PetscErrorCode PetscErrorMessage(PetscErrorCode errnum, const char *text[], char **specific)
 {
   PetscFunctionBegin;
-  if (text && errnum > PETSC_ERR_MIN_VALUE && errnum < PETSC_ERR_MAX_VALUE) {
-    size_t len;
+  if (text) {
+    if (errnum > PETSC_ERR_MIN_VALUE && errnum < PETSC_ERR_MAX_VALUE) {
+      size_t len;
 
-    *text = PetscErrorStrings[errnum - PETSC_ERR_MIN_VALUE - 1];
-    PetscCall(PetscStrlen(*text, &len));
-    if (!len) *text = NULL;
-  } else if (text) *text = NULL;
+      *text = PetscErrorStrings[errnum - PETSC_ERR_MIN_VALUE - 1];
+      PetscCall(PetscStrlen(*text, &len));
+      if (!len) *text = NULL;
+    } else if (errnum == PETSC_ERR_BOOLEAN_MACRO_FAILURE) {
+      /* this "error code" arises from failures in boolean macros, where the || operator is
+         used to short-circuit the macro call in case of error. This has the side effect of
+         "returning" either 0 (PETSC_SUCCESS) or 1 (PETSC_ERR_UNKNONWN):
 
+         #define PETSC_FOO(x) ((PetscErrorCode)(PetscBar(x) || PetscBaz(x)))
+
+         If PetscBar() fails (returns nonzero) PetscBaz() is not executed but the result of
+         this expression is boolean false, hence PETSC_ERR_UNNOWN
+       */
+      *text = "Error occurred in boolean shortcuit in macro";
+    } else {
+      *text = NULL;
+    }
+  }
   if (specific) *specific = PetscErrorBaseMessage;
   PetscFunctionReturn(PETSC_SUCCESS);
 }
