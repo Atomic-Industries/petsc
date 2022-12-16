@@ -343,9 +343,9 @@ static inline PetscErrorCode PetscSFLinkSyncStreamBeforeCallMPI(PetscSF sf, Pets
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 #else /* Host only */
-  #define PetscSFLinkCopyRootBufferInCaseNotUseGpuAwareMPI(a, b, c) 0
-  #define PetscSFLinkCopyLeafBufferInCaseNotUseGpuAwareMPI(a, b, c) 0
-  #define PetscSFLinkSyncStreamBeforeCallMPI(a, b, c)               0
+  #define PetscSFLinkCopyRootBufferInCaseNotUseGpuAwareMPI(a, b, c) PETSC_SUCCESS
+  #define PetscSFLinkCopyLeafBufferInCaseNotUseGpuAwareMPI(a, b, c) PETSC_SUCCESS
+  #define PetscSFLinkSyncStreamBeforeCallMPI(a, b, c)               PETSC_SUCCESS
 #endif
 
 /* Get root indices used for pack/unpack

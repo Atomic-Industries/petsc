@@ -50,7 +50,7 @@ PETSC_EXTERN PetscBool       PetscDeviceInitialized(PetscDeviceType);
   #define PetscDeviceConfigure(PetscDevice)                 PETSC_SUCCESS
   #define PetscDeviceView(PetscDevice, PetscViewer)         PETSC_SUCCESS
   #define PetscDeviceGetType(PetscDevice, type)             (*(type) = PETSC_DEVICE_DEFAULT(), PETSC_SUCCESS)
-  #define PetscDeviceGetDeviceId(PetscDevice, id)           (*(id) = 0)
+  #define PetscDeviceGetDeviceId(PetscDevice, id)           (*(id) = 0, PETSC_SUCCESS)
   #define PETSC_DEVICE_DEFAULT()                            PETSC_DEVICE_HOST
   #define PetscDeviceSetDefaultDeviceType(PetscDeviceType)  PETSC_SUCCESS
   #define PetscDeviceInitialize(PetscDeviceType)            PETSC_SUCCESS
@@ -255,7 +255,7 @@ M*/
 
 .seealso: `PetscDeviceMalloc()`, `PetscDeviceCalloc()`
 M*/
-#define PetscDeviceFree(dctx, ptr) (PetscDeviceDeallocate_Private((dctx), (ptr)) || ((ptr) = PETSC_NULLPTR, PETSC_SUCCESS))
+#define PetscDeviceFree(dctx, ptr) ((PetscErrorCode)(PetscDeviceDeallocate_Private((dctx), (ptr)) || ((ptr) = PETSC_NULLPTR, PETSC_SUCCESS)))
 
 /*MC
   PetscDeviceArrayCopy - Copy memory in a device-aware manner

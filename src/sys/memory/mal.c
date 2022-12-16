@@ -31,16 +31,14 @@ PETSC_EXTERN PetscErrorCode PetscMallocAlign(size_t mem, PetscBool clear, int li
 {
   if (!mem) {
     *result = NULL;
-    return 0;
+    return PETSC_SUCCESS;
   }
 #if PetscDefined(HAVE_MEMKIND)
   {
-    int err;
-
-    err = memkind_posix_memalign(currentmktype ? MEMKIND_HBW_PREFERRED : MEMKIND_DEFAULT, result, PETSC_MEMALIGN, mem);
+    int err = memkind_posix_memalign(currentmktype ? MEMKIND_HBW_PREFERRED : MEMKIND_DEFAULT, result, PETSC_MEMALIGN, mem);
     PetscCheck(err != EINVAL, PETSC_COMM_SELF, PETSC_ERR_MEM, "Memkind: invalid 3rd or 4th argument of memkind_posix_memalign()");
     if (err == ENOMEM) PetscInfo(NULL, "Memkind: fail to request HBW memory %.0f, falling back to normal memory\n", (PetscLogDouble)mem);
-    PetscCheck(*result, PETSC_COMM_SELF, line, func, file, PETSC_ERR_MEM, PETSC_ERROR_INITIAL, "Memory requested %.0f", (PetscLogDouble)mem);
+    PetscCheck(*result, PETSC_COMM_SELF, PETSC_ERR_MEM, "Memory requested %.0f", (PetscLogDouble)mem);
     if (clear) PetscCall(PetscMemzero(*result, mem));
   }
 #else /* PetscDefined(HAVE_MEMKIND) */
@@ -48,11 +46,11 @@ PETSC_EXTERN PetscErrorCode PetscMallocAlign(size_t mem, PetscBool clear, int li
   if (clear) *result = calloc(1 + mem / sizeof(int), sizeof(int));
   else *result = malloc(mem);
 
-  PetscCheck(*result, PETSC_COMM_SELF, line, func, file, PETSC_ERR_MEM, PETSC_ERROR_INITIAL, "Memory requested %.0f", (PetscLogDouble)mem);
+  PetscCheck(*result, PETSC_COMM_SELF, PETSC_ERR_MEM, "Memory requested %.0f", (PetscLogDouble)mem);
   if (PetscLogMemory) PetscCall(PetscMemzero(*result, mem));
   #elif PetscDefined(HAVE_POSIX_MEMALIGN)
   int ret = posix_memalign(result, PETSC_MEMALIGN, mem);
-  PetscCheck(ret == 0, PETSC_COMM_SELF, line, func, file, PETSC_ERR_MEM, PETSC_ERROR_INITIAL, "Memory requested %.0f", (PetscLogDouble)mem);
+  PetscCheck(ret == 0, PETSC_COMM_SELF, PETSC_ERR_MEM, "Memory requested %.0f", (PetscLogDouble)mem);
   if (clear || PetscLogMemory) PetscCall(PetscMemzero(*result, mem));
   #else  /* PetscDefined(HAVE_DOUBLE_ALIGN_MALLOC) || PetscDefined(HAVE_POSIX_MEMALIGN) */
   {
@@ -75,12 +73,12 @@ PETSC_EXTERN PetscErrorCode PetscMallocAlign(size_t mem, PetscBool clear, int li
   }
   #endif /* PetscDefined(HAVE_DOUBLE_ALIGN_MALLOC) || PetscDefined(HAVE_POSIX_MEMALIGN) */
 #endif   /* PetscDefined(HAVE_MEMKIND) */
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PETSC_EXTERN PetscErrorCode PetscFreeAlign(void *ptr, int line, const char func[], const char file[])
 {
-  if (!ptr) return 0;
+  if (!ptr) return PETSC_SUCCESS;
 #if PetscDefined(HAVE_MEMKIND)
   memkind_free(0, ptr); /* specify the kind to 0 so that memkind will look up for the right type */
 #else                   /* PetscDefined(HAVE_MEMKIND) */
@@ -105,7 +103,7 @@ PETSC_EXTERN PetscErrorCode PetscFreeAlign(void *ptr, int line, const char func[
   free(ptr);
   #endif
 #endif
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PETSC_EXTERN PetscErrorCode PetscReallocAlign(size_t mem, int line, const char func[], const char file[], void **result)
@@ -113,7 +111,7 @@ PETSC_EXTERN PetscErrorCode PetscReallocAlign(size_t mem, int line, const char f
   if (!mem) {
     PetscCall(PetscFreeAlign(*result, line, func, file));
     *result = NULL;
-    return 0;
+    return PETSC_SUCCESS;
   }
 #if PetscDefined(HAVE_MEMKIND)
   *result = memkind_realloc(currentmktype ? MEMKIND_HBW_PREFERRED : MEMKIND_DEFAULT, *result, mem);
@@ -151,7 +149,7 @@ PETSC_EXTERN PetscErrorCode PetscReallocAlign(size_t mem, int line, const char f
   }
   #endif
 #endif
-  PetscCheck(*result, PETSC_COMM_SELF, line, func, file, PETSC_ERR_MEM, PETSC_ERROR_INITIAL, "Memory requested %.0f", (PetscLogDouble)mem);
+  PetscCheck(*result, PETSC_COMM_SELF, PETSC_ERR_MEM, "Memory requested %.0f", (PetscLogDouble)mem);
 #if PetscDefined(HAVE_POSIX_MEMALIGN)
   /* There are no standard guarantees that realloc() maintains the alignment of memalign(), so I think we have to
    * realloc and, if the alignment is wrong, malloc/copy/free. */
@@ -159,20 +157,20 @@ PETSC_EXTERN PetscErrorCode PetscReallocAlign(size_t mem, int line, const char f
     void *newResult;
   #if PetscDefined(HAVE_MEMKIND)
     {
-      int err;
-      err = memkind_posix_memalign(currentmktype ? MEMKIND_HBW_PREFERRED : MEMKIND_DEFAULT, &newResult, PETSC_MEMALIGN, mem);
+      int err = memkind_posix_memalign(currentmktype ? MEMKIND_HBW_PREFERRED : MEMKIND_DEFAULT, &newResult, PETSC_MEMALIGN, mem);
       PetscCheck(err != EINVAL, PETSC_COMM_SELF, PETSC_ERR_MEM, "Memkind: invalid 3rd or 4th argument of memkind_posix_memalign()");
       if (err == ENOMEM) PetscInfo(NULL, "Memkind: fail to request HBW memory %.0f, falling back to normal memory\n", (PetscLogDouble)mem);
     }
-    PetscCheck(newResult, PETSC_COMM_SELF, line, func, file, PETSC_ERR_MEM, PETSC_ERROR_INITIAL, "Memory requested %.0f", (PetscLogDouble)mem);
+    PetscCheck(newResult, PETSC_COMM_SELF, PETSC_ERR_MEM, "Memory requested %.0f", (PetscLogDouble)mem);
   #else
-    PetscCheck(posix_memalign(&newResult, PETSC_MEMALIGN, mem) == 0, PETSC_COMM_SELF, line, func, file, PETSC_ERR_MEM, PETSC_ERROR_INITIAL, "Memory requested %.0f", (PetscLogDouble)mem);
+    int ret = posix_memalign(&newResult, PETSC_MEMALIGN, mem);
+    PetscCheck(ret == 0, PETSC_COMM_SELF, PETSC_ERR_LIB, "posix_memalign() failed with error code %d, memory requested %.0f", ret, (PetscLogDouble)mem);
   #endif
     PetscCall(PetscMemcpy(newResult, *result, mem));
   #if PetscDefined(HAVE_FREE_RETURN_INT)
     {
       int err = free(*result);
-      PetscCheck(!err, PETSC_COMM_SELF, line, func, file, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, "System free returned error %d\n", err);
+      PetscCheck(!err, PETSC_COMM_SELF, PETSC_ERR_PLIB, "System free returned error %d", err);
     }
   #else
     #if defined(PETSC_HAVE_MEMKIND)
@@ -184,7 +182,7 @@ PETSC_EXTERN PetscErrorCode PetscReallocAlign(size_t mem, int line, const char f
     *result = newResult;
   }
 #endif
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode (*PetscTrMalloc)(size_t, PetscBool, int, const char[], const char[], void **) = PetscMallocAlign;

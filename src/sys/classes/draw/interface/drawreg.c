@@ -231,7 +231,7 @@ PetscErrorCode PetscDrawSetType(PetscDraw draw, PetscDrawType type)
       PetscBool dontwarn = PETSC_TRUE;
       flg                = PETSC_TRUE;
       PetscCall(PetscOptionsHasName(NULL, NULL, "-nox_warning", &dontwarn));
-      if (!dontwarn) (*PetscErrorPrintf)("PETSc installed without X Windows on this machine\nproceeding without graphics\n");
+      if (!dontwarn) PetscCall((*PetscErrorPrintf)("PETSc installed without X Windows on this machine\nproceeding without graphics\n"));
     }
   }
 #endif
@@ -390,7 +390,7 @@ PetscErrorCode PetscDrawSetFromOptions(PetscDraw draw)
     if (!nox) def = PETSC_DRAW_X;
 #else
     PetscCall(PetscOptionsHasName(NULL, NULL, "-nox_warning", &warn));
-    if (!nox && !warn) (*PetscErrorPrintf)("PETSc installed without X Windows or Microsoft Graphics on this machine\nproceeding without graphics\n");
+    if (!nox && !warn) PetscCall((*PetscErrorPrintf)("PETSc installed without X Windows or Microsoft Graphics on this machine\nproceeding without graphics\n"));
 #endif
   }
   PetscObjectOptionsBegin((PetscObject)draw);

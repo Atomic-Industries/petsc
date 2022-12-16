@@ -56,5 +56,5 @@ PetscErrorCode PetscGetVersionNumber(PetscInt *major, PetscInt *minor, PetscInt 
   if (minor) *minor = PETSC_VERSION_MINOR;
   if (subminor) *subminor = PETSC_VERSION_SUBMINOR;
   if (release) *release = PETSC_VERSION_RELEASE;
-  return 0;
+  return PETSC_SUCCESS;
 }

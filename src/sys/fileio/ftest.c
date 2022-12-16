@@ -112,8 +112,8 @@ static PetscErrorCode PetscTestOwnership(const char fname[], char mode, uid_t fu
 
 static PetscErrorCode PetscGetFileStat(const char fname[], uid_t *fileUid, gid_t *fileGid, int *fileMode, PetscBool *exists)
 {
-  struct stat    statbuf;
-  PetscErrorCode ierr;
+  struct stat statbuf;
+  int         ierr;
 
   PetscFunctionBegin;
   *fileMode = 0;

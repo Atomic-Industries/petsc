@@ -9,13 +9,13 @@ PETSC_INTERN PetscErrorCode PetscNvshmemInitializeCheck(void);
 PETSC_INTERN PetscErrorCode PetscNvshmemMalloc(size_t, void **);
 PETSC_INTERN PetscErrorCode PetscNvshmemCalloc(size_t, void **);
 PETSC_INTERN PetscErrorCode PetscNvshmemFree_Private(void *);
-  #define PetscNvshmemFree(ptr) ((ptr) && (PetscNvshmemFree_Private(ptr) || ((ptr) = PETSC_NULLPTR, 0)))
+  #define PetscNvshmemFree(ptr) ((PetscErrorCode)((ptr) && (PetscNvshmemFree_Private(ptr) || ((ptr) = PETSC_NULLPTR, PETSC_SUCCESS))))
 PETSC_INTERN PetscErrorCode PetscNvshmemSum(PetscInt, PetscScalar *, const PetscScalar *);
 PETSC_INTERN PetscErrorCode PetscNvshmemMax(PetscInt, PetscReal *, const PetscReal *);
 PETSC_INTERN PetscErrorCode VecNormAsync_NVSHMEM(Vec, NormType, PetscReal *);
 PETSC_INTERN PetscErrorCode VecAllocateNVSHMEM_SeqCUDA(Vec);
 #else
-  #define PetscNvshmemFree(ptr) 0
+  #define PetscNvshmemFree(ptr) PETSC_SUCCESS
 #endif
 
 #if defined(__cplusplus) && PetscDefined(HAVE_DEVICE)
@@ -122,7 +122,7 @@ struct no_op {
   template <typename... T>
   constexpr PetscErrorCode operator()(T &&...) const noexcept
   {
-    return 0;
+    return PETSC_SUCCESS;
   }
 };
 

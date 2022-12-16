@@ -464,7 +464,7 @@ inline PetscErrorCode DeviceContext<T>::memCopy(PetscDeviceContext dctx, void *P
       PetscCallCUPM(cerr);
     }
   }
-  PetscCall(cupmMemcpyAsync(dest, src, n, PetscDeviceCopyModeToCUPMMemcpyKind(mode), stream));
+  PetscCallCUPM(cupmMemcpyAsync(dest, src, n, PetscDeviceCopyModeToCUPMMemcpyKind(mode), stream));
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 

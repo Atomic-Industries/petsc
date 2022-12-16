@@ -913,7 +913,7 @@ PetscErrorCode DMPlexInsertBoundaryValuesRiemann(DM dm, PetscReal time, Vec face
   const PetscInt    *leaves;
   PetscScalar       *x, *fx;
   PetscInt           dim, nleaves, loc, fStart, fEnd, pdim, i;
-  PetscErrorCode     ierru = 0;
+  PetscErrorCode     ierru = PETSC_SUCCESS;
 
   PetscFunctionBegin;
   PetscCall(DMGetPointSF(dm, &sf));
@@ -1003,7 +1003,7 @@ static PetscErrorCode zero(PetscInt dim, PetscReal time, const PetscReal x[], Pe
 {
   PetscInt c;
   for (c = 0; c < Nc; ++c) u[c] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode DMPlexInsertBoundaryValues_Plex(DM dm, PetscBool insertEssential, Vec locX, PetscReal time, Vec faceGeomFVM, Vec cellGeomFVM, Vec gradFVM)

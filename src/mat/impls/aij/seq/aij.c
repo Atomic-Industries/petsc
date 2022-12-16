@@ -388,7 +388,7 @@ PetscErrorCode MatSeqAIJSetValuesLocalFast(Mat A, PetscInt m, const PetscInt im[
     }
   }
   PetscCall(MatSeqAIJRestoreArray(A, &aa));
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode MatSetValues_SeqAIJ(Mat A, PetscInt m, const PetscInt im[], PetscInt n, const PetscInt in[], const PetscScalar v[], InsertMode is)

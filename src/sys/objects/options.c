@@ -1016,7 +1016,7 @@ PetscErrorCode PetscOptionsLeftError(void)
       }
     }
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PETSC_EXTERN PetscErrorCode PetscOptionsViewError(void)
@@ -1042,7 +1042,7 @@ PETSC_EXTERN PetscErrorCode PetscOptionsViewError(void)
       PetscCall((*PetscErrorPrintf)("-%s (source: %s)\n", options->names[i], PetscOptionSources[options->source[i]]));
     }
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C

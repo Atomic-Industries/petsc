@@ -120,7 +120,10 @@ static PetscErrorCode PetscViewerFileSetName_VU(PetscViewer viewer, const char n
     */
     vu->fd = fopen(fname, "r+");
     if (!vu->fd) vu->fd = fopen(fname, "w+");
-    else PetscCall(fseek(vu->fd, 0, SEEK_END));
+    else {
+      int ret = fseek(vu->fd, 0, SEEK_END);
+      PetscCheck(!ret, PETSC_COMM_SELF, PETSC_ERR_LIB, "fseek() failed with error code %d", ret);
+    }
     break;
   default:
     SETERRQ(PetscObjectComm((PetscObject)viewer), PETSC_ERR_SUP, "Unsupported file mode %s", PetscFileModes[vu->mode]);

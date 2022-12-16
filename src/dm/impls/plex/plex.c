@@ -5805,7 +5805,7 @@ static inline PetscErrorCode CompressPoints_Private(PetscSection section, PetscI
     }
   }
   *numPoints = q;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* Compressed closure does not apply closure permutation */

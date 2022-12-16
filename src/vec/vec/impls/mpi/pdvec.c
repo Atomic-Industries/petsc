@@ -1006,7 +1006,7 @@ PetscErrorCode VecSetPreallocationCOO_MPI(Vec x, PetscCount coo_n, const PetscIn
 
   PetscFunctionBegin;
   PetscCall(PetscObjectGetComm((PetscObject)x, &comm));
-  PetscCall(MPI_Comm_size(comm, &size));
+  PetscCallMPI(MPI_Comm_size(comm, &size));
   PetscCall(VecResetPreallocationCOO_MPI(x));
 
   PetscCall(PetscLayoutSetUp(x->map));

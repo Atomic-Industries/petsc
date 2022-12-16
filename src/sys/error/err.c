@@ -74,7 +74,7 @@ PetscErrorCode PetscEmacsClientErrorHandler(MPI_Comm comm, int line, const char 
     ierr = (*eh->handler)(comm, line, fun, file, n, p, mess, eh->ctx);
     if (ierr) return ierr;
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C

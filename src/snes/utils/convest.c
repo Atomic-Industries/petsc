@@ -8,7 +8,7 @@ static PetscErrorCode zero_private(PetscInt dim, PetscReal time, const PetscReal
 {
   PetscInt c;
   for (c = 0; c < Nc; ++c) u[c] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@

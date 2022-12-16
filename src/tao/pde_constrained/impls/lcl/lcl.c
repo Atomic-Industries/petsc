@@ -87,7 +87,7 @@ static PetscErrorCode TaoSetFromOptions_LCL(Tao tao, PetscOptionItems *PetscOpti
 
 static PetscErrorCode TaoView_LCL(Tao tao, PetscViewer viewer)
 {
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode TaoSetup_LCL(Tao tao)

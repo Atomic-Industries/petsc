@@ -449,7 +449,7 @@ static PetscErrorCode xxt_generate(xxt_ADT xxt_handle)
   free(z);
   free(w);
 
-  return (0);
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode do_xxt_solve(xxt_ADT xxt_handle, PetscScalar *uc)

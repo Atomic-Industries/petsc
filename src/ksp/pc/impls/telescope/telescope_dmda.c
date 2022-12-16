@@ -132,7 +132,7 @@ static PetscErrorCode PCTelescopeSetUp_dmda_repart_coors2d(PC_Telescope sred, DM
 
   PetscFunctionBegin;
   PetscCall(DMGetCoordinates(dm, &coor));
-  if (!coor) return (0);
+  if (!coor) PetscFunctionReturn(PETSC_SUCCESS);
   if (PCTelescope_isActiveRank(sred)) PetscCall(DMDASetUniformCoordinates(subdm, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0));
   /* Get the coordinate vector from the distributed array */
   PetscCall(DMGetCoordinateDM(dm, &cdm));

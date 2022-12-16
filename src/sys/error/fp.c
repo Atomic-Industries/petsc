@@ -620,8 +620,8 @@ PetscErrorCode PetscDetermineInitialFPTrap(void)
 void PetscDefaultFPTrap(int sig)
 {
   PetscFunctionBegin;
-  (*PetscErrorPrintf)("*** floating point error occurred ***\n");
-  PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  PetscCallAbort(PETSC_COMM_SELF, (*PetscErrorPrintf)("*** floating point error occurred ***\n"));
+  PetscCallAbort(PETSC_COMM_SELF, PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error"));
   PETSCABORT(MPI_COMM_WORLD, PETSC_ERR_FP);
 }
 
@@ -629,8 +629,8 @@ PetscErrorCode PetscSetFPTrap(PetscFPTrap flag)
 {
   PetscFunctionBegin;
   if (flag == PETSC_FP_TRAP_ON) {
-    if (SIG_ERR == signal(SIGFPE, PetscDefaultFPTrap)) (*PetscErrorPrintf)("Can't set floatingpoint handler\n");
-  } else if (SIG_ERR == signal(SIGFPE, SIG_DFL)) (*PetscErrorPrintf)("Can't clear floatingpoint handler\n");
+    if (SIG_ERR == signal(SIGFPE, PetscDefaultFPTrap)) PetscCall((*PetscErrorPrintf)("Can't set floatingpoint handler\n"));
+  } else if (SIG_ERR == signal(SIGFPE, SIG_DFL)) PetscCall((*PetscErrorPrintf)("Can't clear floatingpoint handler\n"));
 
   _trapmode = flag;
   PetscCall(PetscInfo(NULL, "Using default FPTRAP\n"));

@@ -217,6 +217,7 @@ PetscErrorCode PetscDLSym(PetscDLHandle handle, const char symbol[], void **valu
   PETSC_UNUSED dlhandle_t dlhandle;
   dlsymbol_t              dlsymbol;
 
+  PetscFunctionBegin;
   PetscValidCharPointer(symbol, 2);
   PetscValidPointer(value, 3);
 
@@ -299,7 +300,7 @@ PetscErrorCode PetscDLSym(PetscDLHandle handle, const char symbol[], void **valu
 #if defined(PETSC_SERIALIZE_FUNCTIONS)
   if (*value) PetscCall(PetscFPTAdd(*value, symbol));
 #endif /* PETSC_SERIALIZE_FUNCTIONS */
-  return (0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C

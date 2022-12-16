@@ -113,7 +113,7 @@ PetscErrorCode PetscAddLogDouble(PetscLogDouble *tot, PetscLogDouble *tot_th, Pe
   PetscSpinlockLock(&PetscLogSpinLock);
   *tot += tmp;
   PetscSpinlockUnlock(&PetscLogSpinLock);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode PetscAddLogDoubleCnt(PetscLogDouble *cnt, PetscLogDouble *tot, PetscLogDouble *cnt_th, PetscLogDouble *tot_th, PetscLogDouble tmp)
@@ -124,7 +124,7 @@ PetscErrorCode PetscAddLogDoubleCnt(PetscLogDouble *cnt, PetscLogDouble *tot, Pe
   *tot += (PetscLogDouble)(tmp);
   *cnt += *cnt + 1;
   PetscSpinlockUnlock(&PetscLogSpinLock);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscInt PetscLogGetTid(void)
@@ -1580,7 +1580,7 @@ static PetscErrorCode PetscLogViewWarnNoGpuAwareMpi(MPI_Comm comm, FILE *fd)
   PetscCall(PetscFPrintf(comm, fd, "      ##########################################################\n\n\n"));
   PetscFunctionReturn(PETSC_SUCCESS);
   #else
-  return 0;
+  return PETSC_SUCCESS;
   #endif
 }
 
@@ -1604,7 +1604,7 @@ static PetscErrorCode PetscLogViewWarnGpuTime(MPI_Comm comm, FILE *fd)
   PetscCall(PetscFPrintf(comm, fd, "      ##########################################################\n\n\n"));
   PetscFunctionReturn(PETSC_SUCCESS);
   #else
-  return 0;
+  return PETSC_SUCCESS;
   #endif
 }
 
@@ -1629,16 +1629,15 @@ PetscErrorCode PetscLogView_Default(PetscViewer viewer)
   PetscLogEvent  KSP_Solve, SNES_Solve, TS_Step, TAO_Solve; /* These need to be fixed to be some events registered with certain objects */
   PetscLogDouble cct, gct, csz, gsz, gmaxt, gflops, gflopr, fracgflops;
   #endif
-  PetscMPIInt    minC, maxC;
-  PetscMPIInt    size, rank;
-  PetscBool     *localStageUsed, *stageUsed;
-  PetscBool     *localStageVisible, *stageVisible;
-  int            numStages, localNumEvents, numEvents;
-  int            stage, oclass;
-  PetscLogEvent  event;
-  PetscErrorCode ierr = 0;
-  char           version[256];
-  MPI_Comm       comm;
+  PetscMPIInt   minC, maxC;
+  PetscMPIInt   size, rank;
+  PetscBool    *localStageUsed, *stageUsed;
+  PetscBool    *localStageVisible, *stageVisible;
+  int           numStages, localNumEvents, numEvents;
+  int           stage, oclass;
+  PetscLogEvent event;
+  char          version[256];
+  MPI_Comm      comm;
   #if defined(PETSC_HAVE_DEVICE)
   PetscLogEvent eventid;
   PetscInt64    nas = 0x7FF0000000000002;
@@ -1962,6 +1961,8 @@ PetscErrorCode PetscLogView_Default(PetscViewer viewer)
   #endif
         name = stageLog->eventLog->eventInfo[event].name;
       } else {
+        int ierr = 0;
+
         flopr = 0.0;
         PetscCallMPI(MPI_Allreduce(&flopr, &minf, 1, MPIU_PETSCLOGDOUBLE, MPI_MIN, comm));
         PetscCallMPI(MPI_Allreduce(&flopr, &maxf, 1, MPIU_PETSCLOGDOUBLE, MPI_MAX, comm));
@@ -2464,7 +2465,7 @@ PetscBool PetscLogGpuTimeFlag = PETSC_FALSE;
 static PetscErrorCode PetscLogGpuTime_Off(void)
 {
   PetscLogGpuTimeFlag = PETSC_FALSE;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C
@@ -2488,7 +2489,7 @@ PetscErrorCode PetscLogGpuTime(void)
 {
   if (!PetscLogGpuTimeFlag) PetscCall(PetscRegisterFinalize(PetscLogGpuTime_Off));
   PetscLogGpuTimeFlag = PETSC_TRUE;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C

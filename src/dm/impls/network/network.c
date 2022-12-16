@@ -671,7 +671,7 @@ PetscErrorCode DMNetworkLayoutSetUp(DM dm)
   }
 
   PetscCall(PetscObjectGetComm((PetscObject)dm, &comm));
-  PetscCall(MPI_Comm_size(comm, &size));
+  PetscCallMPI(MPI_Comm_size(comm, &size));
 
   /* Create LOCAL edgelist in global vertex ordering for the network by concatenating local input edgelists of the subnetworks */
   PetscCall(PetscCalloc1(2 * network->cloneshared->nEdges, &edges));

@@ -177,7 +177,7 @@ PetscErrorCode PetscSetDebuggerFromString(const char *string)
 PetscErrorCode PetscWaitOnError(void)
 {
   petscwaitonerrorflg = PETSC_TRUE;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@
@@ -444,7 +444,7 @@ PetscErrorCode PetscAttachDebugger(void)
   #endif
   }
 #endif
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C

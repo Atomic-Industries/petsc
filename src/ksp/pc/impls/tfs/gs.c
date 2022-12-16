@@ -199,9 +199,9 @@ PCTFS_gs_id *PCTFS_gs_init(PetscInt *elms, PetscInt nel, PetscInt level)
   /* LATER :: get int list version working for sparse pblms */
   PetscCallAbort(PETSC_COMM_WORLD, gsi_via_bit_mask(gs));
 
-  PetscCallAbort(PETSC_COMM_WORLD, MPI_Comm_group(MPI_COMM_WORLD, &PCTFS_gs_group));
-  PetscCallAbort(PETSC_COMM_WORLD, MPI_Comm_create(MPI_COMM_WORLD, PCTFS_gs_group, &PCTFS_gs_comm));
-  PetscCallAbort(PETSC_COMM_WORLD, MPI_Group_free(&PCTFS_gs_group));
+  PetscCallAbort(PETSC_COMM_WORLD, MPI_Comm_group(MPI_COMM_WORLD, &PCTFS_gs_group) ? PETSC_ERR_MPI : PETSC_SUCCESS);
+  PetscCallAbort(PETSC_COMM_WORLD, MPI_Comm_create(MPI_COMM_WORLD, PCTFS_gs_group, &PCTFS_gs_comm) ? PETSC_ERR_MPI : PETSC_SUCCESS);
+  PetscCallAbort(PETSC_COMM_WORLD, MPI_Group_free(&PCTFS_gs_group) ? PETSC_ERR_MPI : PETSC_SUCCESS);
 
   gs->PCTFS_gs_comm = PCTFS_gs_comm;
 

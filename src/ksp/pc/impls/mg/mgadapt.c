@@ -6,42 +6,42 @@ static PetscErrorCode xfunc(PetscInt dim, PetscReal time, const PetscReal coords
   PetscInt k = *((PetscInt *)ctx), c;
 
   for (c = 0; c < Nc; ++c) u[c] = PetscPowRealInt(coords[0], k);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode yfunc(PetscInt dim, PetscReal time, const PetscReal coords[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   PetscInt k = *((PetscInt *)ctx), c;
 
   for (c = 0; c < Nc; ++c) u[c] = PetscPowRealInt(coords[1], k);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode zfunc(PetscInt dim, PetscReal time, const PetscReal coords[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   PetscInt k = *((PetscInt *)ctx), c;
 
   for (c = 0; c < Nc; ++c) u[c] = PetscPowRealInt(coords[2], k);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode xsin(PetscInt dim, PetscReal time, const PetscReal coords[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   PetscInt k = *((PetscInt *)ctx), c;
 
   for (c = 0; c < Nc; ++c) u[c] = PetscSinReal(PETSC_PI * (k + 1) * coords[0]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode ysin(PetscInt dim, PetscReal time, const PetscReal coords[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   PetscInt k = *((PetscInt *)ctx), c;
 
   for (c = 0; c < Nc; ++c) u[c] = PetscSinReal(PETSC_PI * (k + 1) * coords[1]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode zsin(PetscInt dim, PetscReal time, const PetscReal coords[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   PetscInt k = *((PetscInt *)ctx), c;
 
   for (c = 0; c < Nc; ++c) u[c] = PetscSinReal(PETSC_PI * (k + 1) * coords[2]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode DMSetBasisFunction_Internal(PetscInt Nf, PetscBool usePoly, PetscInt dir, PetscErrorCode (**funcs)(PetscInt, PetscReal, const PetscReal[], PetscInt, PetscScalar *, void *))

@@ -692,7 +692,10 @@ PetscErrorCode PetscViewerFileSetName_ASCII(PetscViewer viewer, const char name[
         */
         vascii->fd = fopen(fname, "r+");
         if (!vascii->fd) vascii->fd = fopen(fname, "w+");
-        else PetscCall(fseek(vascii->fd, 0, SEEK_END));
+        else {
+          int ret = fseek(vascii->fd, 0, SEEK_END);
+          PetscCheck(!ret, PETSC_COMM_SELF, PETSC_ERR_LIB, "fseek() failed with error code %d", ret);
+        }
         break;
       default:
         SETERRQ(PetscObjectComm((PetscObject)viewer), PETSC_ERR_SUP, "Unsupported file mode %s", PetscFileModes[vascii->mode]);

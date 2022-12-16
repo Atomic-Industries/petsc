@@ -7421,7 +7421,7 @@ static PetscErrorCode EnvelopeDataDestroy(EnvelopeData *edata)
   for (PetscInt i = 0; i < edata->n; i++) PetscCall(ISDestroy(&edata->is[i]));
   PetscCall(PetscFree(edata->is));
   PetscCall(PetscFree(edata));
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*

@@ -110,7 +110,7 @@ PetscErrorCode PetscMallocValidate(int line, const char function[], const char f
   char         *a;
   PetscClassId *nend;
 
-  if (!TRdebugLevel) return 0;
+  if (!TRdebugLevel) return PETSC_SUCCESS;
   head     = TRhead;
   lasthead = NULL;
   if (head && head->prev) {

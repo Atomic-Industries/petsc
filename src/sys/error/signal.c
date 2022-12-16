@@ -169,7 +169,7 @@ PetscErrorCode PetscSignalHandlerDefault(int sig, void *ptr)
   }
   atexit(MyExit);
   (void)ierr;
-  PETSCABORT(PETSC_COMM_WORLD, (int)PETSC_ERR_SIG);
+  PETSCABORT(PETSC_COMM_WORLD, PETSC_ERR_SIG);
   return PETSC_SUCCESS;
 }
 

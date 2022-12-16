@@ -183,7 +183,7 @@ void Petsc_MPI_DebuggerOnError(MPI_Comm *comm, PetscMPIInt *flag, ...)
   PetscFunctionBegin;
   ierr = (*PetscErrorPrintf)("MPI error %d\n", *flag);
   (void)ierr;
-  if (PetscAttachDebugger()) PETSCABORT(*comm, *flag); /* hopeless so get out */
+  if (PetscAttachDebugger()) PETSCABORT(*comm, (PetscErrorCode)*flag); /* hopeless so get out */
 }
 
 /*@C

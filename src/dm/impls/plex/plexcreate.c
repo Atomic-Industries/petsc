@@ -2814,7 +2814,7 @@ static void TPSEvaluate_SchwarzP(const PetscReal y[3], PetscReal *f, PetscReal g
 static PetscErrorCode TPSExtrudeNormalFunc_SchwarzP(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt r, PetscScalar u[], void *ctx)
 {
   for (PetscInt i = 0; i < 3; i++) u[i] = -PETSC_PI * PetscSinReal(x[i] * PETSC_PI);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*
@@ -2850,7 +2850,7 @@ static PetscErrorCode TPSExtrudeNormalFunc_Gyroid(PetscInt dim, PetscReal time, 
   u[0]           = PETSC_PI * (c[0] * c[1] - s[2] * s[0]);
   u[1]           = PETSC_PI * (c[1] * c[2] - s[0] * s[1]);
   u[2]           = PETSC_PI * (c[2] * c[0] - s[1] * s[2]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*

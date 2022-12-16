@@ -838,9 +838,9 @@ static inline PetscErrorCode MatPivotCheck(Mat fact, Mat mat, const MatFactorInf
     bt        - PetscBT (bitarray) with all bits set to false
     lnk_empty - flg indicating the list is empty
 */
-#define PetscLLCreate(idx_start, lnk_max, nlnk, lnk, bt) (PetscMalloc1(nlnk, &lnk) || PetscBTCreate(nlnk, &(bt)) || (lnk[idx_start] = lnk_max, 0))
+#define PetscLLCreate(idx_start, lnk_max, nlnk, lnk, bt) ((PetscErrorCode)(PetscMalloc1(nlnk, &lnk) || PetscBTCreate(nlnk, &(bt)) || (lnk[idx_start] = lnk_max, PETSC_SUCCESS)))
 
-#define PetscLLCreate_new(idx_start, lnk_max, nlnk, lnk, bt, lnk_empty) (PetscMalloc1(nlnk, &lnk) || PetscBTCreate(nlnk, &(bt)) || (lnk_empty = PETSC_TRUE, 0) || (lnk[idx_start] = lnk_max, 0))
+#define PetscLLCreate_new(idx_start, lnk_max, nlnk, lnk, bt, lnk_empty) ((PetscErrorCode)(PetscMalloc1(nlnk, &lnk) || PetscBTCreate(nlnk, &(bt)) || (lnk_empty = PETSC_TRUE, 0) || (lnk[idx_start] = lnk_max, PETSC_SUCCESS)))
 
 static inline PetscErrorCode PetscLLInsertLocation_Private(PetscBool assume_sorted, PetscInt k, PetscInt idx_start, PetscInt entry, PetscInt *PETSC_RESTRICT nlnk, PetscInt *PETSC_RESTRICT lnkdata, PetscInt *PETSC_RESTRICT lnk)
 {
@@ -1043,7 +1043,7 @@ static inline PetscErrorCode PetscLLClean(PetscInt idx_start, PetscInt lnk_max, 
 /*
   Free memories used by the list
 */
-#define PetscLLDestroy(lnk, bt) (PetscFree(lnk) || PetscBTDestroy(&(bt)))
+#define PetscLLDestroy(lnk, bt) ((PetscErrorCode)(PetscFree(lnk) || PetscBTDestroy(&(bt))))
 
 /* Routines below are used for incomplete matrix factorization */
 /*
@@ -1057,7 +1057,8 @@ static inline PetscErrorCode PetscLLClean(PetscInt idx_start, PetscInt lnk_max, 
     lnk_lvl   - array of size nlnk for storing levels of lnk
     bt        - PetscBT (bitarray) with all bits set to false
 */
-#define PetscIncompleteLLCreate(idx_start, lnk_max, nlnk, lnk, lnk_lvl, bt) (PetscIntMultError(2, nlnk, NULL) || PetscMalloc1(2 * nlnk, &lnk) || PetscBTCreate(nlnk, &(bt)) || (lnk[idx_start] = lnk_max, lnk_lvl = lnk + nlnk, 0))
+#define PetscIncompleteLLCreate(idx_start, lnk_max, nlnk, lnk, lnk_lvl, bt) \
+  ((PetscErrorCode)(PetscIntMultError(2, nlnk, NULL) || PetscMalloc1(2 * nlnk, &lnk) || PetscBTCreate(nlnk, &(bt)) || (lnk[idx_start] = lnk_max, lnk_lvl = lnk + nlnk, PETSC_SUCCESS)))
 
 static inline PetscErrorCode PetscIncompleteLLInsertLocation_Private(PetscBool assume_sorted, PetscInt k, PetscInt idx_start, PetscInt entry, PetscInt *PETSC_RESTRICT nlnk, PetscInt *PETSC_RESTRICT lnkdata, PetscInt *PETSC_RESTRICT lnk, PetscInt *PETSC_RESTRICT lnklvl, PetscInt newval)
 {
@@ -1247,7 +1248,7 @@ static inline PetscErrorCode PetscIncompleteLLClean(PetscInt idx_start, PetscInt
 /*
   Free memories used by the list
 */
-#define PetscIncompleteLLDestroy(lnk, bt) (PetscFree(lnk) || PetscBTDestroy(&(bt)))
+#define PetscIncompleteLLDestroy(lnk, bt) ((PetscErrorCode)(PetscFree(lnk) || PetscBTDestroy(&(bt))))
 
 #if !defined(PETSC_CLANG_STATIC_ANALYZER)
   #define MatCheckSameLocalSize(A, ar1, B, ar2) \

@@ -324,7 +324,7 @@ PetscErrorCode PetscSubcommCreate(MPI_Comm comm, PetscSubcomm *psubcomm)
 PetscErrorCode PetscSubcommGetParent(PetscSubcomm scomm, MPI_Comm *pcomm)
 {
   *pcomm = PetscSubcommParent(scomm);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C
@@ -347,7 +347,7 @@ PetscErrorCode PetscSubcommGetParent(PetscSubcomm scomm, MPI_Comm *pcomm)
 PetscErrorCode PetscSubcommGetContiguousParent(PetscSubcomm scomm, MPI_Comm *pcomm)
 {
   *pcomm = PetscSubcommContiguousParent(scomm);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C
@@ -369,7 +369,7 @@ PetscErrorCode PetscSubcommGetContiguousParent(PetscSubcomm scomm, MPI_Comm *pco
 PetscErrorCode PetscSubcommGetChild(PetscSubcomm scomm, MPI_Comm *ccomm)
 {
   *ccomm = PetscSubcommChild(scomm);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode PetscSubcommCreate_contiguous(PetscSubcomm psubcomm)

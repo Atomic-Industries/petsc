@@ -521,7 +521,7 @@ static PetscErrorCode TaoSetFromOptions_IPM(Tao tao, PetscOptionItems *PetscOpti
 
 static PetscErrorCode TaoView_IPM(Tao tao, PetscViewer viewer)
 {
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* IPMObjectiveAndGradient()

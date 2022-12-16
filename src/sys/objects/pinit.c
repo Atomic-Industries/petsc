@@ -1791,7 +1791,7 @@ PetscErrorCode PetscFinalize(void)
 #endif
   /* To match PetscFunctionBegin() at the beginning of this function */
   PetscStackClearTop;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 #if defined(PETSC_MISSING_LAPACK_lsame_)

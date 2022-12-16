@@ -67,7 +67,7 @@ PetscErrorCode PetscObjectOptionsBegin_Private(PetscObject obj, PetscOptionItems
 /*
      Handles adding another option to the list of options within this particular PetscOptionsBegin() PetscOptionsEnd()
 */
-static int PetscOptionItemCreate_Private(PetscOptionItems *PetscOptionsObject, const char opt[], const char text[], const char man[], PetscOptionType t, PetscOptionItem *amsopt)
+static PetscErrorCode PetscOptionItemCreate_Private(PetscOptionItems *PetscOptionsObject, const char opt[], const char text[], const char man[], PetscOptionType t, PetscOptionItem *amsopt)
 {
   PetscOptionItem next;
   PetscBool       valid;

@@ -174,7 +174,7 @@ static PetscErrorCode GmshCellInfoSetUp(void)
   size_t           i, n;
   static PetscBool called = PETSC_FALSE;
 
-  if (called) return 0;
+  if (called) return PETSC_SUCCESS;
   PetscFunctionBegin;
   called = PETSC_TRUE;
   n      = PETSC_STATIC_ARRAY_LENGTH(GmshCellMap);

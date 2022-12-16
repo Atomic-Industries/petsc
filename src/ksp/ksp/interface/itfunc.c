@@ -14,7 +14,7 @@ static inline PetscErrorCode ObjectView(PetscObject obj, PetscViewer viewer, Pet
   PetscCall(PetscViewerPushFormat(viewer, format));
   PetscCall(PetscObjectView(obj, viewer));
   PetscCall(PetscViewerPopFormat(viewer));
-  return (0);
+  return PETSC_SUCCESS;
 }
 
 /*@

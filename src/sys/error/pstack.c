@@ -55,13 +55,13 @@ PetscErrorCode PetscStackViewSAWs(void)
   PetscMPIInt rank;
 
   PetscCallMPI(MPI_Comm_rank(PETSC_COMM_WORLD, &rank));
-  if (rank) return 0;
+  if (rank) return PETSC_SUCCESS;
   #if PetscDefined(USE_DEBUG)
   PetscCallSAWs(SAWs_Register, ("/PETSc/Stack/functions", petscstack.function, 20, SAWs_READ, SAWs_STRING));
   PetscCallSAWs(SAWs_Register, ("/PETSc/Stack/__current_size", &petscstack.currentsize, 1, SAWs_READ, SAWs_INT));
   #endif
   amsmemstack = PETSC_TRUE;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode PetscStackSAWsViewOff(void)
@@ -78,13 +78,13 @@ PetscErrorCode PetscStackSAWsViewOff(void)
 PetscErrorCode PetscStackSetCheck(PetscBool check)
 {
   petscstack.check = check;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode PetscStackReset(void)
 {
   memset(&petscstack, 0, sizeof(petscstack));
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C
@@ -145,7 +145,7 @@ PetscErrorCode PetscStackView(FILE *file)
       }
     }
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C
@@ -181,7 +181,7 @@ PetscErrorCode PetscStackCopy(PetscStack *sint, PetscStack *sout)
   } else {
     sout->currentsize = 0;
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C
@@ -215,6 +215,6 @@ PetscErrorCode PetscStackPrint(PetscStack *sint, FILE *fp)
       else fprintf(fp, "      [%d]  %s()\n", PetscGlobalRank, sint->function[i]);
     }
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 #endif /* PetscDefined(USE_DEBUG) */

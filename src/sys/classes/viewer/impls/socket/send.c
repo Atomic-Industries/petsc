@@ -60,10 +60,11 @@ PETSC_EXTERN int connect(int, struct sockaddr *, int);
 static PetscErrorCode PetscViewerDestroy_Socket(PetscViewer viewer)
 {
   PetscViewer_Socket *vmatlab = (PetscViewer_Socket *)viewer->data;
-  PetscErrorCode      ierr;
 
   PetscFunctionBegin;
   if (vmatlab->port) {
+    int ierr;
+
 #if defined(PETSC_HAVE_CLOSESOCKET)
     ierr = closesocket(vmatlab->port);
 #else
@@ -205,7 +206,8 @@ PETSC_INTERN PetscErrorCode PetscSocketEstablish(int portnum, int *ss)
 #if defined(PETSC_HAVE_SO_REUSEADDR)
   {
     int optval = 1; /* Turn on the option */
-    PetscCall(setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&optval, sizeof(optval)));
+    int ret = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&optval, sizeof(optval));
+    PetscCheck(!ret, PETSC_COMM_SELF, PETSC_ERR_LIB, "setsockopt() failed with error code %d", ret);
   }
 #endif
 

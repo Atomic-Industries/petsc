@@ -476,10 +476,10 @@ PetscInt project(PetscInt n, PetscReal *a, PetscReal b, PetscReal *c, PetscReal 
 
   if (nonNegativeSlack) {
     /* inequality constraint, i.e., with \xi >= 0 constraint */
-    if (r < TOL_R) return 0;
+    if (r < TOL_R) return PETSC_SUCCESS;
   } else {
     /* equality constraint ,i.e., without \xi >= 0 constraint */
-    if (PetscAbsReal(r) < TOL_R) return 0;
+    if (PetscAbsReal(r) < TOL_R) return PETSC_SUCCESS;
   }
 
   if (r < 0.0) {
@@ -630,7 +630,7 @@ PetscErrorCode solve(TAO_DF *df)
     if (PetscAbsReal(y[i]) > max) max = PetscAbsReal(y[i]);
   }
 
-  if (max < tol * 1e-3) return 0;
+  if (max < tol * 1e-3) return PETSC_SUCCESS;
 
   alpha = 1.0 / max;
 
@@ -780,7 +780,7 @@ PetscErrorCode solve(TAO_DF *df)
         } else uv[luv++] = i;
       }
 
-      if (it == 0 && PetscSqrtReal(ak) < tol * 0.5 * PetscSqrtReal(bk)) return 0;
+      if (it == 0 && PetscSqrtReal(ak) < tol * 0.5 * PetscSqrtReal(bk)) return PETSC_SUCCESS;
       else {
         kktlam = kktlam / it;
         info   = 1;
@@ -812,9 +812,9 @@ PetscErrorCode solve(TAO_DF *df)
           }
         }
 
-        if (info == 1) return 0;
+        if (info == 1) return PETSC_SUCCESS;
       }
     }
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
