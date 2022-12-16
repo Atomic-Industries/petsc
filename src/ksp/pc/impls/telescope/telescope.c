@@ -120,11 +120,11 @@ DM private_PCTelescopeGetSubDM(PC_Telescope sred)
       subdm = NULL;
       break;
     case TELESCOPE_COARSEDM:
-      if (sred->ksp) KSPGetDM(sred->ksp, &subdm);
+      if (sred->ksp) PetscCallAbort(PETSC_COMM_SELF, KSPGetDM(sred->ksp, &subdm));
       break;
     }
   }
-  return (subdm);
+  return subdm;
 }
 
 PetscErrorCode PCTelescopeSetUp_default(PC pc, PC_Telescope sred)
@@ -381,24 +381,24 @@ static PetscErrorCode PCView_Telescope(PC pc, PetscViewer viewer)
         if (dm) {
           PetscObject obj = (PetscObject)dm;
           PetscCall(PetscViewerASCIIPrintf(subviewer, "Parent DM object:"));
-          PetscViewerASCIIUseTabs(subviewer, PETSC_FALSE);
-          if (obj->type_name) { PetscViewerASCIIPrintf(subviewer, " type = %s;", obj->type_name); }
-          if (obj->name) { PetscViewerASCIIPrintf(subviewer, " name = %s;", obj->name); }
-          if (obj->prefix) PetscViewerASCIIPrintf(subviewer, " prefix = %s", obj->prefix);
+          PetscCall(PetscViewerASCIIUseTabs(subviewer, PETSC_FALSE));
+          if (obj->type_name) PetscCall(PetscViewerASCIIPrintf(subviewer, " type = %s;", obj->type_name));
+          if (obj->name) PetscCall(PetscViewerASCIIPrintf(subviewer, " name = %s;", obj->name));
+          if (obj->prefix) PetscCall(PetscViewerASCIIPrintf(subviewer, " prefix = %s", obj->prefix));
           PetscCall(PetscViewerASCIIPrintf(subviewer, "\n"));
-          PetscViewerASCIIUseTabs(subviewer, PETSC_TRUE);
+          PetscCall(PetscViewerASCIIUseTabs(subviewer, PETSC_TRUE));
         } else {
           PetscCall(PetscViewerASCIIPrintf(subviewer, "Parent DM object: NULL\n"));
         }
         if (subdm) {
           PetscObject obj = (PetscObject)subdm;
           PetscCall(PetscViewerASCIIPrintf(subviewer, "Sub DM object:"));
-          PetscViewerASCIIUseTabs(subviewer, PETSC_FALSE);
-          if (obj->type_name) { PetscViewerASCIIPrintf(subviewer, " type = %s;", obj->type_name); }
-          if (obj->name) { PetscViewerASCIIPrintf(subviewer, " name = %s;", obj->name); }
-          if (obj->prefix) PetscViewerASCIIPrintf(subviewer, " prefix = %s", obj->prefix);
+          PetscCall(PetscViewerASCIIUseTabs(subviewer, PETSC_FALSE));
+          if (obj->type_name) PetscCall(PetscViewerASCIIPrintf(subviewer, " type = %s;", obj->type_name));
+          if (obj->name) PetscCall(PetscViewerASCIIPrintf(subviewer, " name = %s;", obj->name));
+          if (obj->prefix) PetscCall(PetscViewerASCIIPrintf(subviewer, " prefix = %s", obj->prefix));
           PetscCall(PetscViewerASCIIPrintf(subviewer, "\n"));
-          PetscViewerASCIIUseTabs(subviewer, PETSC_TRUE);
+          PetscCall(PetscViewerASCIIUseTabs(subviewer, PETSC_TRUE));
         } else {
           PetscCall(PetscViewerASCIIPrintf(subviewer, "Sub DM object: NULL\n"));
         }

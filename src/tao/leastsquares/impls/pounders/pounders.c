@@ -138,7 +138,7 @@ static PetscErrorCode gqtwrap(Tao tao, PetscReal *gnorm, PetscReal *qmin)
       tao->reason = TAO_DIVERGED_TR_REDUCTION;
     }
   } else {
-    gqt(mfqP->n, mfqP->Hres, mfqP->n, mfqP->Gres, 1.0, mfqP->gqt_rtol, atol, mfqP->gqt_maxits, gnorm, qmin, mfqP->Xsubproblem, &info, &its, mfqP->work, mfqP->work2, mfqP->work3);
+    PetscCall(gqt(mfqP->n, mfqP->Hres, mfqP->n, mfqP->Gres, 1.0, mfqP->gqt_rtol, atol, mfqP->gqt_maxits, gnorm, qmin, mfqP->Xsubproblem, &info, &its, mfqP->work, mfqP->work2, mfqP->work3));
   }
   *qmin *= -1;
   PetscFunctionReturn(PETSC_SUCCESS);

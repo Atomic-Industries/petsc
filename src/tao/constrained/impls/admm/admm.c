@@ -476,7 +476,7 @@ static PetscErrorCode TaoSolve_ADMM(Tao tao)
       if (is_reg_shell) {
         PetscCall(ADMML1EpsilonNorm(tao, am->subsolverZ->solution, am->l1epsilon, &reg_func));
       } else {
-        (*am->ops->regobjgrad)(am->subsolverZ, am->subsolverX->solution, &reg_func, tempL, am->regobjgradP);
+        PetscCall((*am->ops->regobjgrad)(am->subsolverZ, am->subsolverX->solution, &reg_func, tempL, am->regobjgradP));
       }
       break;
     case TAO_ADMM_REGULARIZER_SOFT_THRESH:

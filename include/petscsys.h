@@ -1313,14 +1313,14 @@ PETSC_EXTERN PetscErrorCode PetscStackViewSAWs(void);
 PETSC_EXTERN PetscErrorCode PetscStackSAWsViewOff(void);
 
 #else
-  #define PetscSAWsBlock()                  0
-  #define PetscObjectSAWsViewOff(obj)       0
-  #define PetscObjectSAWsSetBlock(obj, flg) 0
-  #define PetscObjectSAWsBlock(obj)         0
-  #define PetscObjectSAWsGrantAccess(obj)   0
-  #define PetscObjectSAWsTakeAccess(obj)    0
-  #define PetscStackViewSAWs()              0
-  #define PetscStackSAWsViewOff()           0
+  #define PetscSAWsBlock()                  PETSC_SUCCESS
+  #define PetscObjectSAWsViewOff(obj)       PETSC_SUCCESS
+  #define PetscObjectSAWsSetBlock(obj, flg) PETSC_SUCCESS
+  #define PetscObjectSAWsBlock(obj)         PETSC_SUCCESS
+  #define PetscObjectSAWsGrantAccess(obj)   PETSC_SUCCESS
+  #define PetscObjectSAWsTakeAccess(obj)    PETSC_SUCCESS
+  #define PetscStackViewSAWs()              PETSC_SUCCESS
+  #define PetscStackSAWsViewOff()           PETSC_SUCCESS
   #define PetscStackSAWsTakeAccess()
   #define PetscStackSAWsGrantAccess()
 

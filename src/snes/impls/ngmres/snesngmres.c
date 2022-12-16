@@ -211,7 +211,7 @@ PetscErrorCode SNESSolve_NGMRES(SNES snes)
   PetscCall(SNESMonitor(snes, 0, fnorm));
   PetscUseTypeMethod(snes, converged, 0, 0.0, 0.0, fnorm, &snes->reason, snes->cnvP);
   if (snes->reason) PetscFunctionReturn(PETSC_SUCCESS);
-  SNESNGMRESUpdateSubspace_Private(snes, 0, 0, F, fnorm, X);
+  PetscCall(SNESNGMRESUpdateSubspace_Private(snes, 0, 0, F, fnorm, X));
 
   k_restart = 1;
   l         = 1;

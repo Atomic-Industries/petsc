@@ -681,8 +681,8 @@ PetscErrorCode PCTelescopeSetUp_dmda(PC pc, PC_Telescope sred)
   PetscCall(PCGetDM(pc, &dm));
   PetscCall(DMDAGetInfo(dm, &dim, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL));
 
-  PCTelescopeSetUp_dmda_repart(pc, sred, ctx);
-  PCTelescopeSetUp_dmda_repart_coors(pc, sred, ctx);
+  PetscCall(PCTelescopeSetUp_dmda_repart(pc, sred, ctx));
+  PetscCall(PCTelescopeSetUp_dmda_repart_coors(pc, sred, ctx));
   switch (dim) {
   case 1:
     SETERRQ(comm, PETSC_ERR_SUP, "Telescope: DMDA (1D) repartitioning not provided");

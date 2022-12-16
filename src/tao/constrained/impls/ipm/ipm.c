@@ -759,7 +759,7 @@ PetscErrorCode IPMUpdateAi(Tao tao)
     PetscCall(VecScatterBegin(ipmP->ci_scat, tao->constraints_inequality, ipmP->ci, INSERT_VALUES, SCATTER_FORWARD));
     PetscCall(VecScatterEnd(ipmP->ci_scat, tao->constraints_inequality, ipmP->ci, INSERT_VALUES, SCATTER_FORWARD));
   }
-  if (!ipmP->work) VecDuplicate(tao->solution, &ipmP->work);
+  if (!ipmP->work) PetscCall(VecDuplicate(tao->solution, &ipmP->work));
   PetscCall(VecCopy(tao->solution, ipmP->work));
   if (tao->XL) {
     PetscCall(VecAXPY(ipmP->work, -1.0, tao->XL));

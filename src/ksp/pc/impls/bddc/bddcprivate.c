@@ -542,14 +542,14 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
       }
     }
     if (!sneighs || test >= 3 * ord || bdir) { /* splitpoints */
-      if (print) PetscPrintf(PETSC_COMM_SELF, "SPLITPOINT %" PetscInt_FMT " (%s %s %s)\n", i, PetscBools[!sneighs], PetscBools[test >= 3 * ord], PetscBools[bdir]);
+      if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "SPLITPOINT %" PetscInt_FMT " (%s %s %s)\n", i, PetscBools[!sneighs], PetscBools[test >= 3 * ord], PetscBools[bdir]));
       PetscCall(PetscBTSet(btv, i));
     } else if (test == ord) {
       if (order == 1 || (!order && ii[i + 1] - ii[i] == 1)) {
-        if (print) PetscPrintf(PETSC_COMM_SELF, "ENDPOINT %" PetscInt_FMT "\n", i);
+        if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "ENDPOINT %" PetscInt_FMT "\n", i));
         PetscCall(PetscBTSet(btv, i));
       } else {
-        if (print) PetscPrintf(PETSC_COMM_SELF, "CORNER CANDIDATE %" PetscInt_FMT "\n", i);
+        if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "CORNER CANDIDATE %" PetscInt_FMT "\n", i));
         PetscCall(PetscBTSet(btvcand, i));
       }
     }
@@ -560,7 +560,7 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
 
   /* a candidate is valid if it is connected to another candidate via a non-primal edge dof */
   if (order != 1) {
-    if (print) PetscPrintf(PETSC_COMM_SELF, "INSPECTING CANDIDATES\n");
+    if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "INSPECTING CANDIDATES\n"));
     PetscCall(MatGetRowIJ(lGe, 0, PETSC_FALSE, PETSC_FALSE, &i, &iit, &jjt, &done));
     for (i = 0; i < nv; i++) {
       if (PetscBTLookup(btvcand, i)) {
@@ -577,10 +577,10 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
           }
         }
         if (!found) {
-          if (print) PetscPrintf(PETSC_COMM_SELF, "  CANDIDATE %" PetscInt_FMT " CLEARED\n", i);
+          if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "  CANDIDATE %" PetscInt_FMT " CLEARED\n", i));
           PetscCall(PetscBTClear(btvcand, i));
         } else {
-          if (print) PetscPrintf(PETSC_COMM_SELF, "  CANDIDATE %" PetscInt_FMT " ACCEPTED\n", i);
+          if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "  CANDIDATE %" PetscInt_FMT " ACCEPTED\n", i));
         }
       }
     }
@@ -808,16 +808,16 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
     }
     for (j = 0; j < size; j++) {
       PetscInt k, ee = idxs[j];
-      if (print) PetscPrintf(PETSC_COMM_SELF, "  idx %" PetscInt_FMT "\n", ee);
+      if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "  idx %" PetscInt_FMT "\n", ee));
       for (k = ii[ee]; k < ii[ee + 1]; k++) {
-        if (print) PetscPrintf(PETSC_COMM_SELF, "    inspect %" PetscInt_FMT "\n", jj[k]);
+        if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "    inspect %" PetscInt_FMT "\n", jj[k]));
         if (PetscBTLookup(btv, jj[k])) {
-          if (print) PetscPrintf(PETSC_COMM_SELF, "      corner found (already set) %" PetscInt_FMT "\n", jj[k]);
+          if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "      corner found (already set) %" PetscInt_FMT "\n", jj[k]));
         } else if (PetscBTLookup(btvcand, jj[k])) { /* is it ok? */
           PetscInt  k2;
           PetscBool corner = PETSC_FALSE;
           for (k2 = iit[jj[k]]; k2 < iit[jj[k] + 1]; k2++) {
-            if (print) PetscPrintf(PETSC_COMM_SELF, "        INSPECTING %" PetscInt_FMT ": mark %" PetscInt_FMT " (ref mark %" PetscInt_FMT "), boundary %d\n", jjt[k2], marks[jjt[k2]], mark, (int)!!PetscBTLookup(btb, jjt[k2]));
+            if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "        INSPECTING %" PetscInt_FMT ": mark %" PetscInt_FMT " (ref mark %" PetscInt_FMT "), boundary %d\n", jjt[k2], marks[jjt[k2]], mark, (int)!!PetscBTLookup(btb, jjt[k2])));
             /* it's a corner if either is connected with an edge dof belonging to a different cc or
                if the edge dof lie on the natural part of the boundary */
             if ((marks[jjt[k2]] && marks[jjt[k2]] != mark) || (!marks[jjt[k2]] && PetscBTLookup(btb, jjt[k2]))) {
@@ -826,10 +826,10 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
             }
           }
           if (corner) { /* found the nodal dof corresponding to the endpoint of the edge */
-            if (print) PetscPrintf(PETSC_COMM_SELF, "        corner found %" PetscInt_FMT "\n", jj[k]);
+            if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "        corner found %" PetscInt_FMT "\n", jj[k]));
             PetscCall(PetscBTSet(btv, jj[k]));
           } else {
-            if (print) PetscPrintf(PETSC_COMM_SELF, "        no corners found\n");
+            if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "        no corners found\n"));
           }
         }
       }
@@ -907,7 +907,7 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
     PetscCall(PetscArraycpy(newprimals, idxs, cum));
     PetscCall(ISRestoreIndices(primals, &idxs));
     PetscCall(MatGetRowIJ(lGt, 0, PETSC_FALSE, PETSC_FALSE, &i, &iit, &jjt, &done));
-    if (print) PetscPrintf(PETSC_COMM_SELF, "DOING SECOND PASS (eerr %s)\n", PetscBools[eerr]);
+    if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "DOING SECOND PASS (eerr %s)\n", PetscBools[eerr]));
     for (i = 0; i < nee; i++) {
       PetscBool has_candidates = PETSC_FALSE;
       if (PetscBTLookup(bter, i)) {
@@ -918,29 +918,29 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
         /* for (j=0;j<size;j++) newprimals[cum++] = idxs[j]; */
         for (j = 0; j < size; j++) {
           PetscInt k, ee = idxs[j];
-          if (print) PetscPrintf(PETSC_COMM_SELF, "Inspecting edge dof %" PetscInt_FMT " [%" PetscInt_FMT " %" PetscInt_FMT ")\n", ee, ii[ee], ii[ee + 1]);
+          if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "Inspecting edge dof %" PetscInt_FMT " [%" PetscInt_FMT " %" PetscInt_FMT ")\n", ee, ii[ee], ii[ee + 1]));
           for (k = ii[ee]; k < ii[ee + 1]; k++) {
             /* set all candidates located on the edge as corners */
             if (PetscBTLookup(btvcand, jj[k])) {
               PetscInt k2, vv = jj[k];
               has_candidates = PETSC_TRUE;
-              if (print) PetscPrintf(PETSC_COMM_SELF, "  Candidate set to vertex %" PetscInt_FMT "\n", vv);
+              if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "  Candidate set to vertex %" PetscInt_FMT "\n", vv));
               PetscCall(PetscBTSet(btv, vv));
               /* set all edge dofs connected to candidate as primals */
               for (k2 = iit[vv]; k2 < iit[vv + 1]; k2++) {
                 if (marks[jjt[k2]] == mark) {
                   PetscInt k3, ee2 = jjt[k2];
-                  if (print) PetscPrintf(PETSC_COMM_SELF, "    Connected edge dof set to primal %" PetscInt_FMT "\n", ee2);
+                  if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "    Connected edge dof set to primal %" PetscInt_FMT "\n", ee2));
                   newprimals[cum++] = ee2;
                   /* finally set the new corners */
                   for (k3 = ii[ee2]; k3 < ii[ee2 + 1]; k3++) {
-                    if (print) PetscPrintf(PETSC_COMM_SELF, "      Connected nodal dof set to vertex %" PetscInt_FMT "\n", jj[k3]);
+                    if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "      Connected nodal dof set to vertex %" PetscInt_FMT "\n", jj[k3]));
                     PetscCall(PetscBTSet(btv, jj[k3]));
                   }
                 }
               }
             } else {
-              if (print) PetscPrintf(PETSC_COMM_SELF, "  Not a candidate vertex %" PetscInt_FMT "\n", jj[k]);
+              if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "  Not a candidate vertex %" PetscInt_FMT "\n", jj[k]));
             }
           }
         }
@@ -948,16 +948,16 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
           PetscInt k, ee = idxs[0], *tmarks;
 
           PetscCall(PetscCalloc1(ne, &tmarks));
-          if (print) PetscPrintf(PETSC_COMM_SELF, "  Circular edge %" PetscInt_FMT "\n", i);
+          if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "  Circular edge %" PetscInt_FMT "\n", i));
           for (k = ii[ee]; k < ii[ee + 1]; k++) {
             PetscInt k2;
-            if (print) PetscPrintf(PETSC_COMM_SELF, "    Set to corner %" PetscInt_FMT "\n", jj[k]);
+            if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "    Set to corner %" PetscInt_FMT "\n", jj[k]));
             PetscCall(PetscBTSet(btv, jj[k]));
             for (k2 = iit[jj[k]]; k2 < iit[jj[k] + 1]; k2++) tmarks[jjt[k2]]++;
           }
           for (j = 0; j < size; j++) {
             if (tmarks[idxs[j]] > 1) {
-              if (print) PetscPrintf(PETSC_COMM_SELF, "  Edge dof set to primal %" PetscInt_FMT "\n", idxs[j]);
+              if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "  Edge dof set to primal %" PetscInt_FMT "\n", idxs[j]));
               newprimals[cum++] = idxs[j];
             }
           }
@@ -1090,7 +1090,7 @@ PetscErrorCode PCBDDCNedelecSupport(PC pc)
     }
     cedges[i] = idxs[size - 1];
     PetscCall(ISRestoreIndices(eedges[i], &idxs));
-    if (print) PetscPrintf(PETSC_COMM_SELF, "EDGE %" PetscInt_FMT ": ce %" PetscInt_FMT ", corners (%" PetscInt_FMT ",%" PetscInt_FMT ")\n", i, cedges[i], corners[2 * i], corners[2 * i + 1]);
+    if (print) PetscCall(PetscPrintf(PETSC_COMM_SELF, "EDGE %" PetscInt_FMT ": ce %" PetscInt_FMT ", corners (%" PetscInt_FMT ",%" PetscInt_FMT ")\n", i, cedges[i], corners[2 * i], corners[2 * i + 1]));
   }
   PetscCall(MatRestoreRowIJ(lG, 0, PETSC_FALSE, PETSC_FALSE, &i, &ii, &jj, &done));
   PetscCall(PetscBTDestroy(&btvc));
@@ -6174,7 +6174,7 @@ PetscErrorCode PCBDDCConstraintsSetUp(PC pc)
         constraints_idxs_ptr[total_counts_cc + 1] = constraints_idxs_ptr[total_counts_cc] + size_of_constraint;
         constraints_data_ptr[total_counts_cc + 1] = constraints_data_ptr[total_counts_cc] + size_of_constraint * valid_constraints;
         /* set change_of_basis flag */
-        if (boolforchange) PetscBTSet(change_basis, total_counts_cc);
+        if (boolforchange) PetscCall(PetscBTSet(change_basis, total_counts_cc));
         total_counts_cc++;
       }
     }
@@ -6256,7 +6256,7 @@ PetscErrorCode PCBDDCConstraintsSetUp(PC pc)
       for (k = 0; k < constraints_n[i]; k++) pcbddc->primal_indices_local_idxs[total_primal_vertices++] = constraints_idxs[constraints_idxs_ptr[i] + k];
       pcbddc->local_primal_size_cc += constraints_n[i];
       if (constraints_n[i] > 1 || pcbddc->use_qr_single) {
-        PetscBTSet(qr_needed_idx, i);
+        PetscCall(PetscBTSet(qr_needed_idx, i));
         qr_needed = PETSC_TRUE;
       }
     } else {

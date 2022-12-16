@@ -2551,7 +2551,7 @@ PetscErrorCode DMPlexLandauPrintNorms(Vec X, PetscInt stepi)
         energytot += energy[ii];
         densitytot += density[ii];
       }
-      if (ctx->num_species > 1) PetscPrintf(ctx->comm, "\n");
+      if (ctx->num_species > 1) PetscCall(PetscPrintf(ctx->comm, "\n"));
     }
   }
   PetscCall(DMCompositeRestoreAccessArray(pack, X, nDMs, NULL, globXArray));

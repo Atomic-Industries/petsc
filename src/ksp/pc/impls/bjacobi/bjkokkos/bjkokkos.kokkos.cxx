@@ -260,7 +260,7 @@ KOKKOS_INLINE_FUNCTION PetscErrorCode MatMult(const team_member team, const Pets
     Kokkos::single(Kokkos::PerThread(team), [=]() { y_loc[rowb - start] = sum; });
   });
   team.team_barrier();
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 // temp buffer per thread with reduction at end?
@@ -280,7 +280,7 @@ KOKKOS_INLINE_FUNCTION PetscErrorCode MatMultTranspose(const team_member team, c
     });
   });
   team.team_barrier();
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 typedef struct Batch_MetaData_TAG {
@@ -376,11 +376,11 @@ KOKKOS_INLINE_FUNCTION PetscErrorCode BJSolve_TFQMR(const team_member team, cons
 #endif
   if (dp < atol) {
     metad->reason = KSP_CONVERGED_ATOL_NORMAL;
-    return 0;
+    return PETSC_SUCCESS;
   }
   if (0 == maxit) {
     metad->reason = KSP_DIVERGED_ITS;
-    return 0;
+    return PETSC_SUCCESS;
   }
 
   /* Make the initial Rp = R */
@@ -403,7 +403,7 @@ KOKKOS_INLINE_FUNCTION PetscErrorCode BJSolve_TFQMR(const team_member team, cons
     D[idx] = 0;
   });
   team.team_barrier();
-  MatMult(team, glb_Aai, glb_Aaj, glb_Aaa, r, ic, start, end, T, V);
+  PetscCall(MatMult(team, glb_Aai, glb_Aaj, glb_Aaa, r, ic, start, end, T, V));
 
   i = 0;
   do {
@@ -422,7 +422,7 @@ KOKKOS_INLINE_FUNCTION PetscErrorCode BJSolve_TFQMR(const team_member team, cons
     // KSP_PCApplyBAorAB
     parallel_for(Kokkos::TeamVectorRange(team, Nblk), [=](int idx) { T[idx] = Diag[idx] * T[idx]; });
     team.team_barrier();
-    MatMult(team, glb_Aai, glb_Aaj, glb_Aaa, r, ic, start, end, T, AUQ);
+    PetscCall(MatMult(team, glb_Aai, glb_Aaj, glb_Aaa, r, ic, start, end, T, AUQ));
     /* r <- r - a K (u + q) */
     parallel_for(Kokkos::TeamVectorRange(team, Nblk), [=](int idx) { R[idx] = R[idx] - a * AUQ[idx]; });
     team.team_barrier();
@@ -497,7 +497,7 @@ KOKKOS_INLINE_FUNCTION PetscErrorCode BJSolve_TFQMR(const team_member team, cons
     team.team_barrier();
     parallel_for(Kokkos::TeamVectorRange(team, Nblk), [=](int idx) { T[idx] = Diag[idx] * P[idx]; });
     team.team_barrier();
-    MatMult(team, glb_Aai, glb_Aaj, glb_Aaa, r, ic, start, end, T, V);
+    PetscCall(MatMult(team, glb_Aai, glb_Aaj, glb_Aaa, r, ic, start, end, T, V));
 
     rhoold = rho;
     dpold  = dp;
@@ -522,7 +522,7 @@ done:
   } else {
     metad->flops = 2 * (metad->its * (10 * Nblk + 2 * 50 * Nblk) + 5 * Nblk); // guess
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 // Solve Ax = y with biCG
@@ -602,11 +602,11 @@ KOKKOS_INLINE_FUNCTION PetscErrorCode BJSolve_BICG(const team_member team, const
 #endif
   if (dp < atol) {
     metad->reason = KSP_CONVERGED_ATOL_NORMAL;
-    return 0;
+    return PETSC_SUCCESS;
   }
   if (0 == maxit) {
     metad->reason = KSP_DIVERGED_ITS;
-    return 0;
+    return PETSC_SUCCESS;
   }
   i = 0;
   do {
@@ -641,8 +641,8 @@ KOKKOS_INLINE_FUNCTION PetscErrorCode BJSolve_BICG(const team_member team, const
     team.team_barrier();
     betaold = beta;
     /*     z <- Kp         */
-    MatMult(team, glb_Aai, glb_Aaj, glb_Aaa, r, ic, start, end, Pr, Zr);
-    MatMultTranspose(team, glb_Aai, glb_Aaj, glb_Aaa, r, ic, start, end, Pl, Zl);
+    PetscCall(MatMult(team, glb_Aai, glb_Aaj, glb_Aaa, r, ic, start, end, Pr, Zr));
+    PetscCall(MatMultTranspose(team, glb_Aai, glb_Aaj, glb_Aaa, r, ic, start, end, Pl, Zl));
     /*     dpi <- z'p      */
     parallel_reduce(
       Kokkos::TeamVectorRange(team, Nblk), [=](const int idx, PetscScalar &lsum) { lsum += Zr[idx] * PetscConj(Pl[idx]); }, dpi);
@@ -714,7 +714,7 @@ done:
   } else {
     metad->flops = 2 * (metad->its * (10 * Nblk + 2 * 50 * Nblk) + 5 * Nblk); // guess
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 // KSP solver solve Ax = b; x is output, bin is input
@@ -978,7 +978,7 @@ static PetscErrorCode PCApply_BJKOKKOS(PC pc, Vec bin, Vec xout)
       nvtxRangePushA("batch-kokkos-solve");
 #endif
       Kokkos::View<PetscScalar *, Kokkos::DefaultExecutionSpace> d_work_vecs_k("workvectors", global_buff_words); // global work vectors
-      PetscInfo(pc, "\tn = %d. %d shared bytes/team, %d global mem bytes, rtol=%e, num blocks %d, team_size=%d, %d vector threads, %d shared vectors, %d global vectors\n", (int)jac->n, scr_bytes_team_shared, global_buff_words, rtol, (int)nBlk, (int)team_size, PCBJKOKKOS_VEC_SIZE, nShareVec, nGlobBVec);
+      PetscCall(PetscInfo(pc, "\tn = %d. %d shared bytes/team, %d global mem bytes, rtol=%e, num blocks %d, team_size=%d, %d vector threads, %d shared vectors, %d global vectors\n", (int)jac->n, scr_bytes_team_shared, global_buff_words, rtol, (int)nBlk, (int)team_size, PCBJKOKKOS_VEC_SIZE, nShareVec, nGlobBVec));
       PetscScalar *d_work_vecs = d_work_vecs_k.data();
       Kokkos::parallel_for(
         "Solve", Kokkos::TeamPolicy<Kokkos::LaunchBounds<256, 4>>(nBlk, team_size, PCBJKOKKOS_VEC_SIZE).set_scratch_size(PCBJKOKKOS_SHARED_LEVEL, Kokkos::PerTeam(scr_bytes_team_shared)), KOKKOS_LAMBDA(const team_member team) {
@@ -989,10 +989,10 @@ static PetscErrorCode PCApply_BJKOKKOS(PC pc, Vec bin, Vec xout)
           bool         print            = monitor && (blkID == view_bid);
           switch (ksp_type_idx) {
           case BATCH_KSP_BICG_IDX:
-            BJSolve_BICG(team, glb_Aai, glb_Aaj, glb_Aaa, d_isrow, d_isicol, work_buff_global, stride_global, nShareVec, work_buff_shared, stride_shared, rtol, atol, dtol, maxit, &d_metadata[blkID], start, end, glb_idiag, glb_bdata, glb_xdata, print);
+            PetscCallAbort(PETSC_COMM_SELF, BJSolve_BICG(team, glb_Aai, glb_Aaj, glb_Aaa, d_isrow, d_isicol, work_buff_global, stride_global, nShareVec, work_buff_shared, stride_shared, rtol, atol, dtol, maxit, &d_metadata[blkID], start, end, glb_idiag, glb_bdata, glb_xdata, print));
             break;
           case BATCH_KSP_TFQMR_IDX:
-            BJSolve_TFQMR(team, glb_Aai, glb_Aaj, glb_Aaa, d_isrow, d_isicol, work_buff_global, stride_global, nShareVec, work_buff_shared, stride_shared, rtol, atol, dtol, maxit, &d_metadata[blkID], start, end, glb_idiag, glb_bdata, glb_xdata, print);
+            PetscCallAbort(PETSC_COMM_SELF, BJSolve_TFQMR(team, glb_Aai, glb_Aaj, glb_Aaa, d_isrow, d_isicol, work_buff_global, stride_global, nShareVec, work_buff_shared, stride_shared, rtol, atol, dtol, maxit, &d_metadata[blkID], start, end, glb_idiag, glb_bdata, glb_xdata, print));
             break;
           case BATCH_KSP_GMRES_IDX:
             //BJSolve_GMRES();

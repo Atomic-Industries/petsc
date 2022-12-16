@@ -635,7 +635,7 @@ PetscErrorCode SNESLineSearchDestroy(SNESLineSearch *linesearch)
   }
   PetscCall(PetscObjectSAWsViewOff((PetscObject)*linesearch));
   PetscCall(SNESLineSearchReset(*linesearch));
-  if ((*linesearch)->ops->destroy) (*linesearch)->ops->destroy(*linesearch);
+  PetscTryTypeMethod(*linesearch, destroy);
   PetscCall(PetscViewerDestroy(&(*linesearch)->monitor));
   PetscCall(SNESLineSearchMonitorCancel((*linesearch)));
   PetscCall(PetscHeaderDestroy(linesearch));

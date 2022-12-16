@@ -545,7 +545,7 @@ PetscErrorCode CharacteristicAddPoint(Characteristic c, CharacteristicPointDA2D 
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 
-int CharacteristicSendCoordinatesBegin(Characteristic c)
+PetscErrorCode CharacteristicSendCoordinatesBegin(Characteristic c)
 {
   PetscMPIInt rank, tag = 121;
   PetscInt    i, n;

@@ -186,16 +186,16 @@ PetscErrorCode PCTFS_ivec_non_uniform(PetscInt *arg1, PetscInt *arg2, PetscInt n
     j -= i;
 
     /* call appropriate ivec function */
-    if (type == GL_MAX) PCTFS_ivec_max(arg1, arg2, j);
-    else if (type == GL_MIN) PCTFS_ivec_min(arg1, arg2, j);
-    else if (type == GL_MULT) PCTFS_ivec_mult(arg1, arg2, j);
-    else if (type == GL_ADD) PCTFS_ivec_add(arg1, arg2, j);
-    else if (type == GL_B_XOR) PCTFS_ivec_xor(arg1, arg2, j);
-    else if (type == GL_B_OR) PCTFS_ivec_or(arg1, arg2, j);
-    else if (type == GL_B_AND) PCTFS_ivec_and(arg1, arg2, j);
-    else if (type == GL_L_XOR) PCTFS_ivec_lxor(arg1, arg2, j);
-    else if (type == GL_L_OR) PCTFS_ivec_lor(arg1, arg2, j);
-    else if (type == GL_L_AND) PCTFS_ivec_land(arg1, arg2, j);
+    if (type == GL_MAX) PetscCall(PCTFS_ivec_max(arg1, arg2, j));
+    else if (type == GL_MIN) PetscCall(PCTFS_ivec_min(arg1, arg2, j));
+    else if (type == GL_MULT) PetscCall(PCTFS_ivec_mult(arg1, arg2, j));
+    else if (type == GL_ADD) PetscCall(PCTFS_ivec_add(arg1, arg2, j));
+    else if (type == GL_B_XOR) PetscCall(PCTFS_ivec_xor(arg1, arg2, j));
+    else if (type == GL_B_OR) PetscCall(PCTFS_ivec_or(arg1, arg2, j));
+    else if (type == GL_B_AND) PetscCall(PCTFS_ivec_and(arg1, arg2, j));
+    else if (type == GL_L_XOR) PetscCall(PCTFS_ivec_lxor(arg1, arg2, j));
+    else if (type == GL_L_OR) PetscCall(PCTFS_ivec_lor(arg1, arg2, j));
+    else if (type == GL_L_AND) PetscCall(PCTFS_ivec_land(arg1, arg2, j));
     else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_PLIB, "unrecognized type passed to PCTFS_ivec_non_uniform()!");
 
     arg1 += j;
@@ -526,11 +526,11 @@ PetscErrorCode PCTFS_SMI_sort(void *ar1, void *ar2, PetscInt size, PetscInt type
 {
   PetscFunctionBegin;
   if (type == SORT_INTEGER) {
-    if (ar2) PCTFS_ivec_sort_companion((PetscInt *)ar1, (PetscInt *)ar2, size);
-    else PCTFS_ivec_sort((PetscInt *)ar1, size);
+    if (ar2) PetscCall(PCTFS_ivec_sort_companion((PetscInt *)ar1, (PetscInt *)ar2, size));
+    else PetscCall(PCTFS_ivec_sort((PetscInt *)ar1, size));
   } else if (type == SORT_INT_PTR) {
-    if (ar2) PCTFS_ivec_sort_companion_hack((PetscInt *)ar1, (PetscInt **)ar2, size);
-    else PCTFS_ivec_sort((PetscInt *)ar1, size);
+    if (ar2) PetscCall(PCTFS_ivec_sort_companion_hack((PetscInt *)ar1, (PetscInt **)ar2, size));
+    else PetscCall(PCTFS_ivec_sort((PetscInt *)ar1, size));
   } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_PLIB, "PCTFS_SMI_sort only does SORT_INTEGER!");
   PetscFunctionReturn(PETSC_SUCCESS);
 }
@@ -694,13 +694,13 @@ PetscErrorCode PCTFS_rvec_non_uniform(PetscScalar *arg1, PetscScalar *arg2, Pets
     j -= i;
 
     /* call appropriate ivec function */
-    if (type == GL_MAX) PCTFS_rvec_max(arg1, arg2, j);
-    else if (type == GL_MIN) PCTFS_rvec_min(arg1, arg2, j);
-    else if (type == GL_MULT) PCTFS_rvec_mult(arg1, arg2, j);
-    else if (type == GL_ADD) PCTFS_rvec_add(arg1, arg2, j);
-    else if (type == GL_MAX_ABS) PCTFS_rvec_max_abs(arg1, arg2, j);
-    else if (type == GL_MIN_ABS) PCTFS_rvec_min_abs(arg1, arg2, j);
-    else if (type == GL_EXISTS) PCTFS_rvec_exists(arg1, arg2, j);
+    if (type == GL_MAX) PetscCall(PCTFS_rvec_max(arg1, arg2, j));
+    else if (type == GL_MIN) PetscCall(PCTFS_rvec_min(arg1, arg2, j));
+    else if (type == GL_MULT) PetscCall(PCTFS_rvec_mult(arg1, arg2, j));
+    else if (type == GL_ADD) PetscCall(PCTFS_rvec_add(arg1, arg2, j));
+    else if (type == GL_MAX_ABS) PetscCall(PCTFS_rvec_max_abs(arg1, arg2, j));
+    else if (type == GL_MIN_ABS) PetscCall(PCTFS_rvec_min_abs(arg1, arg2, j));
+    else if (type == GL_EXISTS) PetscCall(PCTFS_rvec_exists(arg1, arg2, j));
     else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_PLIB, "unrecognized type passed to PCTFS_rvec_non_uniform()!");
 
     arg1 += j;

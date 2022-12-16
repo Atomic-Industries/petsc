@@ -238,7 +238,7 @@ static PetscErrorCode PCGAMGCreateLevel_GAMG(PC pc, Mat Amat_fine, PetscInt cr_b
           PetscViewer viewer;
           char        fname[32];
           PetscCall(PetscSNPrintf(fname, sizeof(fname), "part_mat_%" PetscInt_FMT ".mat", llev));
-          PetscViewerBinaryOpen(comm, fname, FILE_MODE_WRITE, &viewer);
+          PetscCall(PetscViewerBinaryOpen(comm, fname, FILE_MODE_WRITE, &viewer));
           PetscCall(MatView(tMat, viewer));
           PetscCall(PetscViewerDestroy(&viewer));
         }

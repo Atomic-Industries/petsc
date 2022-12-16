@@ -1861,7 +1861,7 @@ PetscErrorCode MatInvertVariableBlockDiagonal_SeqAIJ(Mat A, PetscInt nblocks, co
     diag += bsizes[i] * bsizes[i];
     flops += 2 * PetscPowInt(bsizes[i], 3) / 3;
   }
-  PetscLogFlops(flops);
+  PetscCall(PetscLogFlops(flops));
   if (bsizemax > 7) PetscCall(PetscFree2(v_work, v_pivots));
   PetscCall(PetscFree(indx));
   PetscFunctionReturn(PETSC_SUCCESS);

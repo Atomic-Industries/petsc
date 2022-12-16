@@ -40,7 +40,7 @@ static PetscErrorCode PCMGGDSWSetUp(PC pc, PetscInt l, DM dm, KSP smooth, PetscI
     MatNullSpace nnsp;
 
     PetscCall(MatGetNearNullSpace(A, &nnsp));
-    PetscObjectReference((PetscObject)nnsp);
+    PetscCall(PetscObjectReference((PetscObject)nnsp));
     PetscCall(MatConvert(A, MATIS, MAT_INITIAL_MATRIX, &A));
     PetscCall(MatSetNearNullSpace(A, nnsp));
     PetscCall(MatNullSpaceDestroy(&nnsp));

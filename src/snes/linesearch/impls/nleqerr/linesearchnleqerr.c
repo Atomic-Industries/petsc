@@ -314,6 +314,6 @@ PETSC_EXTERN PetscErrorCode SNESLineSearchCreate_NLEQERR(SNESLineSearch linesear
 
   linesearch->data    = (void *)nleqerr;
   linesearch->max_its = 40;
-  SNESLineSearchReset_NLEQERR(linesearch);
+  PetscCall(SNESLineSearchReset_NLEQERR(linesearch));
   PetscFunctionReturn(PETSC_SUCCESS);
 }

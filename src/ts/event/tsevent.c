@@ -582,7 +582,7 @@ PetscErrorCode TSAdjointEventHandler(TS ts)
     }
   }
 
-  PetscBarrier((PetscObject)ts);
+  PetscCall(PetscBarrier((PetscObject)ts));
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 

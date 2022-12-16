@@ -382,9 +382,9 @@ PetscErrorCode landau_mat_assemble(PetscSplitCSRDataStructure d_mat, PetscScalar
     for (q = 0; q < nr; q++) {
       for (d = 0; d < nc; d++) vals[q * nc + d] = row_scale[q] * col_scale[d] * Aij;
     }
-    MatSetValuesDevice(d_mat, nr, rows, nc, cols, vals, ADD_VALUES);
+    PetscCallAbort(PETSC_COMM_SELF, MatSetValuesDevice(d_mat, nr, rows, nc, cols, vals, ADD_VALUES));
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode LandauKokkosJacobian(DM plex[], const PetscInt Nq, const PetscInt batch_sz, const PetscInt num_grids, const PetscInt a_numCells[], PetscReal a_Eq_m[], PetscScalar a_elem_closure[], const PetscScalar a_xarray[], const LandauStaticData *SData_d, const PetscReal shift, const PetscLogEvent events[], const PetscInt a_mat_offset[], const PetscInt a_species_offset[], Mat subJ[], Mat JacP)
@@ -725,7 +725,7 @@ PetscErrorCode LandauKokkosJacobian(DM plex[], const PetscInt Nq, const PetscInt
                   d_elem_mats(b_id, grid, loc_elem, fOff) = t;
 #endif
                 } else {
-                  landau_mat_assemble(d_mat, d_coo_vals, t, f, g, Nb, moffset, loc_elem, fieldA, maps[grid], d_coo_elem_offsets, d_coo_elem_fullNb, d_coo_elem_point_offsets, b_elem_idx, b_id * coo_sz_batch);
+                  PetscCallAbort(PETSC_COMM_SELF, landau_mat_assemble(d_mat, d_coo_vals, t, f, g, Nb, moffset, loc_elem, fieldA, maps[grid], d_coo_elem_offsets, d_coo_elem_fullNb, d_coo_elem_point_offsets, b_elem_idx, b_id * coo_sz_batch));
                 }
               });
             });
@@ -777,7 +777,7 @@ PetscErrorCode LandauKokkosJacobian(DM plex[], const PetscInt Nq, const PetscInt
                   d_elem_mats(b_id, grid, loc_elem, fOff) = t;
 #endif
                 } else {
-                  landau_mat_assemble(d_mat, d_coo_vals, t, f, g, Nb, moffset, loc_elem, fieldA, maps[grid], d_coo_elem_offsets, d_coo_elem_fullNb, d_coo_elem_point_offsets, b_elem_idx, b_id * coo_sz_batch);
+                  PetscCallAbort(PETSC_COMM_SELF, landau_mat_assemble(d_mat, d_coo_vals, t, f, g, Nb, moffset, loc_elem, fieldA, maps[grid], d_coo_elem_offsets, d_coo_elem_fullNb, d_coo_elem_point_offsets, b_elem_idx, b_id * coo_sz_batch));
                 }
               });
             });
