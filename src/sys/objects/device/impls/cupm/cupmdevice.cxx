@@ -165,7 +165,7 @@ static bool         cupmMPIAwareJumpBufferSet;
 // godspeed to anyone that attempts to call this function
 void SilenceVariableIsNotNeededAndWillNotBeEmittedWarning_ThisFunctionShouldNeverBeCalled()
 {
-  PETSCABORT(MPI_COMM_NULL, INT_MAX);
+  PETSCABORT(MPI_COMM_NULL, (PetscErrorCode)INT_MAX);
   if (cupmMPIAwareJumpBufferSet) (void)cupmMPIAwareJumpBuffer;
 }
 

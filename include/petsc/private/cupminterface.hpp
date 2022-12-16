@@ -625,7 +625,7 @@ struct Interface : InterfaceImpl<T> {
     PetscFunctionBegin;
     PetscValidPointer(ptr, 1);
     *ptr = nullptr;
-    if (n) PetscCall(cupmMallocHost(reinterpret_cast<void **>(ptr), n * sizeof(M), flags));
+    if (n) PetscCallCUPM(cupmMallocHost(reinterpret_cast<void **>(ptr), n * sizeof(M), flags));
     PetscFunctionReturn(PETSC_SUCCESS);
   }
 

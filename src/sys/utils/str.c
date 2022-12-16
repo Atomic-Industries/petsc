@@ -49,7 +49,7 @@ PetscErrorCode PetscStrToArray(const char s[], char sp, int *argc, char ***args)
   for (; n > 0; n--) { /* remove separator chars at the end - and will empty the string if all chars are separator chars */
     if (s[n - 1] != sp) break;
   }
-  if (!n) return 0;
+  if (!n) return PETSC_SUCCESS;
   for (i = 0; i < n; i++) {
     if (s[i] != sp) break;
   }
@@ -108,7 +108,7 @@ PetscErrorCode PetscStrToArray(const char s[], char sp, int *argc, char ***args)
       flg                   = PETSC_FALSE;
     }
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C
@@ -134,7 +134,7 @@ PetscErrorCode PetscStrToArrayDestroy(int argc, char **args)
 {
   for (int i = 0; i < argc; ++i) free(args[i]);
   if (args) free(args);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C

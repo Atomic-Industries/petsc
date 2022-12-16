@@ -38,7 +38,7 @@ PetscErrorCode PetscMemcmp(const void *str1, const void *str2, size_t len, Petsc
   if (!len) {
     // if e is a bad ptr I guess we just die here then?
     *e = PETSC_TRUE;
-    return 0;
+    return PETSC_SUCCESS;
   }
 
   PetscFunctionBegin;

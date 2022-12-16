@@ -615,20 +615,21 @@ static PetscErrorCode PetscDrawXGetDisplaySize_Private(const char name[], int *w
 
   PetscFunctionBegin;
   display = XOpenDisplay(name);
-  if (!display) {
-    *width = *height = 0;
+  if (display) {
+    *has_display = PETSC_TRUE;
+    *width       = (int)DisplayWidth(display, DefaultScreen(display));
+    *height      = (int)DisplayHeight(display, DefaultScreen(display));
+    XCloseDisplay(display);
+  } else {
+    *has_display = PETSC_FALSE;
+    *width       = 0;
+    *height      = 0;
     PetscCall((*PetscErrorPrintf)("Unable to open display on %s\n\
     Make sure your COMPUTE NODES are authorized to connect\n\
     to this X server and either your DISPLAY variable\n\
     is set or you use the -display name option\n",
                                   name));
-    *has_display = PETSC_FALSE;
-    PetscFunctionReturn(PETSC_SUCCESS);
   }
-  *has_display = PETSC_TRUE;
-  *width       = (int)DisplayWidth(display, DefaultScreen(display));
-  *height      = (int)DisplayHeight(display, DefaultScreen(display));
-  XCloseDisplay(display);
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 
