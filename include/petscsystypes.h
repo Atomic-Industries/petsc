@@ -219,7 +219,7 @@ typedef __int64 PetscInt64;
 #if defined(PETSC_USE_64BIT_INDICES)
 typedef PetscInt64 PetscInt;
 #else
-typedef int       PetscInt;
+typedef int PetscInt;
 #endif
 
 #if defined(PETSC_HAVE_STDINT_H) && defined(PETSC_HAVE_INTTYPES_H) && defined(PETSC_HAVE_MPI_INT64_T) /* MPI_INT64_T is not guaranteed to be a macro */
@@ -272,7 +272,7 @@ M*/
 typedef PetscInt64 PetscBLASInt;
 #else
   #define PetscBLASInt_FMT "d"
-typedef int       PetscBLASInt;
+typedef int PetscBLASInt;
 #endif
 
 /*MC
@@ -359,7 +359,7 @@ M*/
 #if defined(PETSC_USE_REAL_SINGLE)
 typedef float PetscReal;
 #elif defined(PETSC_USE_REAL_DOUBLE)
-typedef double    PetscReal;
+typedef double PetscReal;
 #elif defined(PETSC_USE_REAL___FLOAT128)
   #if defined(__cplusplus)
 extern "C" {
