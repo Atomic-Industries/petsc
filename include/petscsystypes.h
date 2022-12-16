@@ -25,7 +25,11 @@
 
 .seealso: `PetscCall()`, `SETERRQ()`
 M*/
-typedef enum PETSC_NODISCARD {
+typedef enum
+#if !defined(PETSC_SKIP_NODISCARD_PETSCERRORCODE)
+  PETSC_NODISCARD
+#endif
+{
   PETSC_SUCCESS                   = 0,
   PETSC_ERR_BOOLEAN_MACRO_FAILURE = 1,
 
