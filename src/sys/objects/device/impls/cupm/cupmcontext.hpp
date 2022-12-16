@@ -85,7 +85,7 @@ private:
 
   // this exists purely to satisfy the compiler so the tag-based dispatch works for the other
   // handles
-  PETSC_NODISCARD static PetscErrorCode initialize_handle_(stream_tag, PetscDeviceContext) noexcept { return 0; }
+  PETSC_NODISCARD static PetscErrorCode initialize_handle_(stream_tag, PetscDeviceContext) noexcept { return PETSC_SUCCESS; }
 
   PETSC_NODISCARD static PetscErrorCode create_handle_(blas_tag, cupmBlasHandle_t &handle) noexcept
   {

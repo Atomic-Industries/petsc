@@ -656,15 +656,15 @@ PETSC_EXTERN PETSC_DEPRECATED_FUNCTION("Use VecLockReadPush() (since version 3.1
 PETSC_EXTERN PETSC_DEPRECATED_FUNCTION("Use VecLockReadPop() (since version 3.11)") PetscErrorCode VecLockPop(Vec);
   #define VecLocked(x, arg) VecSetErrorIfLocked(x, arg) PETSC_DEPRECATED_MACRO("GCC warning \"Use VecSetErrorIfLocked() (since version 3.11)\"")
 #else
-  #define VecLockReadPush(x)          0
-  #define VecLockReadPop(x)           0
-  #define VecLockGet(x, s)            *(s) = 0
-  #define VecSetErrorIfLocked(x, arg) 0
-  #define VecLockWriteSet(x, flg)     0
+  #define VecLockReadPush(x)          PETSC_SUCCESS
+  #define VecLockReadPop(x)           PETSC_SUCCESS
+  #define VecLockGet(x, s)            (*(s) = 0, PETSC_SUCCESS)
+  #define VecSetErrorIfLocked(x, arg) PETSC_SUCCESS
+  #define VecLockWriteSet(x, flg)     PETSC_SUCCESS
   /* The three are deprecated */
-  #define VecLockPush(x)              0
-  #define VecLockPop(x)               0
-  #define VecLocked(x, arg)           0
+  #define VecLockPush(x)              PETSC_SUCCESS
+  #define VecLockPop(x)               PETSC_SUCCESS
+  #define VecLocked(x, arg)           PETSC_SUCCESS
 #endif
 
 /*E
@@ -905,7 +905,7 @@ PETSC_EXTERN PetscErrorCode VecTaggerFinalizePackage(void);
 /* This is an internal debug-only routine that should not be used by users */
 PETSC_SINGLE_LIBRARY_INTERN PetscErrorCode VecValidValues_Internal(Vec, PetscInt, PetscBool);
 #else
-  #define VecValidValues_Internal(...) 0
+  #define VecValidValues_Internal(...) PETSC_SUCCESS
 #endif /* PETSC_USE_DEBUG */
 
 #define VEC_CUPM_NOT_CONFIGURED(impl) SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP_SYS, "Must configure PETSc with " PetscStringize(impl) " support to use %s", PETSC_FUNCTION_NAME)

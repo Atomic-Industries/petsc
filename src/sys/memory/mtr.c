@@ -663,7 +663,7 @@ PetscErrorCode PetscMallocGetStack(void *ptr, PetscStack **stack)
   PetscFunctionReturn(PETSC_SUCCESS);
 #else
   *stack = NULL;
-  return 0;
+  return PETSC_SUCCESS;
 #endif
 }
 
