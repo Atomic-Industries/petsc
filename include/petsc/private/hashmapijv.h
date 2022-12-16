@@ -16,16 +16,19 @@ PETSC_HASH_MAP(HMapIJV, PetscHashIJKey, PetscScalar, PetscHashIJKeyHash, PetscHa
 
   Synopsis:
   #include <petsc/private/hashmapijv.h>
-  PetscErrorCode PetscHMapIJVQueryAdd(PetscHMapT ht,PetscHashIJKey key,PetscScalar val)
+  PetscErrorCode PetscHMapIJVQueryAdd(PetscHMapT ht,PetscHashIJKey key,PetscScalar val,PetscBool *missing)
 
   Input Parameters:
 + ht  - The hash table
 . key - The key
 - val - The value
 
+  Output Parameter:
+. missing - `PETSC_TRUE` if the `PetscHMapIJV` did not already have the given key
+
   Level: developer
 
-.seealso: `PetscHMapIJVGet()`, `PetscHMapIJVIterSet()`, `PetscHMapIJVSet()`
+.seealso: `PetscHMapIJVAdd()`, `PetscHMapIJV`, `PetscHMapIJVGet()`, `PetscHMapIJVIterSet()`, `PetscHMapIJVSet()`
 M*/
 static inline PetscErrorCode PetscHMapIJVQueryAdd(PetscHMapIJV ht, PetscHashIJKey key, PetscScalar val, PetscBool *missing)
 {
@@ -38,6 +41,36 @@ static inline PetscErrorCode PetscHMapIJVQueryAdd(PetscHMapIJV ht, PetscHashIJKe
   if (ret) kh_val(ht, iter) = val;
   else kh_val(ht, iter) += val;
   *missing = ret ? PETSC_TRUE : PETSC_FALSE;
+  PetscFunctionReturn(0);
+}
+
+/*MC
+  PetscHMapIJVAdd - Add value to the value of a given key if the key exists,
+  otherwise, insert a new (key,value) entry in the hash table
+
+  Synopsis:
+  #include <petsc/private/hashmapijv.h>
+  PetscErrorCode PetscHMapIJVAdd(PetscHMapT ht,PetscHashIJKey key,PetscScalar val)
+
+  Input Parameters:
++ ht  - The hash table
+. key - The key
+- val - The value
+
+  Level: developer
+
+.seealso: `PetscHMapIJVQueryAdd()`, `PetscHMapIJV`, `PetscHMapIJVGet()`, `PetscHMapIJVIterSet()`, `PetscHMapIJVSet()`
+M*/
+static inline PetscErrorCode PetscHMapIJVAdd(PetscHMapIJV ht, PetscHashIJKey key, PetscScalar val)
+{
+  int      ret;
+  khiter_t iter;
+  PetscFunctionBeginHot;
+  PetscValidPointer(ht, 1);
+  iter = kh_put(HMapIJV, ht, key, &ret);
+  PetscHashAssert(ret >= 0);
+  if (ret) kh_val(ht, iter) = val;
+  else kh_val(ht, iter) += val;
   PetscFunctionReturn(0);
 }
 

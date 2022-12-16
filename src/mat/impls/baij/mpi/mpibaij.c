@@ -1216,6 +1216,7 @@ PetscErrorCode MatDestroy_MPIBAIJ(Mat mat)
   PetscCall(PetscObjectComposeFunction((PetscObject)mat, "MatConvert_mpibaij_hypre_C", NULL));
 #endif
   PetscCall(PetscObjectComposeFunction((PetscObject)mat, "MatConvert_mpibaij_is_C", NULL));
+  PetscCall(PetscObjectComposeFunction((PetscObject)mat, "MatSetUp_Hash_C", NULL));
   PetscFunctionReturn(0);
 }
 
@@ -2841,6 +2842,133 @@ PETSC_INTERN PetscErrorCode MatConvert_MPIBAIJ_MPIAIJ(Mat A, MatType newtype, Ma
   PetscFunctionReturn(0);
 }
 
+static PetscErrorCode MatSetValues_Hash_MPIBAIJ(Mat A, PetscInt m, const PetscInt *rows, PetscInt n, const PetscInt *cols, const PetscScalar *values, InsertMode addv)
+{
+  Mat_MPIBAIJ *a = (Mat_MPIBAIJ *)A->data;
+  PetscInt     rStart, rEnd, cStart, cEnd;
+
+  PetscFunctionBegin;
+  PetscCall(MatGetOwnershipRange(A, &rStart, &rEnd));
+  PetscCall(MatGetOwnershipRangeColumn(A, &cStart, &cEnd));
+  for (PetscInt r = 0; r < m; ++r) {
+    if (rows[r] < 0) continue;
+    if ((rows[r] < rStart) || (rows[r] >= rEnd)) {
+      PetscCall(MatStashValuesRow_Private(&A->stash, rows[r], n, cols, values, PETSC_FALSE));
+    } else {
+      for (PetscInt c = 0; c < n; ++c) {
+        if (cols[c] < 0) continue;
+        if ((cols[c] >= cStart) && (cols[c] < cEnd)) PetscCall(MatSetValue(a->A, rows[r] - rStart, cols[c] - cStart, values[r + c * n], addv));
+        else PetscCall(MatSetValue(a->B, rows[r] - rStart, cols[c], values[r + c * n], addv));
+      }
+    }
+  }
+  PetscFunctionReturn(0);
+}
+
+static PetscErrorCode MatAssemblyBegin_Hash_MPIBAIJ(Mat A, MatAssemblyType type)
+{
+  PetscInt nstash, reallocs;
+
+  PetscFunctionBegin;
+  PetscCall(MatStashScatterBegin_Private(A, &A->stash, A->rmap->range));
+  PetscCall(MatStashGetInfo_Private(&A->stash, &nstash, &reallocs));
+  PetscCall(PetscInfo(A, "Stash has %" PetscInt_FMT " entries, uses %" PetscInt_FMT " mallocs.\n", nstash, reallocs));
+  PetscFunctionReturn(0);
+}
+
+static PetscErrorCode MatAssemblyEnd_Hash_MPIBAIJ(Mat A, MatAssemblyType type)
+{
+  Mat_MPIBAIJ *a = (Mat_MPIBAIJ *)A->data;
+  PetscMPIInt  n;
+  PetscScalar *val;
+  PetscInt    *row, *col;
+  PetscInt     j, ncols, flg, rstart;
+
+  PetscFunctionBegin;
+  while (1) {
+    PetscCall(MatStashScatterGetMesg_Private(&A->stash, &n, &row, &col, &val, &flg));
+    if (!flg) break;
+
+    for (PetscInt i = 0; i < n;) {
+      /* Now identify the consecutive vals belonging to the same row */
+      for (j = i, rstart = row[j]; j < n; j++) {
+        if (row[j] != rstart) break;
+      }
+      if (j < n) ncols = j - i;
+      else ncols = n - i;
+      /* Now assemble all these values with a single function call */
+      PetscCall(MatSetValues_Hash_MPIBAIJ(A, 1, row + i, ncols, col + i, val + i, A->insertmode));
+      i = j;
+    }
+  }
+  PetscCall(MatStashScatterEnd_Private(&A->stash));
+  PetscCall(MatStashDestroy_Private(&A->stash));
+  if (type != MAT_FINAL_ASSEMBLY) PetscFunctionReturn(0);
+
+  A->insertmode = NOT_SET_VALUES; /* this was set by the previous calls to MatSetValues() */
+
+  PetscCall(PetscMemcpy(&A->ops, &a->cops, sizeof(struct _MatOps)));
+
+  PetscCall(MatAssemblyBegin(a->A, MAT_FINAL_ASSEMBLY));
+  PetscCall(MatAssemblyEnd(a->A, MAT_FINAL_ASSEMBLY));
+  PetscCall(MatAssemblyBegin(a->B, MAT_FINAL_ASSEMBLY));
+  PetscCall(MatAssemblyEnd(a->B, MAT_FINAL_ASSEMBLY));
+  PetscCall(MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY));
+  PetscCall(MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY));
+  PetscFunctionReturn(0);
+}
+
+PETSC_INTERN PetscErrorCode MatSetUp_Hash_MPIBAIJ(Mat A)
+{
+  Mat_MPIBAIJ *a = (Mat_MPIBAIJ *)A->data;
+  PetscMPIInt  size;
+  PetscInt     bs;
+
+  PetscFunctionBegin;
+  PetscCall(PetscInfo(A, "Using hash-based MatSetValues() for MATMPIBAIJ because no preallocation provided\n"));
+  PetscCall(PetscLayoutSetUp(A->rmap));
+  PetscCall(PetscLayoutSetUp(A->cmap));
+  PetscCallMPI(MPI_Comm_size(PetscObjectComm((PetscObject)A), &size));
+
+  PetscCall(MatGetBlockSize(A, &bs));
+  /* these values are set in MatMPIBAIJSetPreallocation() */
+  a->bs2 = bs * bs;
+  a->mbs = A->rmap->n / bs;
+  a->nbs = A->cmap->n / bs;
+  a->Mbs = A->rmap->N / bs;
+  a->Nbs = A->cmap->N / bs;
+
+  for (PetscInt i = 0; i <= a->size; i++) a->rangebs[i] = A->rmap->range[i] / bs;
+  a->rstartbs = A->rmap->rstart / bs;
+  a->rendbs   = A->rmap->rend / bs;
+  a->cstartbs = A->cmap->rstart / bs;
+  a->cendbs   = A->cmap->rend / bs;
+
+  PetscCall(MatStashCreate_Private(PetscObjectComm((PetscObject)A), A->rmap->bs, &A->bstash));
+  PetscCall(MatCreate(PETSC_COMM_SELF, &a->A));
+  PetscCall(MatSetSizes(a->A, A->rmap->n, A->cmap->n, A->rmap->n, A->cmap->n));
+  PetscCall(MatSetBlockSizesFromMats(a->A, A, A));
+  PetscCall(MatSetType(a->A, MATSEQBAIJ));
+  PetscCall(MatXAIJSetNoPreallocation(a->A));
+  PetscCall(MatSetUp(a->A));
+
+  PetscCall(MatCreate(PETSC_COMM_SELF, &a->B));
+  PetscCall(MatSetSizes(a->B, A->rmap->n, size > 1 ? A->cmap->N : 0, A->rmap->n, size > 1 ? A->cmap->N : 0));
+  PetscCall(MatSetBlockSizesFromMats(a->B, A, A));
+  PetscCall(MatSetType(a->B, MATSEQBAIJ));
+  PetscCall(MatXAIJSetNoPreallocation(a->B));
+  PetscCall(MatSetUp(a->B));
+
+  PetscCall(PetscMemcpy(&a->cops, &A->ops, sizeof(struct _MatOps)));
+  PetscCall(PetscMemzero(&A->ops, sizeof(struct _MatOps)));
+
+  A->ops->assemblybegin = MatAssemblyBegin_Hash_MPIBAIJ;
+  A->ops->assemblyend   = MatAssemblyEnd_Hash_MPIBAIJ;
+  A->ops->setvalues     = MatSetValues_Hash_MPIBAIJ;
+  A->preallocated       = PETSC_TRUE;
+  PetscFunctionReturn(0);
+}
+
 /*MC
    MATMPIBAIJ - MATMPIBAIJ = "mpibaij" - A matrix type to be used for distributed block sparse matrices.
 
@@ -2925,6 +3053,7 @@ PETSC_EXTERN PetscErrorCode MatCreate_MPIBAIJ(Mat B)
   PetscCall(PetscObjectComposeFunction((PetscObject)B, "MatDiagonalScaleLocal_C", MatDiagonalScaleLocal_MPIBAIJ));
   PetscCall(PetscObjectComposeFunction((PetscObject)B, "MatSetHashTableFactor_C", MatSetHashTableFactor_MPIBAIJ));
   PetscCall(PetscObjectComposeFunction((PetscObject)B, "MatConvert_mpibaij_is_C", MatConvert_XAIJ_IS));
+  PetscCall(PetscObjectComposeFunction((PetscObject)B, "MatSetUp_Hash_C", MatSetUp_Hash_MPIBAIJ));
   PetscCall(PetscObjectChangeTypeName((PetscObject)B, MATMPIBAIJ));
 
   PetscOptionsBegin(PetscObjectComm((PetscObject)B), NULL, "Options for loading MPIBAIJ matrix 1", "Mat");
