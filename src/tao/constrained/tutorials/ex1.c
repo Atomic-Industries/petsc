@@ -52,7 +52,7 @@ PetscErrorCode FormEqualityConstraints(Tao, Vec, Vec, void *);
 PetscErrorCode FormInequalityJacobian(Tao, Vec, Mat, Mat, void *);
 PetscErrorCode FormEqualityJacobian(Tao, Vec, Mat, Mat, void *);
 
-PetscErrorCode main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   Tao         tao;
   KSP         ksp;
@@ -149,7 +149,7 @@ PetscErrorCode main(int argc, char **argv)
   PetscCall(DestroyProblem(&user));
   PetscCall(TaoDestroy(&tao));
   PetscCall(PetscFinalize());
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode InitializeProblem(AppCtx *user)

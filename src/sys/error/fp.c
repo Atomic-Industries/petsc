@@ -116,17 +116,19 @@ static struct {
 /* this function gets called if a trap has occurred and been caught */
 sigfpe_handler_type PetscDefaultFPTrap(int sig, int code, struct sigcontext *scp, char *addr)
 {
-  int err_ind = -1;
+  int            err_ind = -1;
+  PetscErrorCode ierr;
 
   PetscFunctionBegin;
   for (int j = 0; error_codes[j].code_no; j++) {
     if (error_codes[j].code_no == code) err_ind = j;
   }
 
-  if (err_ind >= 0) (*PetscErrorPrintf)("*** %s occurred at pc=%X ***\n", error_codes[err_ind].name, SIGPC(scp));
-  else (*PetscErrorPrintf)("*** floating point error 0x%x occurred at pc=%X ***\n", code, SIGPC(scp));
+  if (err_ind >= 0) ierr = (*PetscErrorPrintf)("*** %s occurred at pc=%X ***\n", error_codes[err_ind].name, SIGPC(scp));
+  else ierr = (*PetscErrorPrintf)("*** floating point error 0x%x occurred at pc=%X ***\n", code, SIGPC(scp));
 
-  (void)PetscError(PETSC_COMM_SELF, PETSC_ERR_FP, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  ierr = PetscError(PETSC_COMM_SELF, PETSC_ERR_FP, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  (void)ierr;
   PETSCABORT(MPI_COMM_WORLD, PETSC_ERR_FP);
   PetscFunctionReturn(PETSC_SUCCESS);
 }
@@ -237,17 +239,19 @@ static struct {
 
 void PetscDefaultFPTrap(int sig, siginfo_t *scp, ucontext_t *uap)
 {
-  int err_ind = -1, code = scp->si_code;
+  int            err_ind = -1, code = scp->si_code;
+  PetscErrorCode ierr;
 
   PetscFunctionBegin;
   for (int j = 0; error_codes[j].code_no; j++) {
     if (error_codes[j].code_no == code) err_ind = j;
   }
 
-  if (err_ind >= 0) (*PetscErrorPrintf)("*** %s occurred at pc=%X ***\n", error_codes[err_ind].name, SIGPC(scp));
-  else (*PetscErrorPrintf)("*** floating point error 0x%x occurred at pc=%X ***\n", code, SIGPC(scp));
+  if (err_ind >= 0) ierr = (*PetscErrorPrintf)("*** %s occurred at pc=%X ***\n", error_codes[err_ind].name, SIGPC(scp));
+  else ierr = (*PetscErrorPrintf)("*** floating point error 0x%x occurred at pc=%X ***\n", code, SIGPC(scp));
 
-  (void)PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  ierr = PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  (void)ierr;
   PETSCABORT(MPI_COMM_WORLD, PETSC_ERR_FP);
 }
 
@@ -290,16 +294,18 @@ static struct {
 };
 void PetscDefaultFPTrap(unsigned exception[], int val[])
 {
-  int err_ind = -1, code = exception[0];
+  int            err_ind = -1, code = exception[0];
+  PetscErrorCode ierr;
 
   PetscFunctionBegin;
   for (int j = 0; error_codes[j].code_no; j++) {
     if (error_codes[j].code_no == code) err_ind = j;
   }
-  if (err_ind >= 0) (*PetscErrorPrintf)("*** %s occurred ***\n", error_codes[err_ind].name);
-  else (*PetscErrorPrintf)("*** floating point error 0x%x occurred ***\n", code);
+  if (err_ind >= 0) ierr = (*PetscErrorPrintf)("*** %s occurred ***\n", error_codes[err_ind].name);
+  else ierr = (*PetscErrorPrintf)("*** floating point error 0x%x occurred ***\n", code);
 
-  (void)PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  ierr = PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  (void)ierr;
   PETSCABORT(MPI_COMM_WORLD, PETSC_ERR_FP);
 }
 
@@ -353,8 +359,9 @@ static struct {
 
 void PetscDefaultFPTrap(int sig, int code, struct sigcontext *scp)
 {
-  int      err_ind, j;
-  fp_ctx_t flt_context;
+  int            err_ind, j;
+  fp_ctx_t       flt_context;
+  PetscErrorCode ierr;
 
   PetscFunctionBegin;
   fp_sh_trap_info(scp, &flt_context);
@@ -364,10 +371,11 @@ void PetscDefaultFPTrap(int sig, int code, struct sigcontext *scp)
     if (error_codes[j].code_no == flt_context.trap) err_ind = j;
   }
 
-  if (err_ind >= 0) (*PetscErrorPrintf)("*** %s occurred ***\n", error_codes[err_ind].name);
-  else (*PetscErrorPrintf)("*** floating point error 0x%x occurred ***\n", flt_context.trap);
+  if (err_ind >= 0) ierr = (*PetscErrorPrintf)("*** %s occurred ***\n", error_codes[err_ind].name);
+  else ierr = (*PetscErrorPrintf)("*** floating point error 0x%x occurred ***\n", flt_context.trap);
 
-  (void)PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  ierr = PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  (void)ierr;
   PETSCABORT(MPI_COMM_WORLD, PETSC_ERR_FP);
 }
 
@@ -401,9 +409,12 @@ PetscErrorCode PetscDetermineInitialFPTrap(void)
   #include <float.h>
 void PetscDefaultFPTrap(int sig)
 {
+  PetscErrorCode ierr;
+
   PetscFunctionBegin;
-  (*PetscErrorPrintf)("*** floating point error occurred ***\n");
-  PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  ierr = (*PetscErrorPrintf)("*** floating point error occurred ***\n");
+  ierr = PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  (void)ierr;
   PETSCABORT(MPI_COMM_WORLD, PETSC_ERR_FP);
 }
 
@@ -576,9 +587,12 @@ PetscErrorCode PetscDetermineInitialFPTrap(void)
   #include <ieeefp.h>
 void PetscDefaultFPTrap(int sig)
 {
+  PetscErrorCode ierr;
+
   PetscFunctionBegin;
-  (*PetscErrorPrintf)("*** floating point error occurred ***\n");
-  PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  ierr = (*PetscErrorPrintf)("*** floating point error occurred ***\n");
+  ierr = PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  (void)ierr;
   PETSCABORT(MPI_COMM_WORLD, PETSC_ERR_FP);
 }
 
@@ -619,9 +633,12 @@ PetscErrorCode PetscDetermineInitialFPTrap(void)
 
 void PetscDefaultFPTrap(int sig)
 {
+  PetscErrorCode ierr;
+
   PetscFunctionBegin;
-  PetscCallAbort(PETSC_COMM_SELF, (*PetscErrorPrintf)("*** floating point error occurred ***\n"));
-  PetscCallAbort(PETSC_COMM_SELF, PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error"));
+  ierr = (*PetscErrorPrintf)("*** floating point error occurred ***\n");
+  ierr = PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_FP, PETSC_ERROR_REPEAT, "floating point error");
+  (void)ierr;
   PETSCABORT(MPI_COMM_WORLD, PETSC_ERR_FP);
 }
 
