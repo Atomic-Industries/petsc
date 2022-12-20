@@ -51,7 +51,7 @@ static PetscErrorCode ourmult(Mat mat, Vec x, Vec y)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_MULT]))(&mat, &x, &y, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_MULT]))(&mat, &x, &y, &ierr));
   return ierr;
 }
 
@@ -59,7 +59,7 @@ static PetscErrorCode ourmultadd(Mat mat, Vec x, Vec y, Vec z)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, Vec *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_MULT_ADD]))(&mat, &x, &y, &z, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, Vec *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_MULT_ADD]))(&mat, &x, &y, &z, &ierr));
   return ierr;
 }
 
@@ -67,7 +67,7 @@ static PetscErrorCode ourmulttranspose(Mat mat, Vec x, Vec y)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_MULT_TRANSPOSE]))(&mat, &x, &y, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_MULT_TRANSPOSE]))(&mat, &x, &y, &ierr));
   return ierr;
 }
 
@@ -75,7 +75,7 @@ static PetscErrorCode ourmulttransposeadd(Mat mat, Vec x, Vec y, Vec z)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, Vec *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_MULT_TRANSPOSE_ADD]))(&mat, &x, &y, &z, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, Vec *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_MULT_TRANSPOSE_ADD]))(&mat, &x, &y, &z, &ierr));
   return ierr;
 }
 
@@ -83,7 +83,7 @@ static PetscErrorCode oursor(Mat mat, Vec b, PetscReal omega, MatSORType flg, Pe
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, Vec *, PetscReal *, MatSORType *, PetscReal *, PetscInt *, PetscInt *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_SOR]))(&mat, &b, &omega, &flg, &shift, &its, &lits, &x, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, Vec *, PetscReal *, MatSORType *, PetscReal *, PetscInt *, PetscInt *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_SOR]))(&mat, &b, &omega, &flg, &shift, &its, &lits, &x, &ierr));
   return ierr;
 }
 
@@ -93,7 +93,7 @@ static PetscErrorCode ourtranspose(Mat mat, MatReuse reuse, Mat *B)
   Mat            bb   = (Mat)-1;
   Mat           *b    = (!B ? &bb : B);
 
-  (*(PetscErrorCode(*)(Mat *, MatReuse *, Mat *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_TRANSPOSE]))(&mat, &reuse, b, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, MatReuse *, Mat *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_TRANSPOSE]))(&mat, &reuse, b, &ierr));
   return ierr;
 }
 
@@ -101,7 +101,7 @@ static PetscErrorCode ourgetdiagonal(Mat mat, Vec x)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_GET_DIAGONAL]))(&mat, &x, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_GET_DIAGONAL]))(&mat, &x, &ierr));
   return ierr;
 }
 
@@ -112,7 +112,7 @@ static PetscErrorCode ourdiagonalscale(Mat mat, Vec l, Vec r)
   Vec           *a    = (!l ? &aa : &l);
   Vec           *b    = (!r ? &aa : &r);
 
-  (*(PetscErrorCode(*)(Mat *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_DIAGONAL_SCALE]))(&mat, a, b, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_DIAGONAL_SCALE]))(&mat, a, b, &ierr));
   return ierr;
 }
 
@@ -120,7 +120,7 @@ static PetscErrorCode ourzeroentries(Mat mat)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_ZERO_ENTRIES]))(&mat, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_ZERO_ENTRIES]))(&mat, &ierr));
   return ierr;
 }
 
@@ -128,7 +128,7 @@ static PetscErrorCode ouraxpy(Mat mat, PetscScalar a, Mat X, MatStructure str)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, PetscScalar *, Mat *, MatStructure *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_AXPY]))(&mat, &a, &X, &str, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, PetscScalar *, Mat *, MatStructure *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_AXPY]))(&mat, &a, &X, &str, &ierr));
   return ierr;
 }
 
@@ -136,7 +136,7 @@ static PetscErrorCode ourshift(Mat mat, PetscScalar a)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, PetscScalar *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_SHIFT]))(&mat, &a, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, PetscScalar *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_SHIFT]))(&mat, &a, &ierr));
   return ierr;
 }
 
@@ -144,7 +144,7 @@ static PetscErrorCode ourdiagonalset(Mat mat, Vec x, InsertMode ins)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, Vec *, InsertMode *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_DIAGONAL_SET]))(&mat, &x, &ins, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, Vec *, InsertMode *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_DIAGONAL_SET]))(&mat, &x, &ins, &ierr));
   return ierr;
 }
 
@@ -152,7 +152,7 @@ static PetscErrorCode ourdestroy(Mat mat)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_DESTROY]))(&mat, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_DESTROY]))(&mat, &ierr));
   return ierr;
 }
 
@@ -160,7 +160,7 @@ static PetscErrorCode ourview(Mat mat, PetscViewer v)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
 
-  (*(PetscErrorCode(*)(Mat *, PetscViewer *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_VIEW]))(&mat, &v, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, PetscViewer *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_VIEW]))(&mat, &v, &ierr));
   return ierr;
 }
 
@@ -171,49 +171,49 @@ static PetscErrorCode ourgetvecs(Mat mat, Vec *l, Vec *r)
   Vec           *a    = (!l ? &aa : l);
   Vec           *b    = (!r ? &aa : r);
 
-  (*(PetscErrorCode(*)(Mat *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_CREATE_VECS]))(&mat, a, b, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, Vec *, Vec *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_CREATE_VECS]))(&mat, a, b, &ierr));
   return ierr;
 }
 
 static PetscErrorCode ourgetdiagonalblock(Mat mat, Mat *l)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
-  (*(PetscErrorCode(*)(Mat *, Mat *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_GET_DIAGONAL_BLOCK]))(&mat, l, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, Mat *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_GET_DIAGONAL_BLOCK]))(&mat, l, &ierr));
   return ierr;
 }
 
 static PetscErrorCode ourcopy(Mat mat, Mat B, MatStructure str)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
-  (*(PetscErrorCode(*)(Mat *, Mat *, MatStructure *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_COPY]))(&mat, &B, &str, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, Mat *, MatStructure *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_COPY]))(&mat, &B, &str, &ierr));
   return ierr;
 }
 
 static PetscErrorCode ourscale(Mat mat, PetscScalar a)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
-  (*(PetscErrorCode(*)(Mat *, PetscScalar *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_SCALE]))(&mat, &a, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, PetscScalar *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_SCALE]))(&mat, &a, &ierr));
   return ierr;
 }
 
 static PetscErrorCode oursetrandom(Mat mat, PetscRandom ctx)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
-  (*(PetscErrorCode(*)(Mat *, PetscRandom *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_SET_RANDOM]))(&mat, &ctx, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, PetscRandom *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_SET_RANDOM]))(&mat, &ctx, &ierr));
   return ierr;
 }
 
 static PetscErrorCode ourassemblybegin(Mat mat, MatAssemblyType type)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
-  (*(PetscErrorCode(*)(Mat *, MatAssemblyType *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_ASSEMBLY_BEGIN]))(&mat, &type, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, MatAssemblyType *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_ASSEMBLY_BEGIN]))(&mat, &type, &ierr));
   return ierr;
 }
 
 static PetscErrorCode ourassemblyend(Mat mat, MatAssemblyType type)
 {
   PetscErrorCode ierr = PETSC_SUCCESS;
-  (*(PetscErrorCode(*)(Mat *, MatAssemblyType *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_ASSEMBLY_END]))(&mat, &type, &ierr);
+  PetscCall((*(PetscErrorCode(*)(Mat *, MatAssemblyType *, PetscErrorCode *))(((PetscObject)mat)->fortran_func_pointers[FORTRAN_MATOP_ASSEMBLY_END]))(&mat, &type, &ierr));
   return ierr;
 }
 
