@@ -86,7 +86,7 @@ PETSC_INTERN PetscErrorCode PetscInitFortran_Private(PetscBool, const char *, Pe
     a = NULL; \
   } else if (FORTRANNULLINTEGER(a) || FORTRANNULLDOUBLE(a) || FORTRANNULLREAL(a) || FORTRANNULLBOOL(a) || FORTRANNULLFUNCTION(a) || FORTRANNULLCHARACTER(a) || FORTRANNULLMPICOMM(a)) { \
     *ierr = PetscError(PETSC_COMM_SELF, __LINE__, "fortran_interface_unknown_file", __FILE__, PETSC_ERR_ARG_WRONG, PETSC_ERROR_INITIAL, "Use PETSC_NULL_SCALAR"); \
-    *ierr = 1; \
+    *ierr = PETSC_ERR_ARG_BADPTR; \
     return; \
   }
 

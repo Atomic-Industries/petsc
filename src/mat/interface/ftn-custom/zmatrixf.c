@@ -501,10 +501,10 @@ PETSC_EXTERN void  matgetrowmaxabs_(Mat *mat,Vec *v,PetscInt idx[], int *ierr)
   *ierr = MatGetRowMaxAbs(*mat,*v,idx);
 }
 
-static PetscErrorCode ournullfunction(MatNullSpace sp,Vec x,void *ctx)
+static PetscErrorCode ournullfunction(MatNullSpace sp, Vec x, void *ctx)
 {
-  PetscCallFortranVoidFunction((*(void (*)(MatNullSpace*,Vec*,void*,PetscErrorCode*))(((PetscObject)sp)->fortran_func_pointers[0]))(&sp,&x,ctx,&ierr));
-  return 0;
+  PetscCallFortranVoidFunction((*(void (*)(MatNullSpace *, Vec *, void *, PetscErrorCode *))(((PetscObject)sp)->fortran_func_pointers[0]))(&sp, &x, ctx, &ierr));
+  return PETSC_SUCCESS;
 }
 
 PETSC_EXTERN void matnullspacesetfunction_(MatNullSpace *sp, PetscErrorCode (*rem)(MatNullSpace,Vec,void*),void *ctx,PetscErrorCode *ierr)
@@ -545,9 +545,9 @@ PETSC_EXTERN void matrestorerowij_(Mat *B,PetscInt *shift,PetscBool *sym,PetscBo
   Fortran programmers can only have one outstanding MatGetRows()
   at a time.
 */
-static PetscErrorCode    matgetrowactive = 0;
-static const PetscInt    *my_ocols       = 0;
-static const PetscScalar *my_ovals       = 0;
+static int                matgetrowactive = 0;
+static const PetscInt    *my_ocols        = 0;
+static const PetscScalar *my_ovals        = 0;
 
 PETSC_EXTERN void matgetrow_(Mat *mat, PetscInt *row, PetscInt *ncols, PetscInt *cols, PetscScalar *vals, PetscErrorCode *ierr)
 {

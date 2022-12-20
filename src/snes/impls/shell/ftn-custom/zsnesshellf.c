@@ -7,13 +7,13 @@
 #define snesshellsetsolve_               snesshellsetsolve
 #endif
 
-static PetscErrorCode oursnesshellsolve(SNES snes,Vec x)
+static PetscErrorCode oursnesshellsolve(SNES snes, Vec x)
 {
-  void (*func)(SNES*,Vec*,PetscErrorCode*);
-  PetscCall(PetscObjectQueryFunction((PetscObject)snes,"SNESShellSolve_C",&func));
-  PetscCheck(func,PetscObjectComm((PetscObject)snes),PETSC_ERR_USER,"SNESShellSetSolve() must be called before SNESSolve()");
-  PetscCallFortranVoidFunction(func(&snes,&x,&ierr));
-  return 0;
+  void (*func)(SNES *, Vec *, PetscErrorCode *);
+  PetscCall(PetscObjectQueryFunction((PetscObject)snes, "SNESShellSolve_C", &func));
+  PetscCheck(func, PetscObjectComm((PetscObject)snes), PETSC_ERR_USER, "SNESShellSetSolve() must be called before SNESSolve()");
+  PetscCallFortranVoidFunction(func(&snes, &x, &ierr));
+  return PETSC_SUCCESS;
 }
 
 PETSC_EXTERN void snesshellsetsolve_(SNES *snes, void (*func)(SNES *, Vec *, PetscErrorCode *), PetscErrorCode *ierr)
