@@ -62,7 +62,7 @@ PetscErrorCode HessianProduct(void *, Vec, Vec);
 PetscErrorCode MatrixFreeHessian(Tao, Vec, Mat, Mat, void *);
 PetscErrorCode FormFunctionGradient(Tao, Vec, PetscReal *, Vec, void *);
 
-PetscErrorCode main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   PetscInt    mx = 10; /* discretization in x-direction */
   PetscInt    my = 10; /* discretization in y-direction */

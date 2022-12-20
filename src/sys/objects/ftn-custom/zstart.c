@@ -127,18 +127,18 @@ PETSC_INTERN char **PetscGlobalArgs;
   all processors.
 */
 
-PetscErrorCode PETScParseFortranArgs_Private(int *argc,char ***argv)
+PetscErrorCode PETScParseFortranArgs_Private(int *argc, char ***argv)
 {
 #if defined(PETSC_USE_NARGS)
-  short          i,flg;
+  short i, flg;
 #else
-  int            i;
+  int i;
 #endif
-  int            warg = 256;
-  PetscMPIInt    rank;
-  char           *p;
+  int         warg = 256;
+  PetscMPIInt rank;
+  char       *p;
 
-  PetscCallMPI(MPI_Comm_rank(PETSC_COMM_WORLD,&rank));
+  PetscCallMPI(MPI_Comm_rank(PETSC_COMM_WORLD, &rank));
   if (rank == 0) {
 #if defined(PETSC_HAVE_IARG_COUNT_PROGNAME)
     *argc = iargc_();
@@ -147,41 +147,43 @@ PetscErrorCode PETScParseFortranArgs_Private(int *argc,char ***argv)
     *argc = 1 + iargc_();
 #endif
   }
-  PetscCallMPI(MPI_Bcast(argc,1,MPI_INT,0,PETSC_COMM_WORLD));
+  PetscCallMPI(MPI_Bcast(argc, 1, MPI_INT, 0, PETSC_COMM_WORLD));
 
   /* PetscTrMalloc() not yet set, so don't use PetscMalloc() */
-  PetscCall(PetscMallocAlign((*argc+1)*(warg*sizeof(char)+sizeof(char*)),PETSC_FALSE,0,0,0,(void**)argv));
-  (*argv)[0] = (char*)(*argv + *argc + 1);
+  PetscCall(PetscMallocAlign((*argc + 1) * (warg * sizeof(char) + sizeof(char *)), PETSC_FALSE, 0, 0, 0, (void **)argv));
+  (*argv)[0] = (char *)(*argv + *argc + 1);
 
   if (rank == 0) {
-    PetscCall(PetscMemzero((*argv)[0],(*argc)*warg*sizeof(char)));
-    for (i=0; i<*argc; i++) {
-      (*argv)[i+1] = (*argv)[i] + warg;
-#if defined (PETSC_HAVE_FORTRAN_GET_COMMAND_ARGUMENT) /* same as 'else' case */
-      getarg_(&i,(*argv)[i],warg);
+    PetscCall(PetscMemzero((*argv)[0], (*argc) * warg * sizeof(char)));
+    for (i = 0; i < *argc; i++) {
+      (*argv)[i + 1] = (*argv)[i] + warg;
+#if defined(PETSC_HAVE_FORTRAN_GET_COMMAND_ARGUMENT) /* same as 'else' case */
+      getarg_(&i, (*argv)[i], warg);
 #elif defined(PETSC_HAVE_PXFGETARG_NEW)
-      {char *tmp = (*argv)[i];
-      int ilen;
-      PetscCallFortranVoidFunction(getarg_(&i,tmp,&ilen,&ierr,warg));
-      tmp[ilen] = 0;}
+      {
+        char *tmp = (*argv)[i];
+        int   ilen;
+        PetscCallFortranVoidFunction(getarg_(&i, tmp, &ilen, &ierr, warg));
+        tmp[ilen] = 0;
+      }
 #elif defined(PETSC_USE_NARGS)
-      GETARG(&i,(*argv)[i],warg,&flg);
+      GETARG(&i, (*argv)[i], warg, &flg);
 #else
-      getarg_(&i,(*argv)[i],warg);
+    getarg_(&i, (*argv)[i], warg);
 #endif
       /* zero out garbage at end of each argument */
-      p = (*argv)[i] + warg-1;
+      p = (*argv)[i] + warg - 1;
       while (p > (*argv)[i]) {
         if (*p == ' ') *p = 0;
         p--;
       }
     }
   }
-  PetscCallMPI(MPI_Bcast((*argv)[0],*argc*warg,MPI_CHAR,0,PETSC_COMM_WORLD));
+  PetscCallMPI(MPI_Bcast((*argv)[0], *argc * warg, MPI_CHAR, 0, PETSC_COMM_WORLD));
   if (rank) {
-    for (i=0; i<*argc; i++) (*argv)[i+1] = (*argv)[i] + warg;
+    for (i = 0; i < *argc; i++) (*argv)[i + 1] = (*argv)[i] + warg;
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -224,10 +226,8 @@ PETSC_EXTERN void petscinitializef_(char *filename, char *help, PetscBool *reada
   char        name[256] = {0};
   PetscMPIInt f_petsc_comm_world;
 
-  if (PetscInitializeCalled) {
-    *ierr = 0;
-    return;
-  }
+  *ierr = PETSC_SUCCESS;
+  if (PetscInitializeCalled) return;
   i = 0;
 #if defined(PETSC_HAVE_FORTRAN_GET_COMMAND_ARGUMENT) /* same as 'else' case */
   getarg_(&i, name, sizeof(name));
