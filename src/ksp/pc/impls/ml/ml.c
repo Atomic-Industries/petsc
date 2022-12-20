@@ -114,6 +114,15 @@ static PetscErrorCode PetscML_comm(double p[], void *ML_data)
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 
+/*
+  Needed since ML expects an int (*)(double *, void *) but PetscErrorCode may be an
+  enum. Instead of modifying PetscML_comm() it is easier to just wrap it
+*/
+static int ML_PetscML_comm(double p[], void *ML_data)
+{
+  return (int)PetscML_comm(p, ML_data);
+}
+
 static int PetscML_matvec(ML_Operator *ML_data, int in_length, double p[], int out_length, double ap[])
 {
   FineGridCtx *ml = (FineGridCtx *)ML_Get_MyMatvecData(ML_data);
@@ -651,7 +660,7 @@ PetscErrorCode PCSetUp_ML(PC pc)
   PetscStackCallExternalVoid("ML_Comm_Set_UsrComm", ML_Comm_Set_UsrComm(ml_object->comm, PetscObjectComm((PetscObject)A)));
   pc_ml->ml_object = ml_object;
   PetscStackCallExternalVoid("ML_Init_Amatrix", ML_Init_Amatrix(ml_object, 0, m, m, PetscMLdata));
-  PetscStackCallExternalVoid("ML_Set_Amatrix_Getrow", ML_Set_Amatrix_Getrow(ml_object, 0, PetscML_getrow, PetscML_comm, nlocal_allcols));
+  PetscStackCallExternalVoid("ML_Set_Amatrix_Getrow", ML_Set_Amatrix_Getrow(ml_object, 0, PetscML_getrow, ML_PetscML_comm, nlocal_allcols));
   PetscStackCallExternalVoid("ML_Set_Amatrix_Matvec", ML_Set_Amatrix_Matvec(ml_object, 0, PetscML_matvec));
 
   PetscStackCallExternalVoid("ML_Set_Symmetrize", ML_Set_Symmetrize(ml_object, pc_ml->Symmetrize ? ML_YES : ML_NO));

@@ -259,7 +259,7 @@ static inline PetscErrorCode PetscDeviceDereference_Internal(PetscDevice device)
 }
 #else /* PETSC_HAVE_CXX for PetscDevice Internal Functions */
   #define PetscDeviceInitializeFromOptions_Internal(comm)     PETSC_SUCCESS
-  #define PetscDeviceGetDefaultForType_Internal(Type, device) PETSC_SUCCESS
+  #define PetscDeviceGetDefaultForType_Internal(Type, device) (*(device) = PETSC_NULLPTR, PETSC_SUCCESS)
   #define PetscDeviceReference_Internal(device)               PETSC_SUCCESS
   #define PetscDeviceDereference_Internal(device)             PETSC_SUCCESS
 #endif /* PETSC_HAVE_CXX for PetscDevice Internal Functions */

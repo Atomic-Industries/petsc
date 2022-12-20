@@ -308,7 +308,7 @@ PETSC_EXTERN void MPIAPI PetscMax_Local(void *in, void *out, PetscMPIInt *cnt, M
   }
   #endif
   else {
-    PetscCallAbort((*PetscErrorPrintf)("Can only handle MPIU_REAL or MPIU_COMPLEX data types"));
+    PetscCallAbort(MPI_COMM_SELF, (*PetscErrorPrintf)("Can only handle MPIU_REAL or MPIU_COMPLEX data types"));
     PETSCABORT(MPI_COMM_SELF, PETSC_ERR_ARG_WRONG);
   }
   PetscFunctionReturnVoid();

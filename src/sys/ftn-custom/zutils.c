@@ -90,6 +90,7 @@ PetscErrorCode PetscScalarAddressToFortran(PetscObject obj, PetscInt align, Pets
   size_t   itmp2;
   PetscInt shift;
 
+  PetscFunctionBegin;
 #if !defined(PETSC_HAVE_CRAY90_POINTER)
   if (tmp3 > tmp1) { /* C is bigger than Fortran */
     tmp2  = (tmp3 - tmp1) / sizeof(PetscScalar);
@@ -160,7 +161,7 @@ PetscErrorCode PetscScalarAddressToFortran(PetscObject obj, PetscInt align, Pets
     to alignment differences between C and Fortran\n"));
   }
   *res = itmp2;
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -171,28 +172,29 @@ PetscErrorCode PetscScalarAddressToFortran(PetscObject obj, PetscInt align, Pets
 
     lx   - the array space that is to be passed to XXXXRestoreArray()
 */
-PetscErrorCode PetscScalarAddressFromFortran(PetscObject obj,PetscScalar *base,size_t addr,PetscInt N,PetscScalar **lx)
+PetscErrorCode PetscScalarAddressFromFortran(PetscObject obj, PetscScalar *base, size_t addr, PetscInt N, PetscScalar **lx)
 {
   PetscInt       shift;
   PetscContainer container;
-  PetscScalar    *tlx;
+  PetscScalar   *tlx;
 
-  PetscCall(PetscObjectQuery(obj,"GetArrayPtr",(PetscObject*)&container));
+  PetscFunctionBegin;
+  PetscCall(PetscObjectQuery(obj, "GetArrayPtr", (PetscObject *)&container));
   if (container) {
-    PetscCall(PetscContainerGetPointer(container,(void**)lx));
-    tlx  = base + addr;
+    PetscCall(PetscContainerGetPointer(container, (void **)lx));
+    tlx = base + addr;
 
-    shift = *(PetscInt*)*lx;
-    PetscCall(PetscArraycpy(*lx,tlx,N));
-    tlx   = (PetscScalar*)(((char*)tlx) - shift);
+    shift = *(PetscInt *)*lx;
+    PetscCall(PetscArraycpy(*lx, tlx, N));
+    tlx = (PetscScalar *)(((char *)tlx) - shift);
 
     PetscCall(PetscFree(tlx));
     PetscCall(PetscContainerDestroy(&container));
-    PetscCall(PetscObjectCompose(obj,"GetArrayPtr",0));
+    PetscCall(PetscObjectCompose(obj, "GetArrayPtr", 0));
   } else {
     *lx = base + addr;
   }
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #if defined(PETSC_HAVE_FORTRAN_CAPS)
