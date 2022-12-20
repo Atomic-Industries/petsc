@@ -22,15 +22,15 @@
   // definitions
   #define PETSC_ERROR_CODE_NODISCARD PETSC_NODISCARD
 #elif PETSC_CPP_VERSION >= 17
-  // #if defined(__GNUC__) implied by being here, check that we are using the C++17
-  // #[[nodiscard]] instead of __attribute__((warn_unused_result))
+  // #if defined(__GNUC__) implied by being here, check that we are using C++17
+  // [[nodiscard]] instead of __attribute__((warn_unused_result))
   #define PETSC_ERROR_CODE_NODISCARD PETSC_NODISCARD
 #else
   #define PETSC_ERROR_CODE_NODISCARD
 #endif
 
 /*EC
-  PetscErrorCode - datatype used for return error code from almost all PETSc functions
+  PetscErrorCode - Datatype used for return error code from almost all PETSc functions
 
   Level: beginner
 
