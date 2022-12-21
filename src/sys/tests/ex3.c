@@ -3,7 +3,7 @@ static char help[] = "Tests catching of floating point exceptions.\n\n";
 
 #include <petscsys.h>
 
-int CreateError(PetscReal x)
+PetscErrorCode CreateError(PetscReal x)
 {
   PetscFunctionBegin;
   x = 1.0 / x;

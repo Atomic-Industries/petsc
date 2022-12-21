@@ -26,13 +26,13 @@ PetscErrorCode foo()
 PetscErrorCode bar()
 {
   PetscFunctionBegin;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode baru()
 {
   PetscFunctionBeginUser;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 int main(int argc, char **argv)
