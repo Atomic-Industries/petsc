@@ -11,25 +11,25 @@ typedef struct {
 static PetscErrorCode constant(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   u[0] = 1.;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode linear(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   u[0] = 2. * x[0] + 1.;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode quadratic(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   u[0] = 3. * x[0] * x[0] + 2. * x[0] + 1.;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode cubic(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   u[0] = 4. * x[0] * x[0] * x[0] + 3. * x[0] * x[0] + 2. * x[0] + 1.;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)

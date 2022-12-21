@@ -8,7 +8,7 @@ differently from the way it is assembled.  Input arguments are:\n\
 
 #include <petscksp.h>
 
-int FormElementStiffness(PetscReal H, PetscScalar *Ke)
+PetscErrorCode FormElementStiffness(PetscReal H, PetscScalar *Ke)
 {
   PetscFunctionBeginUser;
   Ke[0]  = H / 6.0;
@@ -29,7 +29,8 @@ int FormElementStiffness(PetscReal H, PetscScalar *Ke)
   Ke[15] = H / 6.0;
   PetscFunctionReturn(PETSC_SUCCESS);
 }
-int FormElementRhs(PetscReal x, PetscReal y, PetscReal H, PetscScalar *r)
+
+PetscErrorCode FormElementRhs(PetscReal x, PetscReal y, PetscReal H, PetscScalar *r)
 {
   PetscFunctionBeginUser;
   r[0] = 0.;

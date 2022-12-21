@@ -69,7 +69,7 @@ int main(int argc, char **argv)
   PetscCall(DMViewFromOptions(sw, NULL, "-swarm_view"));
   PetscCall(DMSwarmPrint(sw));
 
-  PetscPrintf(PETSC_COMM_WORLD, "\n... calling DMSwarmMigrate ...\n\n");
+  PetscCall(PetscPrintf(PETSC_COMM_WORLD, "\n... calling DMSwarmMigrate ...\n\n"));
   PetscCall(DMSwarmMigrate(sw, PETSC_TRUE));
   PetscCall(DMViewFromOptions(sw, NULL, "-swarm_view"));
   PetscCall(DMSwarmPrint(sw));

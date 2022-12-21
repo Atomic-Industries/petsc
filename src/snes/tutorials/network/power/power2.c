@@ -466,7 +466,7 @@ int main(int argc, char **argv)
     PetscCall(DMNetworkRegisterComponent(networkdm, "loadstruct", sizeof(struct _p_LOAD), &componentkey[3]));
 
     PetscCall(PetscLogStageRegister("Read Data", &stage1));
-    PetscLogStagePush(stage1);
+    PetscCall(PetscLogStagePush(stage1));
     /* READ THE DATA */
     if (!crank) {
       /* Only rank 0 reads the data */
@@ -492,10 +492,10 @@ int main(int argc, char **argv)
       PetscCall(GetListofEdges_Power(pfdata2, edgelist2));
     }
 
-    PetscLogStagePop();
+    PetscCall(PetscLogStagePop());
     PetscCallMPI(MPI_Barrier(PETSC_COMM_WORLD));
     PetscCall(PetscLogStageRegister("Create network", &stage2));
-    PetscLogStagePush(stage2);
+    PetscCall(PetscLogStagePush(stage2));
 
     /* Set number of nodes/edges and edge connectivity */
     PetscCall(DMNetworkSetNumSubNetworks(networkdm, PETSC_DECIDE, nsubnet));
@@ -569,7 +569,7 @@ int main(int argc, char **argv)
     /* Distribute networkdm to multiple processes */
     PetscCall(DMNetworkDistribute(&networkdm, 0));
 
-    PetscLogStagePop();
+    PetscCall(PetscLogStagePop());
 
     /* Broadcast Sbase to all processors */
     PetscCallMPI(MPI_Bcast(&User.Sbase, 1, MPIU_SCALAR, 0, PETSC_COMM_WORLD));

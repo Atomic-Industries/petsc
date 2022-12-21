@@ -18,7 +18,7 @@ PetscErrorCode pyramidNormal(PetscInt dim, PetscReal time, const PetscReal x[], 
 
   for (d = 0; d < dim; ++d) u[d] = x[d] - apex[d];
   for (d = dim; d < 3; ++d) u[d] = 0.0 - apex[d];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)

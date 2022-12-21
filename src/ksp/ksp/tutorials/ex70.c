@@ -224,7 +224,7 @@ static void BForm_Div(PetscScalar De[], PetscScalar coords[])
   PetscScalar Ge[U_DOFS * NODES_PER_EL * P_DOFS * NODES_PER_EL];
   PetscInt    i, j, nr_g, nc_g;
 
-  PetscMemzero(Ge, sizeof(Ge));
+  PetscCallAbort(PETSC_COMM_SELF, PetscMemzero(Ge, sizeof(Ge)));
   BForm_Grad(Ge, coords);
 
   nr_g = U_DOFS * NODES_PER_EL;

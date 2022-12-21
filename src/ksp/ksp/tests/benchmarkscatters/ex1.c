@@ -12,7 +12,7 @@ int main(int argc, char **args)
   char        file[PETSC_MAX_PATH_LEN];
   PetscBool   flg, preload = PETSC_TRUE;
 
-  PetscInitialize(&argc, &args, (char *)0, help);
+  PetscCall(PetscInitialize(&argc, &args, (char *)0, help));
   PetscCall(PetscLogDefaultBegin());
   PetscCall(PetscOptionsGetString(NULL, NULL, "-f", file, sizeof(file), &flg));
 
@@ -81,7 +81,7 @@ PetscErrorCode PetscLogView_VecScatter(PetscViewer viewer)
   char                arch[128], hostname[128], username[128], pname[PETSC_MAX_PATH_LEN], date[128], version[256];
 
   PetscFunctionBegin;
-  PetscTime(&locTotalTime);
+  PetscCall(PetscTime(&locTotalTime));
   locTotalTime -= petsc_BaseTime;
   PetscCallMPI(MPI_Comm_size(comm, &size));
   PetscCallMPI(MPI_Comm_rank(comm, &rank));

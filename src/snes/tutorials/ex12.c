@@ -66,13 +66,13 @@ typedef struct {
 static PetscErrorCode zero(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode ecks(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   u[0] = x[0];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*
@@ -103,7 +103,7 @@ static PetscErrorCode ecks(PetscInt dim, PetscReal time, const PetscReal x[], Pe
 static PetscErrorCode quadratic_u_2d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   *u = x[0] * x[0] + x[1] * x[1];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void quadratic_u_field_2d(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar uexact[])
@@ -119,7 +119,7 @@ static PetscErrorCode ball_u_2d(PetscInt dim, PetscReal time, const PetscReal x[
   const PetscReal xi      = alpha * (radius2 - r2);
 
   *u = PetscTanhScalar(xi) + 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode cross_u_2d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
@@ -128,7 +128,7 @@ static PetscErrorCode cross_u_2d(PetscInt dim, PetscReal time, const PetscReal x
   const PetscReal xy    = (x[0] - 0.5) * (x[1] - 0.5);
 
   *u = PetscSinReal(alpha * xy) * (alpha * PetscAbsReal(xy) < 2 * PETSC_PI ? 1 : 0.01);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_u(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -194,7 +194,7 @@ static void g3_uu(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff
 static PetscErrorCode xtrig_u_2d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   *u = PetscSinReal(2.0 * PETSC_PI * x[0]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_xtrig_u(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -215,7 +215,7 @@ static void f0_xtrig_u(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt
 static PetscErrorCode xytrig_u_2d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   *u = PetscSinReal(2.0 * PETSC_PI * x[0]) * PetscSinReal(2.0 * PETSC_PI * x[1]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_xytrig_u(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -237,7 +237,7 @@ static void f0_xytrig_u(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscIn
 static PetscErrorCode nu_2d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   *u = x[0] + x[1];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode checkerboardCoeff(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
@@ -362,7 +362,7 @@ void g3_analytic_nonlinear_uu(PetscInt dim, PetscInt Nf, PetscInt NfAux, const P
 static PetscErrorCode quadratic_u_3d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   *u = 2.0 * (x[0] * x[0] + x[1] * x[1] + x[2] * x[2]) / 3.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode ball_u_3d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
@@ -373,7 +373,7 @@ static PetscErrorCode ball_u_3d(PetscInt dim, PetscReal time, const PetscReal x[
   const PetscReal xi      = alpha * (radius2 - r2);
 
   *u = PetscTanhScalar(xi) + 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void quadratic_u_field_3d(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar uexact[])
@@ -387,7 +387,7 @@ static PetscErrorCode cross_u_3d(PetscInt dim, PetscReal time, const PetscReal x
   const PetscReal xyz   = (x[0] - 0.5) * (x[1] - 0.5) * (x[2] - 0.5);
 
   *u = PetscSinReal(alpha * xyz) * (alpha * PetscAbsReal(xyz) < 2 * PETSC_PI ? (alpha * PetscAbsReal(xyz) > -2 * PETSC_PI ? 1.0 : 0.01) : 0.01);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_cross_u_3d(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])

@@ -215,11 +215,11 @@ PetscErrorCode test_axpy_dot_max(void)
   PetscFunctionBegin;
   PetscCall(PetscPrintf(PETSC_COMM_WORLD, "\n\n============== %s ==============\n", PETSC_FUNCTION_NAME));
 
-  gen_test_vector(PETSC_COMM_WORLD, 4, 0, 1, &x1);
-  gen_test_vector(PETSC_COMM_WORLD, 5, 10, 2, &x2);
+  PetscCall(gen_test_vector(PETSC_COMM_WORLD, 4, 0, 1, &x1));
+  PetscCall(gen_test_vector(PETSC_COMM_WORLD, 5, 10, 2, &x2));
 
-  gen_test_vector(PETSC_COMM_WORLD, 4, 4, 3, &y1);
-  gen_test_vector(PETSC_COMM_WORLD, 5, 5, 1, &y2);
+  PetscCall(gen_test_vector(PETSC_COMM_WORLD, 4, 4, 3, &y1));
+  PetscCall(gen_test_vector(PETSC_COMM_WORLD, 5, 5, 1, &y2));
 
   tmp_buf[0] = x1;
   tmp_buf[1] = x2;

@@ -701,7 +701,7 @@ static void FormDivergenceOperatorQ13D(PetscScalar De[], PetscScalar coords[])
   PetscInt    i, j;
   PetscInt    nr_g, nc_g;
 
-  PetscMemzero(Ge, sizeof(Ge));
+  PetscCallAbort(PETSC_COMM_SELF, PetscMemzero(Ge, sizeof(Ge)));
   FormGradientOperatorQ13D(Ge, coords);
 
   nr_g = U_DOFS * NODES_PER_EL;
@@ -1442,58 +1442,58 @@ PetscErrorCode DAView_3DVTK_StructuredGrid_appended(DM da, Vec FIELD, const char
   PetscFunctionBeginUser;
 
   /* create file name */
-  PetscObjectGetComm((PetscObject)da, &comm);
-  MPI_Comm_rank(comm, &rank);
+  PetscCall(PetscObjectGetComm((PetscObject)da, &comm));
+  PetscCallMPI(MPI_Comm_rank(comm, &rank));
   PetscCall(PetscSNPrintf(vtk_filename, sizeof(vtk_filename), "subdomain-%s-p%1.4d.vts", file_prefix, rank));
 
   /* open file and write header */
   vtk_fp = fopen(vtk_filename, "w");
   PetscCheck(vtk_fp, PETSC_COMM_SELF, PETSC_ERR_SYS, "Cannot open file = %s ", vtk_filename);
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "<?xml version=\"1.0\"?>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "<?xml version=\"1.0\"?>\n"));
 
   /* coords */
   PetscCall(DMDAGetGhostCorners(da, &si, &sj, &sk, &nx, &ny, &nz));
   N = nx * ny * nz;
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "<VTKFile type=\"StructuredGrid\" version=\"0.1\" byte_order=\"%s\">\n", byte_order);
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  <StructuredGrid WholeExtent=\"%" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT "\">\n", si, si + nx - 1, sj, sj + ny - 1, sk, sk + nz - 1);
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    <Piece Extent=\"%" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT "\">\n", si, si + nx - 1, sj, sj + ny - 1, sk, sk + nz - 1);
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "<VTKFile type=\"StructuredGrid\" version=\"0.1\" byte_order=\"%s\">\n", byte_order));
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  <StructuredGrid WholeExtent=\"%" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT "\">\n", si, si + nx - 1, sj, sj + ny - 1, sk, sk + nz - 1));
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    <Piece Extent=\"%" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT "\">\n", si, si + nx - 1, sj, sj + ny - 1, sk, sk + nz - 1));
 
   memory_offset = 0;
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      <CellData></CellData>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      <CellData></CellData>\n"));
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      <Points>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      <Points>\n"));
 
   /* copy coordinates */
   PetscCall(DMGetCoordinateDM(da, &cda));
   PetscCall(DMGetCoordinatesLocal(da, &coords));
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "        <DataArray type=\"Float64\" NumberOfComponents=\"3\" format=\"appended\" offset=\"%" PetscInt_FMT "\" />\n", memory_offset);
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "        <DataArray type=\"Float64\" NumberOfComponents=\"3\" format=\"appended\" offset=\"%" PetscInt_FMT "\" />\n", memory_offset));
   memory_offset = memory_offset + sizeof(PetscInt) + sizeof(PetscScalar) * N * 3;
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      </Points>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      </Points>\n"));
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      <PointData Scalars=\" ");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      <PointData Scalars=\" "));
   PetscCall(DMDAGetInfo(da, 0, 0, 0, 0, 0, 0, 0, &n_fields, 0, 0, 0, 0, 0));
   for (f = 0; f < n_fields; f++) {
     const char *field_name;
     PetscCall(DMDAGetFieldName(da, f, &field_name));
-    PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "%s ", field_name);
+    PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "%s ", field_name));
   }
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "\">\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "\">\n"));
 
   for (f = 0; f < n_fields; f++) {
     const char *field_name;
 
     PetscCall(DMDAGetFieldName(da, f, &field_name));
-    PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "        <DataArray type=\"Float64\" Name=\"%s\" format=\"appended\" offset=\"%" PetscInt_FMT "\"/>\n", field_name, memory_offset);
+    PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "        <DataArray type=\"Float64\" Name=\"%s\" format=\"appended\" offset=\"%" PetscInt_FMT "\"/>\n", field_name, memory_offset));
     memory_offset = memory_offset + sizeof(PetscInt) + sizeof(PetscScalar) * N;
   }
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      </PointData>\n");
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    </Piece>\n");
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  </StructuredGrid>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      </PointData>\n"));
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    </Piece>\n"));
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  </StructuredGrid>\n"));
 
   PetscCall(PetscMalloc1(N, &buffer));
   PetscCall(DMGetLocalVector(da, &l_FIELD));
@@ -1501,8 +1501,8 @@ PetscErrorCode DAView_3DVTK_StructuredGrid_appended(DM da, Vec FIELD, const char
   PetscCall(DMGlobalToLocalEnd(da, FIELD, INSERT_VALUES, l_FIELD));
   PetscCall(VecGetArray(l_FIELD, &_L_FIELD));
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  <AppendedData encoding=\"raw\">\n");
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "_");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  <AppendedData encoding=\"raw\">\n"));
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "_"));
 
   /* write coordinates */
   {
@@ -1524,9 +1524,9 @@ PetscErrorCode DAView_3DVTK_StructuredGrid_appended(DM da, Vec FIELD, const char
     /* write */
     fwrite(buffer, sizeof(PetscScalar), N, vtk_fp);
   }
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "\n  </AppendedData>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "\n  </AppendedData>\n"));
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "</VTKFile>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "</VTKFile>\n"));
 
   PetscCall(PetscFree(buffer));
   PetscCall(VecRestoreArray(l_FIELD, &_L_FIELD));
@@ -1551,9 +1551,9 @@ PetscErrorCode DAViewVTK_write_PieceExtend(FILE *vtk_fp, PetscInt indent_level, 
 
   PetscFunctionBeginUser;
   /* create file name */
-  PetscObjectGetComm((PetscObject)da, &comm);
-  MPI_Comm_size(comm, &size);
-  MPI_Comm_rank(comm, &rank);
+  PetscCall(PetscObjectGetComm((PetscObject)da, &comm));
+  PetscCallMPI(MPI_Comm_size(comm, &size));
+  PetscCallMPI(MPI_Comm_rank(comm, &rank));
 
   PetscCall(DMDAGetInfo(da, 0, &M, &N, &P, &pM, &pN, &pP, 0, &stencil, 0, 0, 0, 0));
   PetscCall(DMDAGetOwnershipRanges(da, &lx, &ly, &lz));
@@ -1613,9 +1613,9 @@ PetscErrorCode DAViewVTK_write_PieceExtend(FILE *vtk_fp, PetscInt indent_level, 
         char     name[PETSC_MAX_PATH_LEN];
         PetscInt procid = i + j * pM + k * pM * pN; /* convert proc(i,j,k) to pid */
         PetscCall(PetscSNPrintf(name, sizeof(name), "subdomain-%s-p%1.4" PetscInt_FMT ".vts", local_file_prefix, procid));
-        for (II = 0; II < indent_level; II++) PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  ");
+        for (II = 0; II < indent_level; II++) PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  "));
 
-        PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "<Piece Extent=\"%" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT "\"      Source=\"%s\"/>\n", osx[i], oex[i] - 1, osy[j], oey[j] - 1, osz[k], oez[k] - 1, name);
+        PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "<Piece Extent=\"%" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT " %" PetscInt_FMT "\"      Source=\"%s\"/>\n", osx[i], oex[i] - 1, osy[j], oey[j] - 1, osz[k], oez[k] - 1, name));
       }
     }
   }
@@ -1643,9 +1643,9 @@ PetscErrorCode DAView_3DVTK_PStructuredGrid(DM da, const char file_prefix[], con
 
   PetscFunctionBeginUser;
   /* only rank-0 generates this file */
-  PetscObjectGetComm((PetscObject)da, &comm);
-  MPI_Comm_size(comm, &size);
-  MPI_Comm_rank(comm, &rank);
+  PetscCall(PetscObjectGetComm((PetscObject)da, &comm));
+  PetscCallMPI(MPI_Comm_size(comm, &size));
+  PetscCallMPI(MPI_Comm_rank(comm, &rank));
 
   if (rank != 0) PetscFunctionReturn(PETSC_SUCCESS);
 
@@ -1655,37 +1655,37 @@ PetscErrorCode DAView_3DVTK_PStructuredGrid(DM da, const char file_prefix[], con
   PetscCheck(vtk_fp, PETSC_COMM_SELF, PETSC_ERR_SYS, "Cannot open file = %s ", vtk_filename);
 
   /* (VTK) generate pvts header */
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "<?xml version=\"1.0\"?>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "<?xml version=\"1.0\"?>\n"));
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "<VTKFile type=\"PStructuredGrid\" version=\"0.1\" byte_order=\"%s\">\n", byte_order);
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "<VTKFile type=\"PStructuredGrid\" version=\"0.1\" byte_order=\"%s\">\n", byte_order));
 
   /* define size of the nodal mesh based on the cell DM */
   PetscCall(DMDAGetInfo(da, 0, &M, &N, &P, 0, 0, 0, &dofs, 0, 0, 0, 0, 0));
   PetscCall(DMDAGetGhostCorners(da, &si, &sj, &sk, &nx, &ny, &nz));
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  <PStructuredGrid GhostLevel=\"1\" WholeExtent=\"%d %" PetscInt_FMT " %d %" PetscInt_FMT " %d %" PetscInt_FMT "\">\n", 0, M - 1, 0, N - 1, 0, P - 1); /* note overlap = 1 for Q1 */
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  <PStructuredGrid GhostLevel=\"1\" WholeExtent=\"%d %" PetscInt_FMT " %d %" PetscInt_FMT " %d %" PetscInt_FMT "\">\n", 0, M - 1, 0, N - 1, 0, P - 1)); /* note overlap = 1 for Q1 */
 
   /* DUMP THE CELL REFERENCES */
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    <PCellData>\n");
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    </PCellData>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    <PCellData>\n"));
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    </PCellData>\n"));
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    <PPoints>\n");
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      <PDataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"%d\"/>\n", NSD);
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    </PPoints>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    <PPoints>\n"));
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      <PDataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"%d\"/>\n", NSD));
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    </PPoints>\n"));
 
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    <PPointData>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    <PPointData>\n"));
   for (i = 0; i < dofs; i++) {
     const char *fieldname;
     PetscCall(DMDAGetFieldName(da, i, &fieldname));
-    PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      <PDataArray type=\"Float64\" Name=\"%s\" NumberOfComponents=\"1\"/>\n", fieldname);
+    PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "      <PDataArray type=\"Float64\" Name=\"%s\" NumberOfComponents=\"1\"/>\n", fieldname));
   }
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    </PPointData>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "    </PPointData>\n"));
 
   /* write out the parallel information */
   PetscCall(DAViewVTK_write_PieceExtend(vtk_fp, 2, da, local_file_prefix));
 
   /* close the file */
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  </PStructuredGrid>\n");
-  PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "</VTKFile>\n");
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "  </PStructuredGrid>\n"));
+  PetscCall(PetscFPrintf(PETSC_COMM_SELF, vtk_fp, "</VTKFile>\n"));
 
   if (vtk_fp) {
     fclose(vtk_fp);
@@ -1741,7 +1741,7 @@ static PetscErrorCode PCMGSetupViaCoarsen(PC pc, DM da_fine)
 
   PetscFunctionBeginUser;
   nlevels = 1;
-  PetscOptionsGetInt(NULL, NULL, "-levels", &nlevels, 0);
+  PetscCall(PetscOptionsGetInt(NULL, NULL, "-levels", &nlevels, 0));
 
   PetscCall(PetscMalloc1(nlevels, &da_list));
   for (k = 0; k < nlevels; k++) da_list[k] = NULL;
@@ -1751,7 +1751,7 @@ static PetscErrorCode PCMGSetupViaCoarsen(PC pc, DM da_fine)
   /* finest grid is nlevels - 1 */
   finest     = nlevels - 1;
   daclist[0] = da_fine;
-  PetscObjectReference((PetscObject)da_fine);
+  PetscCall(PetscObjectReference((PetscObject)da_fine));
   PetscCall(DMCoarsenHierarchy(da_fine, nlevels - 1, &daclist[1]));
   for (k = 0; k < nlevels; k++) {
     da_list[k] = daclist[nlevels - 1 - k];

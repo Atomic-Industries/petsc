@@ -359,7 +359,7 @@ int main(int argc, char **argv)
     numEdges[1]    = waterdata->nedge;
     numVertices[1] = waterdata->nvertex;
   }
-  PetscLogStagePop();
+  PetscCall(PetscLogStagePop());
 
   /* (2) Create a network consist of two subnetworks */
   PetscCall(PetscLogStageRegister("Net Setup", &stage[1]));
@@ -506,7 +506,7 @@ int main(int argc, char **argv)
   PetscCall(DMCreateGlobalVector(networkdm, &X));
   PetscCall(VecDuplicate(X, &F));
   PetscCall(DMGetLocalVector(networkdm, &user.localXold));
-  PetscLogStagePop();
+  PetscCall(PetscLogStagePop());
 
   /* (3) Setup Solvers */
   PetscCall(PetscOptionsGetBool(NULL, NULL, "-viewJ", &viewJ, NULL));

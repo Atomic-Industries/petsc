@@ -141,7 +141,7 @@ static PetscErrorCode quadratic_u(PetscInt dim, PetscReal time, const PetscReal 
     u[0] += PetscSqr(x[c]);
     u[c] = 2.0 * PetscSqr(x[0]) - 2.0 * x[0] * x[c];
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode quadratic_p(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
@@ -150,7 +150,7 @@ static PetscErrorCode quadratic_p(PetscInt dim, PetscReal time, const PetscReal 
 
   u[0] = -0.5 * dim;
   for (d = 0; d < dim; ++d) u[0] += x[d];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_quadratic_u(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -202,7 +202,7 @@ static PetscErrorCode trig_u(PetscInt dim, PetscReal time, const PetscReal x[], 
     u[0] += PetscSinReal(PETSC_PI * x[c]);
     u[c] = -PETSC_PI * PetscCosReal(PETSC_PI * x[0]) * x[c];
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode trig_p(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
@@ -210,7 +210,7 @@ static PetscErrorCode trig_p(PetscInt dim, PetscReal time, const PetscReal x[], 
   PetscInt d;
 
   for (d = 0, u[0] = 0.0; d < dim; ++d) u[0] += PetscSinReal(2.0 * PETSC_PI * x[d]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_trig_u(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -329,13 +329,13 @@ static PetscErrorCode zero(PetscInt dim, PetscReal time, const PetscReal x[], Pe
 {
   PetscInt c;
   for (c = 0; c < Nc; ++c) u[c] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode one(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   PetscInt c;
   for (c = 0; c < Nc; ++c) u[c] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode CreatePressureNullSpace(DM dm, PetscInt origField, PetscInt field, MatNullSpace *nullspace)

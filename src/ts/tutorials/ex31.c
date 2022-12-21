@@ -1028,7 +1028,7 @@ PetscErrorCode Initialize(Vec Y, void *s)
 
   PetscFunctionBeginUser;
   PetscCall(GetSize((const char *)s, &N));
-  VecZeroEntries(Y);
+  PetscCall(VecZeroEntries(Y));
   PetscCall(VecGetArray(Y, &y));
   if (!strcmp(p, "hull1972a1")) {
     y[0]        = 1.0;

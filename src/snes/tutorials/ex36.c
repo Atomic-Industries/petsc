@@ -50,7 +50,7 @@ static PetscErrorCode trig_homogeneous_u(PetscInt dim, PetscReal time, const Pet
   PetscInt d;
   *u = 1.0;
   for (d = 0; d < dim; ++d) *u *= PetscSinReal(2.0 * PETSC_PI * x[d]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode oscillatory_u(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
@@ -59,7 +59,7 @@ static PetscErrorCode oscillatory_u(PetscInt dim, PetscReal time, const PetscRea
   const PetscReal eps   = param->epsilon;
 
   u[0] = x[0] - x[0] * x[0] + (eps / (2. * PETSC_PI)) * (0.5 - x[0]) * PetscSinReal(2. * PETSC_PI * x[0] / eps) + PetscSqr(eps / (2. * PETSC_PI)) * (1. - PetscCosReal(2. * PETSC_PI * x[0] / eps));
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_trig_homogeneous_u(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])

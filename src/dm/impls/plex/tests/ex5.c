@@ -1041,14 +1041,14 @@ static PetscErrorCode r(PetscInt dim, PetscReal time, const PetscReal x[], Petsc
 {
   PetscInt d;
   for (d = 0; d < dim; ++d) u[d] = x[d];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode rp1(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   PetscInt d;
   for (d = 0; d < dim; ++d) u[d] = x[d] + (d > 0 ? 1.0 : 0.0);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode phi(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
@@ -1057,7 +1057,7 @@ static PetscErrorCode phi(PetscInt dim, PetscReal time, const PetscReal x[], Pet
   u[0] = -x[1];
   u[1] = x[0];
   for (d = 2; d < dim; ++d) u[d] = x[d];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* \lambda \cdot (\psi_u^- - \psi_u^+) */

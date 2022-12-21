@@ -322,7 +322,7 @@ static PetscErrorCode RDIFunction_FD(TS ts, PetscReal t, Vec X, Vec Xdot, Vec F,
   PetscCall(RDGetLocalArrays(rd, ts, X, Xdot, &Theta, &dt, &X0loc, &x0, &Xloc, &x, &Xloc_t, &xdot));
   PetscCall(DMDAVecGetArray(rd->da, F, &f));
   PetscCall(DMDAGetLocalInfo(rd->da, &info));
-  VecZeroEntries(F);
+  PetscCall(VecZeroEntries(F));
 
   hx = rd->L / (info.mx - 1);
 

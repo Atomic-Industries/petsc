@@ -25,7 +25,7 @@ static PetscErrorCode zero_func(PetscInt dim, PetscReal time, const PetscReal x[
 {
   PetscInt c;
   for (c = 0; c < Nc; ++c) u[c] = 0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 /* Linear Exact Functions
    \vec{u} = \vec{x};
@@ -35,12 +35,12 @@ static PetscErrorCode linear_u(PetscInt dim, PetscReal time, const PetscReal x[]
 {
   PetscInt c;
   for (c = 0; c < Nc; ++c) u[c] = x[c];
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode linear_p(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   u[0] = dim;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* Sinusoidal Exact Functions
@@ -52,14 +52,14 @@ static PetscErrorCode sinusoid_u(PetscInt dim, PetscReal time, const PetscReal x
 {
   PetscInt c;
   for (c = 0; c < Nc; ++c) u[c] = PetscSinReal(2 * PETSC_PI * x[c]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode sinusoid_p(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   PetscInt d;
   u[0] = 0;
   for (d = 0; d < dim; ++d) u[0] += 2 * PETSC_PI * PetscCosReal(2 * PETSC_PI * x[d]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* Pointwise residual for u = u*. Need one of these for each possible u* */
@@ -68,10 +68,10 @@ static void f0_v_linear(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscIn
   PetscInt     i;
   PetscScalar *u_rhs;
 
-  PetscCalloc1(dim, &u_rhs);
-  (void)linear_u(dim, t, x, dim, u_rhs, NULL);
+  PetscCallAbort(PETSC_COMM_SELF, PetscCalloc1(dim, &u_rhs));
+  PetscCallAbort(PETSC_COMM_SELF, linear_u(dim, t, x, dim, u_rhs, NULL));
   for (i = 0; i < dim; ++i) f0[i] = u[uOff[0] + i] - u_rhs[i];
-  PetscFree(u_rhs);
+  PetscCallAbort(PETSC_COMM_SELF, PetscFree(u_rhs));
 }
 
 static void f0_v_sinusoid(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -79,10 +79,10 @@ static void f0_v_sinusoid(PetscInt dim, PetscInt Nf, PetscInt NfAux, const Petsc
   PetscInt     i;
   PetscScalar *u_rhs;
 
-  PetscCalloc1(dim, &u_rhs);
-  (void)sinusoid_u(dim, t, x, dim, u_rhs, NULL);
+  PetscCallAbort(PETSC_COMM_SELF, PetscCalloc1(dim, &u_rhs));
+  PetscCallAbort(PETSC_COMM_SELF, sinusoid_u(dim, t, x, dim, u_rhs, NULL));
   for (i = 0; i < dim; ++i) f0[i] = u[uOff[0] + i] - u_rhs[i];
-  PetscFree(u_rhs);
+  PetscCallAbort(PETSC_COMM_SELF, PetscFree(u_rhs));
 }
 
 /* Residual function for enforcing p = \div{u}. */
@@ -113,22 +113,22 @@ static void f0_bd_u_sinusoid(PetscInt dim, PetscInt Nf, PetscInt NfAux, const Pe
 {
   PetscInt     d;
   PetscScalar *u_rhs;
-  PetscCalloc1(dim, &u_rhs);
-  (void)sinusoid_u(dim, t, x, dim, u_rhs, NULL);
 
+  PetscCallAbort(PETSC_COMM_SELF, PetscCalloc1(dim, &u_rhs));
+  PetscCallAbort(PETSC_COMM_SELF, sinusoid_u(dim, t, x, dim, u_rhs, NULL));
   for (d = 0; d < dim; ++d) f0[d] = u_rhs[d];
-  PetscFree(u_rhs);
+  PetscCallAbort(PETSC_COMM_SELF, PetscFree(u_rhs));
 }
 
 static void f0_bd_u_linear(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], const PetscReal n[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
 {
   PetscInt     d;
   PetscScalar *u_rhs;
-  PetscCalloc1(dim, &u_rhs);
-  (void)linear_u(dim, t, x, dim, u_rhs, NULL);
 
+  PetscCallAbort(PETSC_COMM_SELF, PetscCalloc1(dim, &u_rhs));
+  PetscCallAbort(PETSC_COMM_SELF, linear_u(dim, t, x, dim, u_rhs, NULL));
   for (d = 0; d < dim; ++d) f0[d] = u_rhs[d];
-  PetscFree(u_rhs);
+  PetscCallAbort(PETSC_COMM_SELF, PetscFree(u_rhs));
 }
 /* Jacobian functions. For the following, v is the test function associated with
  * u, q the test function associated with p, and w the test function associated
@@ -242,7 +242,7 @@ static PetscErrorCode PerturbMesh(DM *mesh, PetscScalar *coordVals, PetscInt npo
     }
   }
 
-  PetscRandomDestroy(&ran);
+  PetscCall(PetscRandomDestroy(&ran));
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 

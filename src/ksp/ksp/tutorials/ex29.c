@@ -79,7 +79,7 @@ int main(int argc, char **argv)
   if (testsolver) {
     PetscCall(KSPGetSolution(ksp, &x));
     PetscCall(KSPGetRhs(ksp, &b));
-    KSPSetDMActive(ksp, PETSC_FALSE);
+    PetscCall(KSPSetDMActive(ksp, PETSC_FALSE));
     PetscCall(KSPSolve(ksp, b, x));
     {
 #if defined(PETSC_USE_LOG)

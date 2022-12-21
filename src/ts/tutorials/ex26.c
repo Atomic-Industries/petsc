@@ -213,6 +213,7 @@ PetscErrorCode FormInitialSolution(TS ts, Vec X, AppCtx *user)
   PetscReal grashof, dx;
   Field   **x;
 
+  PetscFunctionBeginUser;
   grashof = user->grashof;
   PetscCall(TSGetDM(ts, &da));
   PetscCall(DMDAGetInfo(da, 0, &mx, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
@@ -251,7 +252,7 @@ PetscErrorCode FormInitialSolution(TS ts, Vec X, AppCtx *user)
      Restore vector
   */
   PetscCall(DMDAVecRestoreArray(da, X, &x));
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode FormIFunctionLocal(DMDALocalInfo *info, PetscReal ptime, Field **x, Field **xdot, Field **f, void *ptr)

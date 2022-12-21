@@ -15,7 +15,7 @@ static PetscErrorCode linear(PetscInt dim, PetscReal time, const PetscReal x[], 
 {
   PetscInt c;
   for (c = 0; c < Nc; ++c) u[c] = (x[0] + x[1]) * Nc + c;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* {x, y, z} */
@@ -23,7 +23,7 @@ static PetscErrorCode linear2(PetscInt dim, PetscReal time, const PetscReal x[],
 {
   PetscInt c;
   for (c = 0; c < Nc; ++c) u[c] = x[c];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* {u_x, u_y, u_z} */

@@ -279,8 +279,10 @@ static PetscErrorCode DMDAGetElementOwnershipRanges2d(DM da, PetscInt **_lx, Pet
 
   PetscCall(VecSetValue(vlx, proc_I, (PetscScalar)(local_mx + 1.0e-9), INSERT_VALUES));
   PetscCall(VecSetValue(vly, proc_J, (PetscScalar)(local_my + 1.0e-9), INSERT_VALUES));
-  PetscCall(VecAssemblyBegin(vlx); VecAssemblyEnd(vlx));
-  PetscCall(VecAssemblyBegin(vly); VecAssemblyEnd(vly));
+  PetscCall(VecAssemblyBegin(vlx));
+  PetscCall(VecAssemblyEnd(vlx));
+  PetscCall(VecAssemblyBegin(vly));
+  PetscCall(VecAssemblyEnd(vly));
 
   PetscCall(VecScatterCreateToAll(vlx, &ctx, &V_SEQ));
   PetscCall(VecScatterBegin(ctx, vlx, V_SEQ, INSERT_VALUES, SCATTER_FORWARD));
@@ -575,7 +577,7 @@ static void FormDivergenceOperatorQ1(PetscScalar De[], PetscScalar coords[])
   PetscInt    i, j;
   PetscInt    nr_g, nc_g;
 
-  PetscMemzero(Ge, sizeof(Ge));
+  PetscCallAbort(PETSC_COMM_SELF, PetscMemzero(Ge, sizeof(Ge)));
   FormGradientOperatorQ1(Ge, coords);
 
   nr_g = U_DOFS * NODES_PER_EL;
@@ -733,7 +735,7 @@ static PetscErrorCode AssembleA_Stokes(Mat A, DM stokes_da, DM properties_da, Ve
   for (ej = sey; ej < sey + my; ej++) {
     for (ei = sex; ei < sex + mx; ei++) {
       /* get coords for the element */
-      GetElementCoords(_coords, ei, ej, el_coords);
+      PetscCall(GetElementCoords(_coords, ei, ej, el_coords));
 
       /* get coefficients for the element */
       prop_eta = props[ej][ei].eta;
@@ -803,7 +805,7 @@ static PetscErrorCode AssembleA_PCStokes(Mat A, DM stokes_da, DM properties_da, 
   for (ej = sey; ej < sey + my; ej++) {
     for (ei = sex; ei < sex + mx; ei++) {
       /* get coords for the element */
-      GetElementCoords(_coords, ei, ej, el_coords);
+      PetscCall(GetElementCoords(_coords, ei, ej, el_coords));
 
       /* get coefficients for the element */
       prop_eta = props[ej][ei].eta;
@@ -889,7 +891,7 @@ static PetscErrorCode AssembleF_Stokes(Vec F, DM stokes_da, DM properties_da, Ve
   for (ej = sey; ej < sey + my; ej++) {
     for (ei = sex; ei < sex + mx; ei++) {
       /* get coords for the element */
-      GetElementCoords(_coords, ei, ej, el_coords);
+      PetscCall(GetElementCoords(_coords, ei, ej, el_coords));
 
       /* get coefficients for the element */
       prop_fx = props[ej][ei].fx;

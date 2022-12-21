@@ -156,7 +156,7 @@ int main(int argc, char **argv)
     /* Default to a direct solver, if a package is available */
     PetscMPIInt size;
 
-    PetscCall(MPI_Comm_size(ctx->comm, &size));
+    PetscCallMPI(MPI_Comm_size(ctx->comm, &size));
     if (PetscDefined(HAVE_SUITESPARSE) && size == 1) {
       PC pc;
 

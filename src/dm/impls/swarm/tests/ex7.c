@@ -101,7 +101,7 @@ PetscErrorCode gridToParticles(const DM dm, DM sw, PetscReal *moments, Vec rhs, 
       }
       PetscCall(MatAssemblyBegin(D, MAT_FINAL_ASSEMBLY));
       PetscCall(MatAssemblyEnd(D, MAT_FINAL_ASSEMBLY));
-      PetscInfo(M_p, "createMtMKSP Have %" PetscInt_FMT " eqs, nzl = %" PetscInt_FMT "\n", N, nzl);
+      PetscCall(PetscInfo(M_p, "createMtMKSP Have %" PetscInt_FMT " eqs, nzl = %" PetscInt_FMT "\n", N, nzl));
       PetscCall(KSPSetOperators(ksp, MtM, D));
       PetscCall(MatViewFromOptions(D, NULL, "-ftop2_D_mat_view"));
       PetscCall(MatViewFromOptions(M_p, NULL, "-ftop2_Mp_mat_view"));

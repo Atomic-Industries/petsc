@@ -188,7 +188,7 @@ static void f0_constant_u(PetscInt dim, PetscInt Nf, PetscInt NfAux, const Petsc
   PetscScalar wind[3] = {0.0, 0.0, 0.0};
   PetscInt    comp;
 
-  constant_u_2d(dim, t, x, Nf, wind, NULL);
+  PetscCallAbort(PETSC_COMM_SELF, constant_u_2d(dim, t, x, Nf, wind, NULL));
   for (comp = 0; comp < dim && comp < 3; ++comp) f0[comp] = u[comp] - wind[comp];
 }
 
@@ -309,14 +309,14 @@ static PetscErrorCode zero_u_2d(PetscInt dim, PetscReal time, const PetscReal x[
 {
   u[0] = 0.0;
   u[1] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode constant_u_2d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
   u[1] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* Coordinates of the point which was at x at t = 0 */
@@ -330,7 +330,7 @@ static PetscErrorCode constant_x_2d(PetscInt dim, PetscReal time, const PetscRea
 #else
   u[1]    = u[1] - (int)PetscRealPart(u[1]);
 #endif
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*
@@ -366,7 +366,7 @@ static PetscErrorCode quadratic_u_2d(PetscInt dim, PetscReal time, const PetscRe
 {
   u[0] = x[0] * x[0] + x[1] * x[1];
   u[1] = 2.0 * x[0] * x[0] - 2.0 * x[0] * x[1];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*
@@ -390,7 +390,7 @@ static PetscErrorCode periodic_u_2d(PetscInt dim, PetscReal time, const PetscRea
 {
   u[0] = PetscSinReal(2.0 * PETSC_PI * x[0]) / PetscSqr(2.0 * PETSC_PI);
   u[1] = -x[1] * PetscCosReal(2.0 * PETSC_PI * x[0]) / (2.0 * PETSC_PI);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*
@@ -414,33 +414,33 @@ static PetscErrorCode doubly_periodic_u_2d(PetscInt dim, PetscReal time, const P
 {
   u[0] = PetscSinReal(2.0 * PETSC_PI * x[0]) * PetscCosReal(2.0 * PETSC_PI * x[1]) / PetscSqr(2.0 * PETSC_PI);
   u[1] = -PetscSinReal(2.0 * PETSC_PI * x[1]) * PetscCosReal(2.0 * PETSC_PI * x[0]) / PetscSqr(2.0 * PETSC_PI);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode shear_bc(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = x[1] - 0.5;
   u[1] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode initialVelocity(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   PetscInt d;
   for (d = 0; d < dim; ++d) u[d] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode zero_phi(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode constant_phi(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode delta_phi_2d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
@@ -450,7 +450,7 @@ static PetscErrorCode delta_phi_2d(PetscInt dim, PetscReal time, const PetscReal
 
   x0[0] = globalUser->source[0];
   x0[1] = globalUser->source[1];
-  constant_x_2d(dim, time, x0, Nf, xn, ctx);
+  PetscCall(constant_x_2d(dim, time, x0, Nf, xn, ctx));
   {
     const PetscReal xi  = x[0] - PetscRealPart(xn[0]);
     const PetscReal eta = x[1] - PetscRealPart(xn[1]);
@@ -458,7 +458,7 @@ static PetscErrorCode delta_phi_2d(PetscInt dim, PetscReal time, const PetscReal
 
     u[0] = r2 < 1.0e-7 ? 1.0 : 0.0;
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*
@@ -480,7 +480,7 @@ static PetscErrorCode gaussian_phi_2d(PetscInt dim, PetscReal time, const PetscR
   const PetscReal sigma = 1.0 / 6.0;
   PetscScalar     xn[2];
 
-  constant_x_2d(dim, time, x0, Nf, xn, ctx);
+  PetscCall(constant_x_2d(dim, time, x0, Nf, xn, ctx));
   {
     /* const PetscReal xi  = x[0] + (sin(2.0*PETSC_PI*x[0])/(4.0*PETSC_PI*PETSC_PI))*t - x0[0]; */
     /* const PetscReal eta = x[1] + (-x[1]*cos(2.0*PETSC_PI*x[0])/(2.0*PETSC_PI))*t - x0[1]; */
@@ -490,7 +490,7 @@ static PetscErrorCode gaussian_phi_2d(PetscInt dim, PetscReal time, const PetscR
 
     u[0] = PetscExpReal(-r2 / (2.0 * sigma * sigma)) / (sigma * PetscSqrtReal(2.0 * PETSC_PI));
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode tilted_phi_2d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
@@ -502,7 +502,7 @@ static PetscErrorCode tilted_phi_2d(PetscInt dim, PetscReal time, const PetscRea
   DMPlex_WaxpyD_Internal(2, -t, wind, x, x0);
   if (x0[1] > 0) u[0] = 1.0 * x[0] + 3.0 * x[1];
   else u[0] = -2.0; /* Inflow state */
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode tilted_phi_coupled_2d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
@@ -517,7 +517,7 @@ static PetscErrorCode tilted_phi_coupled_2d(PetscInt dim, PetscReal time, const 
   DMPlex_WaxpyD_Internal(2, -t, ur, x, x0);
   if (x0[1] > 0) u[0] = 1.0 * x[0] + 3.0 * x[1];
   else u[0] = -2.0; /* Inflow state */
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode advect_inflow(PetscReal time, const PetscReal *c, const PetscReal *n, const PetscScalar *xI, PetscScalar *xG, void *ctx)
@@ -546,14 +546,14 @@ static PetscErrorCode ExactSolution(DM dm, PetscReal time, const PetscReal *x, P
   PetscCall(DMGetDimension(dm, &dim));
   switch (user->porosityDist) {
   case TILTED:
-    if (user->velocityDist == VEL_ZERO) tilted_phi_2d(dim, time, x, 2, u, (void *)&time);
-    else tilted_phi_coupled_2d(dim, time, x, 2, u, (void *)&time);
+    if (user->velocityDist == VEL_ZERO) PetscCall(tilted_phi_2d(dim, time, x, 2, u, (void *)&time));
+    else PetscCall(tilted_phi_coupled_2d(dim, time, x, 2, u, (void *)&time));
     break;
   case GAUSSIAN:
-    gaussian_phi_2d(dim, time, x, 2, u, (void *)&time);
+    PetscCall(gaussian_phi_2d(dim, time, x, 2, u, (void *)&time));
     break;
   case DELTA:
-    delta_phi_2d(dim, time, x, 2, u, (void *)&time);
+    PetscCall(delta_phi_2d(dim, time, x, 2, u, (void *)&time));
     break;
   default:
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Unknown solution type");

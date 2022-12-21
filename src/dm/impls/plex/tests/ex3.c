@@ -36,13 +36,13 @@ PetscErrorCode constant(PetscInt dim, PetscReal time, const PetscReal coords[], 
   AppCtx  *user = (AppCtx *)ctx;
   PetscInt d;
   for (d = 0; d < dim; ++d) u[d] = user->constants[d];
-  return 0;
+  return PETSC_SUCCESS;
 }
 PetscErrorCode constantDer(PetscInt dim, PetscReal time, const PetscReal coords[], const PetscReal n[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   PetscInt d;
   for (d = 0; d < dim; ++d) u[d] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* u = x */
@@ -50,7 +50,7 @@ PetscErrorCode linear(PetscInt dim, PetscReal time, const PetscReal coords[], Pe
 {
   PetscInt d;
   for (d = 0; d < dim; ++d) u[d] = coords[d];
-  return 0;
+  return PETSC_SUCCESS;
 }
 PetscErrorCode linearDer(PetscInt dim, PetscReal time, const PetscReal coords[], const PetscReal n[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
@@ -59,7 +59,7 @@ PetscErrorCode linearDer(PetscInt dim, PetscReal time, const PetscReal coords[],
     u[d] = 0.0;
     for (e = 0; e < dim; ++e) u[d] += (d == e ? 1.0 : 0.0) * n[e];
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* u = x^2 or u = (x^2, xy) or u = (xy, yz, zx) */
@@ -75,7 +75,7 @@ PetscErrorCode quadratic(PetscInt dim, PetscReal time, const PetscReal coords[],
   } else if (dim > 0) {
     u[0] = coords[0] * coords[0];
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 PetscErrorCode quadraticDer(PetscInt dim, PetscReal time, const PetscReal coords[], const PetscReal n[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
@@ -89,7 +89,7 @@ PetscErrorCode quadraticDer(PetscInt dim, PetscReal time, const PetscReal coords
   } else if (dim > 0) {
     u[0] = 2.0 * coords[0] * n[0];
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* u = x^3 or u = (x^3, x^2y) or u = (x^2y, y^2z, z^2x) */
@@ -105,7 +105,7 @@ PetscErrorCode cubic(PetscInt dim, PetscReal time, const PetscReal coords[], Pet
   } else if (dim > 0) {
     u[0] = coords[0] * coords[0] * coords[0];
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 PetscErrorCode cubicDer(PetscInt dim, PetscReal time, const PetscReal coords[], const PetscReal n[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
@@ -119,7 +119,7 @@ PetscErrorCode cubicDer(PetscInt dim, PetscReal time, const PetscReal coords[], 
   } else if (dim > 0) {
     u[0] = 3.0 * coords[0] * coords[0] * n[0];
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* u = tanh(x) */
@@ -127,13 +127,13 @@ PetscErrorCode trig(PetscInt dim, PetscReal time, const PetscReal coords[], Pets
 {
   PetscInt d;
   for (d = 0; d < dim; ++d) u[d] = PetscTanhReal(coords[d] - 0.5);
-  return 0;
+  return PETSC_SUCCESS;
 }
 PetscErrorCode trigDer(PetscInt dim, PetscReal time, const PetscReal coords[], const PetscReal n[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   PetscInt d;
   for (d = 0; d < dim; ++d) u[d] = 1.0 / PetscSqr(PetscCoshReal(coords[d] - 0.5)) * n[d];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)

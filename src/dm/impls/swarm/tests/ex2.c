@@ -26,7 +26,7 @@ static PetscErrorCode linear(PetscInt dim, PetscReal time, const PetscReal x[], 
 
   u[0] = 0.0;
   for (d = 0; d < dim; ++d) u[0] += x[d] / (ctx->L[d]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode x2_x4(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *a_ctx)
@@ -36,7 +36,7 @@ static PetscErrorCode x2_x4(PetscInt dim, PetscReal time, const PetscReal x[], P
 
   u[0] = 1;
   for (d = 0; d < dim; ++d) u[0] *= PetscSqr(x[d]) * PetscSqr(ctx->L[d]) - PetscPowRealInt(x[d], 4);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode sinx(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *a_ctx)
@@ -44,7 +44,7 @@ static PetscErrorCode sinx(PetscInt dim, PetscReal time, const PetscReal x[], Pe
   AppCtx *ctx = (AppCtx *)a_ctx;
 
   u[0] = PetscSinScalar(2 * PETSC_PI * ctx->k * x[0] / (ctx->L[0]));
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
@@ -242,7 +242,7 @@ static PetscErrorCode CreateParticles(DM dm, DM *sw, AppCtx *user)
         PetscCall(PetscRandomGetValue(rndp, &value));
         coords[n * dim + d] += PetscRealPart(value);
       }
-      user->func(dim, 0.0, &coords[n * dim], 1, &vals[c], user);
+      PetscCall(user->func(dim, 0.0, &coords[n * dim], 1, &vals[c], user));
     }
   }
   PetscCall(DMSwarmRestoreField(*sw, DMSwarmPICField_coor, NULL, NULL, (void **)&coords));

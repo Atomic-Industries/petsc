@@ -103,7 +103,7 @@ static PetscErrorCode identityEmbedding(PetscInt dim, PetscReal time, const Pets
   PetscInt i;
 
   for (i = 0; i < dim; i++) u[i] = x[i];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 int main(int argc, char **argv)

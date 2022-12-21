@@ -1575,8 +1575,9 @@ M*/
 #endif /* PETSC_USE_DEBUG */
 
 #if defined(PETSC_CLANG_STATIC_ANALYZER)
-  #define PetscStackCallExternalVoid(name, routine)
-  #define PetscCallExternal(func, ...)
+  #define PetscStackCallExternalVoid(name, ...)
+template <typename F, typename Args...>
+void PetscCallExternal(F, Args...);
 #else
   /*MC
     PetscStackCallExternalVoid - Calls an external library routine or user function after pushing the name of the routine on the stack.
@@ -1630,9 +1631,9 @@ M*/
   #define PetscCallExternal(func, ...) \
     do { \
       PetscStackPush(PetscStringize(func)); \
-      PetscErrorCode ierr_petsc_call_external_ = func(__VA_ARGS__); \
+      int ierr_petsc_call_external_ = func(__VA_ARGS__); \
       PetscStackPop; \
-      PetscCheck(ierr_petsc_call_external_ == PETSC_SUCCESS, PETSC_COMM_SELF, PETSC_ERR_LIB, "Error in %s(): error code %d", PetscStringize(func), ierr_petsc_call_external_); \
+      PetscCheck(ierr_petsc_call_external_ == 0, PETSC_COMM_SELF, PETSC_ERR_LIB, "Error in %s(): error code %d", PetscStringize(func), ierr_petsc_call_external_); \
     } while (0)
 #endif /* PETSC_CLANG_STATIC_ANALYZER */
 

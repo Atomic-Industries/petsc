@@ -220,7 +220,7 @@ int main(int argc, char **argv)
     /* time step complete */
     time += ctxt.dt;
   }
-  PetscFree3(ix, ix2, zvals);
+  PetscCall(PetscFree3(ix, ix2, zvals));
 
   /* Deallocate work and right-hand-side vectors */
   PetscCall(VecDestroy(&z));

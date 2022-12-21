@@ -90,7 +90,7 @@ static inline void Cof3D(PetscReal C[], const PetscScalar A[])
 PetscErrorCode zero_scalar(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode zero_vector(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
@@ -99,7 +99,7 @@ PetscErrorCode zero_vector(PetscInt dim, PetscReal time, const PetscReal x[], Pe
 
   PetscInt comp;
   for (comp = 0; comp < Ncomp; ++comp) u[comp] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode coordinates(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
@@ -108,21 +108,21 @@ PetscErrorCode coordinates(PetscInt dim, PetscReal time, const PetscReal x[], Pe
 
   PetscInt comp;
   for (comp = 0; comp < Ncomp; ++comp) u[comp] = x[comp];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode elasticityMaterial(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   AppCtx *user = (AppCtx *)ctx;
   u[0]         = user->mu;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode wallPressure(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   AppCtx *user = (AppCtx *)ctx;
   u[0]         = user->p_wall;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 void f1_u_3d(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f1[])

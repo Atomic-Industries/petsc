@@ -77,7 +77,7 @@ PetscErrorCode quadratic_u(PetscInt dim, PetscReal time, const PetscReal X[], Pe
   u[0] = u_0;
   for (d = 1; d < dim; ++d) u[0] += Delta / (fac * 2.0 * nu) * X[d] * (1.0 - X[d]);
   for (d = 1; d < dim; ++d) u[d] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode linear_p(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *p, void *ctx)
@@ -86,7 +86,7 @@ PetscErrorCode linear_p(PetscInt dim, PetscReal time, const PetscReal X[], Petsc
   PetscReal  Delta = param->Delta;
 
   p[0] = -Delta * X[0];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode wall_velocity(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *u, void *ctx)
@@ -97,7 +97,7 @@ PetscErrorCode wall_velocity(PetscInt dim, PetscReal time, const PetscReal X[], 
 
   u[0] = u_0;
   for (d = 1; d < dim; ++d) u[d] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* gradU[comp*dim+d] = {u_x, u_y, v_x, v_y} or {u_x, u_y, u_z, v_x, v_y, v_z, w_x, w_y, w_z}

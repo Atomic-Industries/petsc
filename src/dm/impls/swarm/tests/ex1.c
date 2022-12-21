@@ -26,7 +26,7 @@ static PetscErrorCode linear(PetscInt dim, PetscReal time, const PetscReal x[], 
   PetscInt d;
   u[0] = 0.0;
   for (d = 0; d < dim; ++d) u[0] += x[d];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void identity(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, PetscReal u_tShift, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar g0[])
@@ -80,7 +80,7 @@ static PetscErrorCode CreateParticles(DM dm, DM *sw, AppCtx *user)
       PetscCall(DMPlexComputeCellGeometryFEM(dm, c, NULL, v0, J, invJ, &detJ));
       cellid[c * Nq + q] = c;
       CoordinatesRefToReal(dim, dim, xi0, v0, J, &qpoints[q * dim], &coords[(c * Nq + q) * dim]);
-      linear(dim, 0.0, &coords[(c * Nq + q) * dim], 1, &vals[c * Nq + q], NULL);
+      PetscCall(linear(dim, 0.0, &coords[(c * Nq + q) * dim], 1, &vals[c * Nq + q], NULL));
     }
   }
   PetscCall(DMSwarmRestoreField(*sw, DMSwarmPICField_coor, NULL, NULL, (void **)&coords));
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
   PetscCall(TestL2Projection(dm, sw, &user));
   PetscCall(DMDestroy(&dm));
   PetscCall(DMDestroy(&sw));
-  PetscFinalize();
+  PetscCall(PetscFinalize());
   return 0;
 }
 

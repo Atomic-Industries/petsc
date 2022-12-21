@@ -315,7 +315,7 @@ int main(int argc, char **argv)
       else PetscCall(DMLabelSetValue(labelB, p, 17));
     }
     PetscCall(DMLabelFilter(labelB, lStart, lEnd));
-    CheckLabelsSame(labelA, labelB);
+    PetscCall(CheckLabelsSame(labelA, labelB));
     PetscCall(DMRemoveLabel(dm, "labelA", NULL));
     PetscCall(DMRemoveLabel(dm, "labelB", NULL));
   }

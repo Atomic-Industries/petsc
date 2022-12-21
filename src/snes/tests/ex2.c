@@ -19,12 +19,13 @@ static PetscErrorCode linear(PetscInt dim, PetscReal time, const PetscReal x[], 
 {
   PetscInt d, c;
 
+  PetscFunctionBeginUser;
   PetscCheck(Nc == 3, PETSC_COMM_SELF, PETSC_ERR_ARG_WRONG, "Something is wrong: %" PetscInt_FMT, Nc);
   for (c = 0; c < Nc; ++c) {
     u[c] = 0.0;
     for (d = 0; d < dim; ++d) u[c] += x[d];
   }
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)

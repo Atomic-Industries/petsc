@@ -21,7 +21,7 @@ typedef struct {
 static PetscErrorCode zero(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   *u = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode trig_inhomogeneous_u(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
@@ -29,7 +29,7 @@ static PetscErrorCode trig_inhomogeneous_u(PetscInt dim, PetscReal time, const P
   PetscInt d;
   *u = 0.0;
   for (d = 0; d < dim; ++d) *u += PetscSinReal(2.0 * PETSC_PI * x[d]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode trig_homogeneous_u(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
@@ -37,7 +37,7 @@ static PetscErrorCode trig_homogeneous_u(PetscInt dim, PetscReal time, const Pet
   PetscInt d;
   *u = 1.0;
   for (d = 0; d < dim; ++d) *u *= PetscSinReal(2.0 * PETSC_PI * x[d]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* Compute integral of (residual of solution)*(adjoint solution - projection of adjoint solution) */

@@ -319,8 +319,8 @@ int main(int argc, char **argv)
   PETSC_UNUSED PetscLogStage stage;
 
   PetscCall(PetscInitialize(&argc, &argv, (char *)0, help));
-  PetscCall(MPI_Comm_size(PETSC_COMM_WORLD, &user.size));
-  PetscCall(MPI_Comm_rank(PETSC_COMM_WORLD, &user.rank));
+  PetscCallMPI(MPI_Comm_size(PETSC_COMM_WORLD, &user.size));
+  PetscCallMPI(MPI_Comm_rank(PETSC_COMM_WORLD, &user.rank));
 
   user.n        = 100;         /* Default grid points per dimension */
   user.matmult  = PETSC_FALSE; /* Test MatMult only */

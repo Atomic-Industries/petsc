@@ -684,8 +684,9 @@ PetscErrorCode PostSetSubKSP(SNESLineSearch linesearch, Vec xcurrent, Vec y, Vec
 */
 PetscErrorCode MatrixFreePreconditioner(PC pc, Vec x, Vec y)
 {
+  PetscFunctionBeginUser;
   PetscCall(VecCopy(x, y));
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

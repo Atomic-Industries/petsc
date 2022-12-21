@@ -454,8 +454,8 @@ static void PhysicsRiemann_SW_HLL(PetscInt dim, PetscInt Nf, const PetscReal *qp
   nn[0] = n[0];
   nn[1] = n[1];
   Normalize2Real(nn);
-  SWFlux(phys, nn, uL, &(fL.swnode));
-  SWFlux(phys, nn, uR, &(fR.swnode));
+  PetscCallAbort(PETSC_COMM_SELF, SWFlux(phys, nn, uL, &(fL.swnode)));
+  PetscCallAbort(PETSC_COMM_SELF, SWFlux(phys, nn, uR, &(fR.swnode)));
   /* gravity wave speed */
   aL = PetscSqrtReal(sw->gravity * uL->h);
   aR = PetscSqrtReal(sw->gravity * uR->h);
@@ -504,8 +504,8 @@ static void PhysicsRiemann_SW_Rusanov(PetscInt dim, PetscInt Nf, const PetscReal
   nn[0] = n[0];
   nn[1] = n[1];
   Normalize2Real(nn);
-  SWFlux(phys, nn, uL, &(fL.swnode));
-  SWFlux(phys, nn, uR, &(fR.swnode));
+  PetscCallAbort(PETSC_COMM_SELF, SWFlux(phys, nn, uL, &(fL.swnode)));
+  PetscCallAbort(PETSC_COMM_SELF, SWFlux(phys, nn, uR, &(fR.swnode)));
   cL    = PetscSqrtReal(sw->gravity * uL->h);
   cR    = PetscSqrtReal(sw->gravity * uR->h); /* gravity wave speed */
   speed = PetscMax(PetscAbsReal(Dot2Real(uL->uh, nn) / uL->h) + cL, PetscAbsReal(Dot2Real(uR->uh, nn) / uR->h) + cR);
@@ -567,8 +567,8 @@ static PetscErrorCode PhysicsCreate_SW(Model mod, Physics phys, PetscOptionItems
   phys->data   = sw;
   mod->setupbc = SetUpBC_SW;
 
-  PetscFunctionListAdd(&PhysicsRiemannList_SW, "rusanov", PhysicsRiemann_SW_Rusanov);
-  PetscFunctionListAdd(&PhysicsRiemannList_SW, "hll", PhysicsRiemann_SW_HLL);
+  PetscCall(PetscFunctionListAdd(&PhysicsRiemannList_SW, "rusanov", PhysicsRiemann_SW_Rusanov));
+  PetscCall(PetscFunctionListAdd(&PhysicsRiemannList_SW, "hll", PhysicsRiemann_SW_HLL));
 
   PetscOptionsHeadBegin(PetscOptionsObject, "SW options");
   {
@@ -694,7 +694,7 @@ static PetscErrorCode PhysicsSolution_Euler(Model mod, PetscReal time, const Pet
   } else SETERRQ(mod->comm, PETSC_ERR_SUP, "Unknown type %d", eu->type);
 
   /* set phys->maxspeed: (mod->maxspeed = phys->maxspeed) in main; */
-  eu->sound(&gamma, uu, &c);
+  PetscCall(eu->sound(&gamma, uu, &c));
   c = (uu->ru[0] / uu->r) + c;
   if (c > phys->maxspeed) phys->maxspeed = c;
 
@@ -716,7 +716,7 @@ static PetscErrorCode SpeedOfSound_PG(const PetscReal *gamma, const EulerNode *x
   PetscReal p;
 
   PetscFunctionBeginUser;
-  Pressure_PG(*gamma, x, &p);
+  PetscCall(Pressure_PG(*gamma, x, &p));
   PetscCheck(p >= 0., PETSC_COMM_WORLD, PETSC_ERR_SUP, "negative pressure time %g -- NEED TO FIX!!!!!!", (double)p);
   /* pars[EULER_PAR_GAMMA] = heat capacity ratio */
   (*c) = PetscSqrtReal(*gamma * p / x->r);
@@ -737,7 +737,7 @@ static PetscErrorCode EulerFlux(Physics phys, const PetscReal *n, const EulerNod
   PetscInt       i;
 
   PetscFunctionBeginUser;
-  Pressure_PG(eu->pars[EULER_PAR_GAMMA], x, &p);
+  PetscCall(Pressure_PG(eu->pars[EULER_PAR_GAMMA], x, &p));
   nu   = DotDIMReal(x->ru, n);
   f->r = nu;                                                     /* A rho u */
   nu /= x->r;                                                    /* A u */
@@ -789,8 +789,8 @@ static void PhysicsRiemann_Euler_Godunov(PetscInt dim, PetscInt Nf, const PetscR
   if (0) { /* Rusanov */
     const EulerNode *uL = (const EulerNode *)xL, *uR = (const EulerNode *)xR;
     EulerNodeUnion   fL, fR;
-    EulerFlux(phys, nn, uL, &(fL.eulernode));
-    EulerFlux(phys, nn, uR, &(fR.eulernode));
+    PetscCallAbort(PETSC_COMM_SELF, EulerFlux(phys, nn, uL, &(fL.eulernode)));
+    PetscCallAbort(PETSC_COMM_SELF, EulerFlux(phys, nn, uR, &(fR.eulernode)));
     ierr = eu->sound(&eu->pars[EULER_PAR_GAMMA], uL, &cL);
     if (ierr) exit(13);
     ierr = eu->sound(&eu->pars[EULER_PAR_GAMMA], uR, &cR);
@@ -820,7 +820,7 @@ static PetscErrorCode PhysicsFunctional_Euler(Model mod, PetscReal time, const P
   f[eu->monitor.Momentum] = NormDIM(x->ru);
   f[eu->monitor.Energy]   = x->E;
   f[eu->monitor.Speed]    = NormDIM(x->ru) / x->r;
-  Pressure_PG(eu->pars[EULER_PAR_GAMMA], x, &p);
+  PetscCall(Pressure_PG(eu->pars[EULER_PAR_GAMMA], x, &p));
   f[eu->monitor.Pressure] = p;
   PetscFunctionReturn(PETSC_SUCCESS);
 }

@@ -504,6 +504,7 @@ PetscErrorCode FormInitialGuess(AppCtx *user, Vec X)
   PetscInt  Neglobal, Nvglobal, j, row;
   PetscReal alpha, lambda;
 
+  PetscFunctionBeginUser;
   Nvglobal = user->Nvglobal;
   Neglobal = user->Neglobal;
   lambda   = user->non_lin_param;
@@ -531,7 +532,7 @@ PetscErrorCode FormInitialGuess(AppCtx *user, Vec X)
      Restore vector
   */
   PetscCall(VecRestoreArray(X, &x));
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 /* --------------------  Evaluate Function F(x) --------------------- */
 /*
@@ -560,6 +561,7 @@ PetscErrorCode FormFunction(SNES snes, Vec X, Vec F, void *ptr)
   PetscInt    Nvglobal, Neglobal, row;
   PetscInt   *gloInd;
 
+  PetscFunctionBeginUser;
   Nvglobal = user->Nvglobal;
   Neglobal = user->Neglobal;
   gloInd   = user->gloInd;
@@ -606,7 +608,7 @@ PetscErrorCode FormFunction(SNES snes, Vec X, Vec F, void *ptr)
   PetscCall(VecRestoreArray(F, &f));
   /* PetscCall(VecView(F,PETSC_VIEWER_STDOUT_WORLD)); */
 
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* --------------------  Evaluate Jacobian F'(x) -------------------- */
@@ -637,6 +639,7 @@ PetscErrorCode FormJacobian(SNES snes, Vec X, Mat J, Mat jac, void *ptr)
   PetscInt    row, Nvglobal, Neglobal;
   PetscInt   *gloInd;
 
+  PetscFunctionBeginUser;
   Nvglobal = user->Nvglobal;
   Neglobal = user->Neglobal;
   gloInd   = user->gloInd;
@@ -697,7 +700,7 @@ PetscErrorCode FormJacobian(SNES snes, Vec X, Mat J, Mat jac, void *ptr)
   */
   PetscCall(MatSetOption(jac, MAT_NEW_NONZERO_LOCATION_ERR, PETSC_TRUE));
   /* MatView(jac,PETSC_VIEWER_STDOUT_SELF); */
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST
