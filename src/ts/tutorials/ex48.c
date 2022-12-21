@@ -246,13 +246,13 @@ static PetscErrorCode log_n_0(PetscInt dim, PetscReal time, const PetscReal x[],
 {
   AppCtx *lctx = (AppCtx *)ctx;
   u[0]         = 2. * lctx->a + x[0];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode Omega_0(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode psi_0(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
@@ -265,19 +265,19 @@ static PetscErrorCode psi_0(PetscInt dim, PetscReal time, const PetscReal x[], P
   } else {
     u[0] = 1.0 - PetscPowScalar((x[0] - lctx->a) / lctx->a, 2);
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode initialSolution_n(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode initialSolution_Omega(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode initialSolution_psi(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *a_ctx)
@@ -287,19 +287,19 @@ static PetscErrorCode initialSolution_psi(PetscInt dim, PetscReal time, const Pe
   if (x[0] == ctx->lower[0] || x[0] == ctx->upper[0]) r = 0;
   u[0] = r;
   /* PetscPrintf(PETSC_COMM_WORLD, "rand psi %lf\n",u[0]); */
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode initialSolution_phi(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode initialSolution_jz(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode SetupProblem(DM dm, AppCtx *ctx)

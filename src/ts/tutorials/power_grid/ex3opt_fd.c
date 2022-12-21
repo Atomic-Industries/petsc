@@ -173,6 +173,7 @@ PetscErrorCode FormFunction(Tao tao, Vec P, PetscReal *f, void *ctx0)
   PetscInt           direction[2];
   PetscBool          terminate[2];
 
+  PetscFunctionBeginUser;
   PetscCall(VecGetArrayRead(P, &x_ptr));
   ctx->Pm = x_ptr[0];
   PetscCall(VecRestoreArrayRead(P, &x_ptr));
@@ -239,7 +240,7 @@ PetscErrorCode FormFunction(Tao tao, Vec P, PetscReal *f, void *ctx0)
   PetscCall(MatDestroy(&A));
   PetscCall(VecDestroy(&U));
   PetscCall(TSDestroy(&ts));
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

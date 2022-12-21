@@ -263,7 +263,7 @@ int main(int argc, char **argv)
   appctx.gamma = .024;
   appctx.kappa = .06;
 
-  PetscLogStageRegister("MyAdjoint", &stage);
+  PetscCall(PetscLogStageRegister("MyAdjoint", &stage));
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      Create distributed array (DMDA) to manage parallel grid and vectors
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -362,9 +362,9 @@ int main(int argc, char **argv)
     /*   Reset initial conditions for the adjoint integration */
     PetscCall(InitializeLambda(da, lambda[0], 0.5, 0.5));
     PetscCall(TSSetCostGradients(ts, 1, lambda, NULL));
-    PetscLogStagePush(stage);
+    PetscCall(PetscLogStagePush(stage));
     PetscCall(TSAdjointSolve(ts));
-    PetscLogStagePop();
+    PetscCall(PetscLogStagePop());
     PetscCall(VecDestroy(&lambda[0]));
   }
   PetscCall(PetscTime(&v2));

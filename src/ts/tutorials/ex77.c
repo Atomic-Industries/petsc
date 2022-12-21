@@ -76,14 +76,14 @@ static PetscErrorCode zero(PetscInt dim, PetscReal time, const PetscReal x[], Pe
 {
   PetscInt d;
   for (d = 0; d < Nc; ++d) u[d] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode constant(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   PetscInt d;
   for (d = 0; d < Nc; ++d) u[d] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*
@@ -123,7 +123,7 @@ static PetscErrorCode trig_trig_x(PetscInt dim, PetscReal time, const PetscReal 
 
   x[0] = R0 * PetscCosReal(p->omega * time + theta0);
   x[1] = R0 * PetscSinReal(p->omega * time + theta0);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode trig_trig_u(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
@@ -131,30 +131,30 @@ static PetscErrorCode trig_trig_u(PetscInt dim, PetscReal time, const PetscReal 
 
   u[0] = -p->omega * X[1];
   u[1] = p->omega * X[0];
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode trig_trig_u_t(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
   u[1] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode trig_trig_p(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   p[0] = X[0] + X[1] - 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode trig_trig_T(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = time + X[0] + X[1];
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode trig_trig_T_t(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_trig_trig_v(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal X[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])

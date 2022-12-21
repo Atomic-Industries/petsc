@@ -166,12 +166,12 @@ PetscErrorCode data_kernel(PetscInt dim, PetscReal time, const PetscReal x[], Pe
 {
   *y = 1.0 / (2 * PETSC_PI * PETSC_PI) * PetscSinReal(PETSC_PI * x[0]) * PetscSinReal(PETSC_PI * x[1]);
   /* the associated control is sin(pi*x[0])*sin(pi*x[1]) */
-  return 0;
+  return PETSC_SUCCESS;
 }
 PetscErrorCode zero(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   *u = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode CreateCtx(DM dm, AppCtx *user)

@@ -114,7 +114,7 @@ PetscErrorCode EvaluateFunction(Tao tao, Vec X, Vec F, void *ptr)
   for (i = 0; i < NOBSERVATIONS; i++) f[i] = y[i] - PetscExpScalar(-x[0] * t[i]) / (x[1] + x[2] * t[i]);
   PetscCall(VecRestoreArrayRead(X, &x));
   PetscCall(VecRestoreArray(F, &f));
-  PetscLogFlops(6 * NOBSERVATIONS);
+  PetscCall(PetscLogFlops(6 * NOBSERVATIONS));
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 
@@ -144,7 +144,7 @@ PetscErrorCode EvaluateJacobian(Tao tao, Vec X, Mat J, Mat Jpre, void *ptr)
   PetscCall(MatAssemblyEnd(J, MAT_FINAL_ASSEMBLY));
 
   PetscCall(VecRestoreArrayRead(X, &x));
-  PetscLogFlops(NOBSERVATIONS * 13);
+  PetscCall(PetscLogFlops(NOBSERVATIONS * 13));
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 

@@ -46,13 +46,13 @@ PetscErrorCode mms1_u_2d(PetscInt dim, PetscReal time, const PetscReal x[], Pets
 {
   u[0] = time + x[0] * x[0] + x[1] * x[1];
   u[1] = time + 2.0 * x[0] * x[0] - 2.0 * x[0] * x[1];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode mms1_p_2d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   *p = x[0] + x[1] - 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* MMS 2*/
@@ -61,13 +61,13 @@ static PetscErrorCode mms2_u_2d(PetscInt dim, PetscReal time, const PetscReal x[
 {
   u[0] = PetscSinReal(time + x[0]) * PetscSinReal(time + x[1]);
   u[1] = PetscCosReal(time + x[0]) * PetscCosReal(time + x[1]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode mms2_p_2d(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   *p = PetscSinReal(time + x[0] - x[1]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_mms1_u(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])

@@ -141,7 +141,7 @@ PetscErrorCode EvaluateResidual(Tao tao, Vec X, Vec F, void *ptr)
   /* Compute Ax - b */
   PetscCall(MatMult(user->A, X, F));
   PetscCall(VecAXPY(F, -1, user->b));
-  PetscLogFlops(2.0 * user->M * user->N);
+  PetscCall(PetscLogFlops(2.0 * user->M * user->N));
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 

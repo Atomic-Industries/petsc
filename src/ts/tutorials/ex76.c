@@ -107,14 +107,14 @@ static PetscErrorCode zero(PetscInt dim, PetscReal time, const PetscReal x[], Pe
 {
   PetscInt d;
   for (d = 0; d < Nc; ++d) u[d] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode constant(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   PetscInt d;
   for (d = 0; d < Nc; ++d) u[d] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*
@@ -146,30 +146,30 @@ static PetscErrorCode quadratic_u(PetscInt Dim, PetscReal time, const PetscReal 
 {
   u[0] = time + X[0] * X[0] + X[1] * X[1];
   u[1] = time + 2.0 * X[0] * X[0] - 2.0 * X[0] * X[1];
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode quadratic_u_t(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 1.0;
   u[1] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode quadratic_p(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   p[0] = X[0] + X[1] - 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode quadratic_T(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = time + X[0] + X[1] + 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode quadratic_T_t(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_quadratic_v(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal X[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -273,30 +273,30 @@ static PetscErrorCode cubic_u(PetscInt Dim, PetscReal time, const PetscReal X[],
 {
   u[0] = time + X[0] * X[0] * X[0] + X[1] * X[1] * X[1];
   u[1] = time + 2.0 * X[0] * X[0] * X[0] - 3.0 * X[0] * X[0] * X[1];
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode cubic_u_t(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 1.0;
   u[1] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode cubic_p(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   p[0] = 3.0 * X[0] * X[0] / 2.0 + 3.0 * X[1] * X[1] / 2.0 - 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode cubic_T(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = time + X[0] * X[0] / 2.0 + X[1] * X[1] / 2.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode cubic_T_t(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_cubic_v(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal X[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -345,30 +345,30 @@ static PetscErrorCode cubic_trig_u(PetscInt Dim, PetscReal time, const PetscReal
 {
   u[0] = 100. * PetscCosReal(time) + X[0] * X[0] * X[0] + X[1] * X[1] * X[1];
   u[1] = 100. * PetscSinReal(time) + 2.0 * X[0] * X[0] * X[0] - 3.0 * X[0] * X[0] * X[1];
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode cubic_trig_u_t(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = -100. * PetscSinReal(time);
   u[1] = 100. * PetscCosReal(time);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode cubic_trig_p(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   p[0] = 3.0 * X[0] * X[0] / 2.0 + 3.0 * X[1] * X[1] / 2.0 - 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode cubic_trig_T(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = 100. * PetscCosReal(time) + X[0] * X[0] / 2.0 + X[1] * X[1] / 2.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode cubic_trig_T_t(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = -100. * PetscSinReal(time);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_cubic_trig_v(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal X[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -443,43 +443,43 @@ static PetscErrorCode taylor_green_u(PetscInt Dim, PetscReal time, const PetscRe
 {
   u[0] = 1 - PetscCosReal(PETSC_PI * (X[0] - time)) * PetscSinReal(PETSC_PI * (X[1] - time)) * PetscExpReal(-2 * PETSC_PI * PETSC_PI * time);
   u[1] = 1 + PetscSinReal(PETSC_PI * (X[0] - time)) * PetscCosReal(PETSC_PI * (X[1] - time)) * PetscExpReal(-2 * PETSC_PI * PETSC_PI * time);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode taylor_green_u_t(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = -PETSC_PI * (PetscSinReal(PETSC_PI * (X[0] - time)) * PetscSinReal(PETSC_PI * (X[1] - time)) - PetscCosReal(PETSC_PI * (X[0] - time)) * PetscCosReal(PETSC_PI * (X[1] - time)) - 2 * PETSC_PI * PetscCosReal(PETSC_PI * (X[0] - time)) * PetscSinReal(PETSC_PI * (X[1] - time))) * PetscExpReal(-2 * PETSC_PI * PETSC_PI * time);
   u[1] = PETSC_PI * (PetscSinReal(PETSC_PI * (X[0] - time)) * PetscSinReal(PETSC_PI * (X[1] - time)) - PetscCosReal(PETSC_PI * (X[0] - time)) * PetscCosReal(PETSC_PI * (X[1] - time)) - 2 * PETSC_PI * PetscSinReal(PETSC_PI * (X[0] - time)) * PetscCosReal(PETSC_PI * (X[1] - time))) * PetscExpReal(-2 * PETSC_PI * PETSC_PI * time);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode taylor_green_p(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   p[0] = -0.25 * (PetscCosReal(2 * PETSC_PI * (X[0] - time)) + PetscCosReal(2 * PETSC_PI * (X[1] - time))) * PetscExpReal(-4 * PETSC_PI * PETSC_PI * time);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode taylor_green_p_t(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   p[0] = PETSC_PI * (0.5 * (PetscSinReal(2 * PETSC_PI * (X[0] - time)) + PetscSinReal(2 * PETSC_PI * (X[1] - time))) + PETSC_PI * (PetscCosReal(2 * PETSC_PI * (X[0] - time)) + PetscCosReal(2 * PETSC_PI * (X[1] - time)))) * PetscExpReal(-4 * PETSC_PI * PETSC_PI * time);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode taylor_green_T(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = time + X[0] + X[1];
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode taylor_green_T_t(PetscInt Dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_taylor_green_w(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal X[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
 {
   PetscScalar vel[2];
 
-  taylor_green_u(dim, t, X, Nf, vel, NULL);
+  PetscCallAbort(PETSC_COMM_SELF, taylor_green_u(dim, t, X, Nf, vel, NULL));
   f0[0] -= 1.0 + vel[0] + vel[1];
 }
 
@@ -531,24 +531,24 @@ static PetscErrorCode pipe_u(PetscInt dim, PetscReal time, const PetscReal X[], 
 
   u[0] = (0.5 * param->Reynolds / param->mu) * X[1] * (1.0 - X[1]);
   u[1] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode pipe_u_t(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
   u[1] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode pipe_p(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   p[0] = -X[0];
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode pipe_p_t(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   p[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode pipe_T(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
@@ -556,12 +556,12 @@ static PetscErrorCode pipe_T(PetscInt dim, PetscReal time, const PetscReal X[], 
   Parameter *param = (Parameter *)ctx;
 
   T[0] = X[1] * (1.0 - X[1]) + param->T_in;
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode pipe_T_t(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_conduct_pipe_v(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal X[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -647,24 +647,24 @@ static PetscErrorCode pipe_wiggly_u(PetscInt dim, PetscReal time, const PetscRea
 
   u[0] = (0.5 * param->Reynolds / param->mu) * (X[1] * (1.0 - X[1]) + param->epsilon * PetscSinReal(PETSC_PI * X[1]));
   u[1] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode pipe_wiggly_u_t(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   u[0] = 0.0;
   u[1] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode pipe_wiggly_p(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   p[0] = -X[0];
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode pipe_wiggly_p_t(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *p, void *ctx)
 {
   p[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode pipe_wiggly_T(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
@@ -672,12 +672,12 @@ static PetscErrorCode pipe_wiggly_T(PetscInt dim, PetscReal time, const PetscRea
   Parameter *param = (Parameter *)ctx;
 
   T[0] = X[1] * (1.0 - X[1]) + param->epsilon * PetscSinReal(PETSC_PI * X[1]) + param->T_in;
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode pipe_wiggly_T_t(PetscInt dim, PetscReal time, const PetscReal X[], PetscInt Nf, PetscScalar *T, void *ctx)
 {
   T[0] = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_conduct_pipe_wiggly_v(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal X[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])

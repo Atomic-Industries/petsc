@@ -247,6 +247,7 @@ PetscErrorCode FormFunctionGradient(Tao tao, Vec P, PetscReal *f, Vec G, void *c
   Vec          q;
   Mat          qgrad;
 
+  PetscFunctionBeginUser;
   PetscCall(VecGetArrayRead(P, (const PetscScalar **)&x_ptr));
   ctx->Pm = x_ptr[0];
   PetscCall(VecRestoreArrayRead(P, (const PetscScalar **)&x_ptr));
@@ -325,7 +326,7 @@ PetscErrorCode FormFunctionGradient(Tao tao, Vec P, PetscReal *f, Vec G, void *c
   PetscCall(VecGetArray(q, &x_ptr));
   *f = -ctx->Pm + x_ptr[0];
   PetscCall(VecRestoreArray(q, &x_ptr));
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

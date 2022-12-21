@@ -350,6 +350,7 @@ PetscErrorCode FormFunction(Tao tao, Vec P, PetscReal *f, void *ctx0)
   PetscScalar *x_ptr;
   Vec          q;
 
+  PetscFunctionBeginUser;
   PetscCall(VecGetArrayRead(P, (const PetscScalar **)&x_ptr));
   ctx->Pm = x_ptr[0];
   PetscCall(VecRestoreArrayRead(P, (const PetscScalar **)&x_ptr));
@@ -381,7 +382,7 @@ PetscErrorCode FormFunction(Tao tao, Vec P, PetscReal *f, void *ctx0)
   PetscCall(VecGetArray(q, &x_ptr));
   *f = -ctx->Pm + x_ptr[0];
   PetscCall(VecRestoreArray(q, &x_ptr));
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode FormGradient(Tao tao, Vec P, Vec G, void *ctx0)
@@ -395,6 +396,7 @@ PetscErrorCode FormGradient(Tao tao, Vec P, Vec G, void *ctx0)
   PetscScalar *x_ptr, *y_ptr;
   Vec         *lambda, q, *mu;
 
+  PetscFunctionBeginUser;
   PetscCall(VecGetArrayRead(P, (const PetscScalar **)&x_ptr));
   ctx->Pm = x_ptr[0];
   PetscCall(VecRestoreArrayRead(P, (const PetscScalar **)&x_ptr));
@@ -447,7 +449,7 @@ PetscErrorCode FormGradient(Tao tao, Vec P, Vec G, void *ctx0)
   PetscCall(TSGetCostIntegral(ts, &q));
   PetscCall(ComputeSensiP(lambda[0], mu[0], ctx));
   PetscCall(VecCopy(mu[0], G));
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*TEST

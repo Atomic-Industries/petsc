@@ -71,7 +71,7 @@ int main(int argc, char **argv)
   PC        pc;
   AppCtx    user;
 
-  PetscInitialize(&argc, &argv, (char *)0, help);
+  PetscCall(PetscInitialize(&argc, &argv, (char *)0, help));
 
   /* Specify default dimension of the problem */
   user.param = 5.0;
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
   PetscCall(VecDestroy(&user.localX));
   PetscCall(DMDestroy(&user.dm));
 
-  PetscFinalize();
+  PetscCall(PetscFinalize());
   return 0;
 }
 

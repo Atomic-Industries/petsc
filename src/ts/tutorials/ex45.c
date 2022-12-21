@@ -47,13 +47,13 @@ static PetscErrorCode mms_quad_lin(PetscInt dim, PetscReal time, const PetscReal
 
   *u = dim * time;
   for (d = 0; d < dim; ++d) *u += x[d] * x[d];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode mms_quad_lin_t(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   *u = dim;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_quad_lin_exp(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -82,13 +82,13 @@ static PetscErrorCode mms_quad_trig(PetscInt dim, PetscReal time, const PetscRea
 
   *u = dim * PetscCosReal(time);
   for (d = 0; d < dim; ++d) *u += x[d] * x[d];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode mms_quad_trig_t(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   *u = -dim * PetscSinReal(time);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_quad_trig_exp(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -117,13 +117,13 @@ static PetscErrorCode mms_trig_lin(PetscInt dim, PetscReal time, const PetscReal
 
   *u = dim * PetscSqr(PETSC_PI) * time;
   for (d = 0; d < dim; ++d) *u += PetscCosReal(PETSC_PI * x[d]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode mms_trig_lin_t(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   *u = dim * PetscSqr(PETSC_PI);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_trig_lin(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
@@ -154,13 +154,13 @@ static PetscErrorCode mms_trig_trig(PetscInt dim, PetscReal time, const PetscRea
 
   *u = PetscSqr(PETSC_PI) * PetscCosReal(time);
   for (d = 0; d < dim; ++d) *u += PetscCosReal(PETSC_PI * x[d]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode mms_trig_trig_t(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nc, PetscScalar *u, void *ctx)
 {
   *u = -PetscSqr(PETSC_PI) * PetscSinReal(time);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static void f0_trig_trig_exp(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])

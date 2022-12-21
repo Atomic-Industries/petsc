@@ -116,7 +116,7 @@ static PetscReal CalculateE(PetscReal Tev, PetscReal n, PetscReal lnLambda, Pets
     double Ec, Ehat = *E, betath = PetscSqrtReal(2 * Tev * e / (m * c * c)), j0 = Ehat * 7 / (PetscSqrtReal(2) * 2) * PetscPowReal(betath, 3) * n * e * c;
     Ec = n * lnLambda * PetscPowReal(e, 3) / (4 * PETSC_PI * PetscPowReal(eps0, 2) * m * c * c);
     *E = Ec;
-    PetscPrintf(PETSC_COMM_WORLD, "CalculateE j0=%g Ec = %g\n", j0, Ec);
+    PetscCall(PetscPrintf(PETSC_COMM_WORLD, "CalculateE j0=%g Ec = %g\n", j0, Ec));
   } else {
     PetscReal Ed, vth;
     vth = PetscSqrtReal(8 * Tev * e / (m * PETSC_PI));
@@ -434,7 +434,7 @@ PetscErrorCode Monitor(TS ts, PetscInt stepi, PetscReal time, Vec X, void *actx)
       /* diagnostics + change E field with Sptizer (not just a monitor) */
       PetscCall(rectx->test(ts, X, stepi, time, reason ? PETSC_TRUE : PETSC_FALSE, ctx, rectx));
     } else {
-      PetscPrintf(PETSC_COMM_WORLD, "\t\t ERROR SKIP test spit ------\n");
+      PetscCall(PetscPrintf(PETSC_COMM_WORLD, "\t\t ERROR SKIP test spit ------\n"));
       rectx->plotting = PETSC_TRUE;
     }
     if (rectx->grid_view_idx != -1) {
@@ -445,7 +445,7 @@ PetscErrorCode Monitor(TS ts, PetscInt stepi, PetscReal time, Vec X, void *actx)
     }
     rectx->plotStep = stepi;
   } else {
-    if (rectx->plotting) PetscPrintf(PETSC_COMM_WORLD, " ERROR rectx->plotting=%s step %" PetscInt_FMT "\n", PetscBools[rectx->plotting], stepi);
+    if (rectx->plotting) PetscCall(PetscPrintf(PETSC_COMM_WORLD, " ERROR rectx->plotting=%s step %" PetscInt_FMT "\n", PetscBools[rectx->plotting], stepi));
     /* diagnostics + change E field with Sptizer (not just a monitor) - can we lag this? */
     PetscCall(rectx->test(ts, X, stepi, time, reason ? PETSC_TRUE : PETSC_FALSE, ctx, rectx));
   }

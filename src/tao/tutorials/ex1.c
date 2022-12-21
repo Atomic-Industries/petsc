@@ -138,17 +138,17 @@ void g3_lu(PetscInt dim, PetscInt Nf, PetscInt NfAux, const PetscInt uOff[], con
 PetscErrorCode quadratic_u_2d(PetscInt dim, PetscReal t, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   *u = x[0] * x[0] + x[1] * x[1];
-  return 0;
+  return PETSC_SUCCESS;
 }
 PetscErrorCode linear_a_2d(PetscInt dim, PetscReal t, const PetscReal x[], PetscInt Nf, PetscScalar *a, void *ctx)
 {
   *a = x[0] + x[1];
-  return 0;
+  return PETSC_SUCCESS;
 }
 PetscErrorCode zero(PetscInt dim, PetscReal t, const PetscReal x[], PetscInt Nf, PetscScalar *l, void *ctx)
 {
   *l = 0.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode SetupProblem(DM dm, AppCtx *user)

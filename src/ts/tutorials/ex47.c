@@ -61,14 +61,14 @@ static PetscErrorCode analytic_phi(PetscInt dim, PetscReal time, const PetscReal
 
   *u = -dim * time;
   for (d = 0; d < dim; ++d) *u += x[d];
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode velocity(PetscInt dim, PetscReal time, const PetscReal x[], PetscInt Nf, PetscScalar *u, void *ctx)
 {
   PetscInt d;
   for (d = 0; d < dim; ++d) u[d] = 1.0;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* <psi, phi_t> + <psi, u . grad phi> */

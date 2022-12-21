@@ -88,9 +88,9 @@ int main(int argc, char **argv)
     /* Free PETSc data structures */
     PetscCall(VecDestroy(&x));
     PetscCall(VecDestroy(&f));
-    StopWorkers(&user);
+    PetscCall(StopWorkers(&user));
   } else {
-    TaskWorker(&user);
+    PetscCall(TaskWorker(&user));
   }
   PetscCall(PetscFinalize());
   return 0;
@@ -142,7 +142,7 @@ PetscErrorCode EvaluateFunction(Tao tao, Vec X, Vec F, void *ptr)
   }
   PetscCall(VecRestoreArray(X, &x));
   PetscCall(VecRestoreArray(F, &f));
-  PetscLogFlops(6 * NOBSERVATIONS);
+  PetscCall(PetscLogFlops(6 * NOBSERVATIONS));
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 
@@ -627,12 +627,14 @@ PetscErrorCode RunSimulation(PetscReal *x, PetscInt i, PetscReal *f, AppCtx *use
 {
   PetscReal *t = user->t;
   PetscReal *y = user->y;
+
+  PetscFunctionBeginUser;
 #if defined(PETSC_USE_REAL_SINGLE)
   *f = y[i] - exp(-x[0] * t[i]) / (x[1] + x[2] * t[i]); /* expf() for single-precision breaks this example on Freebsd, Valgrind errors on Linux */
 #else
   *f = y[i] - PetscExpScalar(-x[0] * t[i]) / (x[1] + x[2] * t[i]);
 #endif
-  return (0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode StopWorkers(AppCtx *user)
@@ -641,7 +643,7 @@ PetscErrorCode StopWorkers(AppCtx *user)
   MPI_Status status;
   PetscReal  f, x[NPARAMETERS];
 
-  PetscFunctionBegin;
+  PetscFunctionBeginUser;
   checkedin = 0;
   while (checkedin < user->size - 1) {
     PetscCallMPI(MPI_Recv(&f, 1, MPIU_REAL, MPI_ANY_SOURCE, MPI_ANY_TAG, PETSC_COMM_WORLD, &status));

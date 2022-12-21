@@ -117,6 +117,7 @@ PetscErrorCode InitialConditions(TS ts, Vec U, AppCtx *appctx)
   DM           da;
   PetscReal    h;
 
+  PetscFunctionBeginUser;
   PetscCall(TSGetDM(ts, &da));
   PetscCall(DMDAGetCorners(da, &mstart, 0, 0, &um, 0, 0));
   PetscCall(DMDAGetInfo(da, PETSC_IGNORE, &M, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
@@ -142,7 +143,7 @@ PetscErrorCode InitialConditions(TS ts, Vec U, AppCtx *appctx)
 
   /* Restore vector */
   PetscCall(DMDAVecRestoreArray(da, U, &u));
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 /* --------------------------------------------------------------------- */
 /*
@@ -164,6 +165,7 @@ PetscErrorCode Solution(TS ts, PetscReal t, Vec U, AppCtx *appctx)
   PetscInt     i, mstart, mend, um, M;
   DM           da;
 
+  PetscFunctionBeginUser;
   PetscCall(TSGetDM(ts, &da));
   PetscCall(DMDAGetCorners(da, &mstart, 0, 0, &um, 0, 0));
   PetscCall(DMDAGetInfo(da, PETSC_IGNORE, &M, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
@@ -180,7 +182,7 @@ PetscErrorCode Solution(TS ts, PetscReal t, Vec U, AppCtx *appctx)
 
   /* Restore vector */
   PetscCall(DMDAVecRestoreArray(da, U, &u));
-  return 0;
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* --------------------------------------------------------------------- */

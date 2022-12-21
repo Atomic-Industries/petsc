@@ -201,7 +201,7 @@ static PetscErrorCode PhysicsRiemann_Shallow_Exact(void *vctx, PetscInt m, const
       else h = tmp;
       PetscCheck(((h > 0) && PetscIsNormalScalar(h)), PETSC_COMM_SELF, PETSC_ERR_FP, "non-normal iterate h=%g", (double)h);
     }
-    SETERRQ(PETSC_COMM_SELF, 1, "Newton iteration for star.h diverged after %" PetscInt_FMT " iterations", i);
+    SETERRQ(PETSC_COMM_SELF, PETSC_ERR_NOT_CONVERGED, "Newton iteration for star.h diverged after %" PetscInt_FMT " iterations", i);
   }
 converged:
   cstar = PetscSqrtScalar(g * star.h);
@@ -447,8 +447,8 @@ static PetscErrorCode PhysicsCreate_Shallow(FVCtx *ctx)
   ctx->physics2.user            = user;
   ctx->physics2.dof             = 2;
 
-  PetscMalloc1(2 * (ctx->physics2.dof), &ctx->physics2.bcinflowindex);
-  PhysicsSetInflowType_Shallow(ctx);
+  PetscCall(PetscMalloc1(2 * (ctx->physics2.dof), &ctx->physics2.bcinflowindex));
+  PetscCall(PhysicsSetInflowType_Shallow(ctx));
 
   PetscCall(PetscStrallocpy("height", &ctx->physics2.fieldname[0]));
   PetscCall(PetscStrallocpy("momentum", &ctx->physics2.fieldname[1]));
@@ -584,7 +584,7 @@ PetscErrorCode FVRHSFunction_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, void
     /* See LeVeque, R. (2002). Finite Volume Methods for Hyperbolic Problems. doi:10.1017/CBO9780511791253
     pages 137-138 for the scheme. */
     if (xs == 0) { /* Left Boundary */
-      ctx->physics2.inflow(ctx, time, ctx->xmin, ctx->ub);
+      PetscCall(ctx->physics2.inflow(ctx, time, ctx->xmin, ctx->ub));
       for (j = 0; j < dof; j++) {
         if (ctx->physics2.bcinflowindex[j]) {
           for (i = -2; i < 0; i++) x[i * dof + j] = 2.0 * ctx->ub[j] - x[-(i + 1) * dof + j];
@@ -594,7 +594,7 @@ PetscErrorCode FVRHSFunction_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, void
       }
     }
     if (xs + xm == Mx) { /* Right Boundary */
-      ctx->physics2.inflow(ctx, time, ctx->xmax, ctx->ub);
+      PetscCall(ctx->physics2.inflow(ctx, time, ctx->xmax, ctx->ub));
       for (j = 0; j < dof; j++) {
         if (ctx->physics2.bcinflowindex[dof + j]) {
           for (i = Mx; i < Mx + 2; i++) x[i * dof + j] = 2.0 * ctx->ub[dof + j] - x[(2 * Mx - (i + 1)) * dof + j];
@@ -716,7 +716,7 @@ PetscErrorCode FVRHSFunction_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, void
     if (dt > 0.5 / ctx->cfl_idt) {
       if (1) {
         PetscCall(PetscPrintf(ctx->comm, "Stability constraint exceeded at t=%g, dt %g > %g\n", (double)tnow, (double)dt, (double)(0.5 / ctx->cfl_idt)));
-      } else SETERRQ(PETSC_COMM_SELF, 1, "Stability constraint exceeded, %g > %g", (double)dt, (double)(ctx->cfl / ctx->cfl_idt));
+      } else SETERRQ(PETSC_COMM_SELF, PETSC_ERR_PLIB, "Stability constraint exceeded, %g > %g", (double)dt, (double)(ctx->cfl / ctx->cfl_idt));
     }
   }
   PetscFunctionReturn(PETSC_SUCCESS);
@@ -758,7 +758,7 @@ PetscErrorCode FVRHSFunctionslow_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, 
     /* See LeVeque, R. (2002). Finite Volume Methods for Hyperbolic Problems. doi:10.1017/CBO9780511791253
     pages 137-138 for the scheme. */
     if (xs == 0) { /* Left Boundary */
-      ctx->physics2.inflow(ctx, time, ctx->xmin, ctx->ub);
+      PetscCall(ctx->physics2.inflow(ctx, time, ctx->xmin, ctx->ub));
       for (j = 0; j < dof; j++) {
         if (ctx->physics2.bcinflowindex[j] == PETSC_TRUE) {
           for (i = -2; i < 0; i++) x[i * dof + j] = 2.0 * ctx->ub[j] - x[-(i + 1) * dof + j];
@@ -768,7 +768,7 @@ PetscErrorCode FVRHSFunctionslow_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, 
       }
     }
     if (xs + xm == Mx) { /* Right Boundary */
-      ctx->physics2.inflow(ctx, time, ctx->xmax, ctx->ub);
+      PetscCall(ctx->physics2.inflow(ctx, time, ctx->xmax, ctx->ub));
       for (j = 0; j < dof; j++) {
         if (ctx->physics2.bcinflowindex[dof + j] == PETSC_TRUE) {
           for (i = Mx; i < Mx + 2; i++) x[i * dof + j] = 2.0 * ctx->ub[dof + j] - x[(2 * Mx - (i + 1)) * dof + j];
@@ -909,7 +909,7 @@ PetscErrorCode FVRHSFunctionslowbuffer_2WaySplit(TS ts, PetscReal time, Vec X, V
     /* See LeVeque, R. (2002). Finite Volume Methods for Hyperbolic Problems. doi:10.1017/CBO9780511791253
     pages 137-138 for the scheme. */
     if (xs == 0) { /* Left Boundary */
-      ctx->physics2.inflow(ctx, time, ctx->xmin, ctx->ub);
+      PetscCall(ctx->physics2.inflow(ctx, time, ctx->xmin, ctx->ub));
       for (j = 0; j < dof; j++) {
         if (ctx->physics2.bcinflowindex[j] == PETSC_TRUE) {
           for (i = -2; i < 0; i++) x[i * dof + j] = 2.0 * ctx->ub[j] - x[-(i + 1) * dof + j];
@@ -919,7 +919,7 @@ PetscErrorCode FVRHSFunctionslowbuffer_2WaySplit(TS ts, PetscReal time, Vec X, V
       }
     }
     if (xs + xm == Mx) { /* Right Boundary */
-      ctx->physics2.inflow(ctx, time, ctx->xmax, ctx->ub);
+      PetscCall(ctx->physics2.inflow(ctx, time, ctx->xmax, ctx->ub));
       for (j = 0; j < dof; j++) {
         if (ctx->physics2.bcinflowindex[dof + j] == PETSC_TRUE) {
           for (i = Mx; i < Mx + 2; i++) x[i * dof + j] = 2.0 * ctx->ub[dof + j] - x[(2 * Mx - (i + 1)) * dof + j];
@@ -1080,7 +1080,7 @@ PetscErrorCode FVRHSFunctionfast_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, 
     /* See LeVeque, R. (2002). Finite Volume Methods for Hyperbolic Problems. doi:10.1017/CBO9780511791253
     pages 137-138 for the scheme. */
     if (xs == 0) { /* Left Boundary */
-      ctx->physics2.inflow(ctx, time, ctx->xmin, ctx->ub);
+      PetscCall(ctx->physics2.inflow(ctx, time, ctx->xmin, ctx->ub));
       for (j = 0; j < dof; j++) {
         if (ctx->physics2.bcinflowindex[j] == PETSC_TRUE) {
           for (i = -2; i < 0; i++) x[i * dof + j] = 2.0 * ctx->ub[j] - x[-(i + 1) * dof + j];
@@ -1090,7 +1090,7 @@ PetscErrorCode FVRHSFunctionfast_2WaySplit(TS ts, PetscReal time, Vec X, Vec F, 
       }
     }
     if (xs + xm == Mx) { /* Right Boundary */
-      ctx->physics2.inflow(ctx, time, ctx->xmax, ctx->ub);
+      PetscCall(ctx->physics2.inflow(ctx, time, ctx->xmax, ctx->ub));
       for (j = 0; j < dof; j++) {
         if (ctx->physics2.bcinflowindex[dof + j] == PETSC_TRUE) {
           for (i = Mx; i < Mx + 2; i++) x[i * dof + j] = 2.0 * ctx->ub[dof + j] - x[(2 * Mx - (i + 1)) * dof + j];
