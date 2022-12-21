@@ -12,6 +12,8 @@
 
 /* SUBMANSEC = Sys */
 
+#include <limits.h> // INT_MIN, INT_MAX
+
 // cannot just blindly use PETSC_NODISCARD, since gcc complains that
 // __attribute__((warn_unused_result)) (which PETSC_NODISCARD may expand to) can only be
 // applied to functions...
@@ -44,7 +46,7 @@
 E*/
 typedef enum PETSC_ERROR_CODE_NODISCARD {
   PETSC_SUCCESS                   = 0,
-  PETSC_ERR_BOOLEAN_MACRO_FAILURE = 1,
+  PETSC_ERR_BOOLEAN_MACRO_FAILURE = 1, /* do not use */
 
   PETSC_ERR_MIN_VALUE = 54, /* should always be one less then the smallest value */
 
@@ -88,16 +90,23 @@ typedef enum PETSC_ERROR_CODE_NODISCARD {
 
   PETSC_ERR_INT_OVERFLOW   = 84,
   PETSC_ERR_FLOP_COUNT     = 90,
-  PETSC_ERR_NOT_CONVERGED  = 91, /* solver did not converge */
-  PETSC_ERR_MISSING_FACTOR = 92, /* MatGetFactor() failed */
-  PETSC_ERR_OPT_OVERWRITE  = 93, /* attempted to over write options which should not be changed */
-  PETSC_ERR_WRONG_MPI_SIZE = 94, /* example/application run with number of MPI ranks it does not support */
-  PETSC_ERR_USER_INPUT     = 95, /* missing or incorrect user input */
-  PETSC_ERR_GPU_RESOURCE   = 96, /* unable to load a GPU resource, for example cuBLAS */
-  PETSC_ERR_GPU            = 97, /* An error from a GPU call, this may be due to lack of resources on the GPU or a true error in the call */
-  PETSC_ERR_MPI            = 98, /* general MPI error */
-  PETSC_ERR_RETURN         = 99, /* PetscError() incorrectly returned an error code of 0 */
-  PETSC_ERR_MAX_VALUE      = 100 /* this is always the one more than the largest error code */
+  PETSC_ERR_NOT_CONVERGED  = 91,  /* solver did not converge */
+  PETSC_ERR_MISSING_FACTOR = 92,  /* MatGetFactor() failed */
+  PETSC_ERR_OPT_OVERWRITE  = 93,  /* attempted to over write options which should not be changed */
+  PETSC_ERR_WRONG_MPI_SIZE = 94,  /* example/application run with number of MPI ranks it does not support */
+  PETSC_ERR_USER_INPUT     = 95,  /* missing or incorrect user input */
+  PETSC_ERR_GPU_RESOURCE   = 96,  /* unable to load a GPU resource, for example cuBLAS */
+  PETSC_ERR_GPU            = 97,  /* An error from a GPU call, this may be due to lack of resources on the GPU or a true error in the call */
+  PETSC_ERR_MPI            = 98,  /* general MPI error */
+  PETSC_ERR_RETURN         = 99,  /* PetscError() incorrectly returned an error code of 0 */
+  PETSC_ERR_MAX_VALUE      = 100, /* this is always the one more than the largest error code */
+
+  /*
+    do not use, exist purely to make the enum bounds equal that of a regular int (so conversion
+    to int in main() is not undefined behavior)
+  */
+  PETSC_ERR_MIN_SIGNED_BOUND_DO_NOT_USE = INT_MIN,
+  PETSC_ERR_MAX_SIGNED_BOUND_DO_NOT_USE = INT_MAX
 } PetscErrorCode;
 
 #undef PETSC_ERROR_CODE_NODISCARD
