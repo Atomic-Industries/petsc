@@ -1527,8 +1527,8 @@ static inline PetscErrorCode PetscMemmove(void *a, const void *b, size_t n)
 {
   PetscFunctionBegin;
   if (n > 0) {
-    PetscCheck(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy to null pointer");
-    PetscCheck(b, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy from a null pointer");
+    PetscAssert(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy to null pointer");
+    PetscAssert(b, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy from a null pointer");
   }
 #if !defined(PETSC_HAVE_MEMMOVE)
   if (a < b) {
@@ -1592,14 +1592,13 @@ static inline PetscErrorCode PetscMemcpy(void *a, const void *b, size_t n)
 #if defined(PETSC_USE_DEBUG)
   size_t al = (size_t)a, bl = (size_t)b;
   size_t nl = (size_t)n;
+#endif
+
   PetscFunctionBegin;
   if (n > 0) {
-    PetscCheck(b, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy from a null pointer");
-    PetscCheck(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy to a null pointer");
+    PetscAssert(b, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy from a null pointer");
+    PetscAssert(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy to a null pointer");
   }
-#else
-  PetscFunctionBegin;
-#endif
   if (a != b && n > 0) {
 #if defined(PETSC_USE_DEBUG)
     PetscCheck(!((al > bl && (al - bl) < nl) || (bl - al) < nl), PETSC_COMM_SELF, PETSC_ERR_ARG_INCOMP, "Memory regions overlap: either use PetscMemmov()\n\
@@ -1658,9 +1657,7 @@ static inline PetscErrorCode PetscMemcpy(void *a, const void *b, size_t n)
 static inline PetscErrorCode PetscMemzero(void *a, size_t n)
 {
   if (n > 0) {
-#if defined(PETSC_USE_DEBUG)
-    PetscCheck(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to zero at a null pointer with %zu bytes", n);
-#endif
+    PetscAssert(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to zero at a null pointer with %zu bytes", n);
 #if defined(PETSC_PREFER_ZERO_FOR_MEMZERO)
     if (!(((long)a) % sizeof(PetscScalar)) && !(n % sizeof(PetscScalar))) {
       size_t       i, len = n / sizeof(PetscScalar);
@@ -1712,7 +1709,7 @@ static inline PetscErrorCode PetscMemzero(void *a, size_t n)
 .seealso: `PetscMemcpy()`, `PetscMemcmp()`, `PetscArrayzero()`, `PetscMemzero()`, `PetscArraycpy()`, `PetscMemmove()`, `PetscStrallocpy()`,
           `PetscArraymove()`
 M*/
-#define PetscArraycmp(str1, str2, cnt, e) ((PetscErrorCode)((sizeof(*(str1)) != sizeof(*(str2))) || PetscMemcmp(str1, str2, (size_t)(cnt) * sizeof(*(str1)), e)))
+#define PetscArraycmp(str1, str2, cnt, e) ((sizeof(*(str1)) == sizeof(*(str2))) ? PetscMemcmp((str1), (str2), (size_t)(cnt) * sizeof(*(str1)), (e)) : PETSC_ERR_ARG_SIZ)
 
 /*MC
    PetscArraymove - Copies from one array in memory to another, the arrays may overlap. Use `PetscArraycpy()` when the arrays
@@ -1738,7 +1735,7 @@ M*/
 
 .seealso: `PetscMemcpy()`, `PetscMemcmp()`, `PetscArrayzero()`, `PetscMemzero()`, `PetscArraycpy()`, `PetscMemmove()`, `PetscArraycmp()`, `PetscStrallocpy()`
 M*/
-#define PetscArraymove(str1, str2, cnt) ((PetscErrorCode)((sizeof(*(str1)) != sizeof(*(str2))) || PetscMemmove(str1, str2, (size_t)(cnt) * sizeof(*(str1)))))
+#define PetscArraymove(str1, str2, cnt) ((sizeof(*(str1)) == sizeof(*(str2))) ? PetscMemmove((str1), (str2), (size_t)(cnt) * sizeof(*(str1))) : PETSC_ERR_ARG_SIZ)
 
 /*MC
    PetscArraycpy - Copies from one array in memory to another
@@ -1763,7 +1760,7 @@ M*/
 
 .seealso: `PetscMemcpy()`, `PetscMemcmp()`, `PetscArrayzero()`, `PetscMemzero()`, `PetscArraymove()`, `PetscMemmove()`, `PetscArraycmp()`, `PetscStrallocpy()`
 M*/
-#define PetscArraycpy(str1, str2, cnt) ((PetscErrorCode)((sizeof(*(str1)) != sizeof(*(str2))) || PetscMemcpy(str1, str2, (size_t)(cnt) * sizeof(*(str1)))))
+#define PetscArraycpy(str1, str2, cnt) ((sizeof(*(str1)) == sizeof(*(str2))) ? PetscMemcpy((str1), (str2), (size_t)(cnt) * sizeof(*(str1))) : PETSC_ERR_ARG_SIZ)
 
 /*MC
    PetscArrayzero - Zeros an array in memory.

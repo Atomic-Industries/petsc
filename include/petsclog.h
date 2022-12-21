@@ -98,8 +98,8 @@ PETSC_EXTERN PetscErrorCode PetscAddLogDoubleCnt(PetscLogDouble *, PetscLogDoubl
 #else
   #define PETSC_EXTERN_TLS PETSC_EXTERN
   #define PETSC_TLS
-  #define PetscAddLogDouble(a, b, c)          (PetscErrorCode)((*(a) += (c), 0) || ((*(b) += (c)), 0))
-  #define PetscAddLogDoubleCnt(a, b, c, d, e) PetscAddLogDouble(a, c, 1) || PetscAddLogDouble(b, d, e)
+  #define PetscAddLogDouble(a, b, c)          ((PetscErrorCode)((*(a) += (c), 0) || ((*(b) += (c)), 0)))
+  #define PetscAddLogDoubleCnt(a, b, c, d, e) ((PetscErrorCode)(PetscAddLogDouble(a, c, 1) || PetscAddLogDouble(b, d, e)))
 #endif
 
 /* We must make the following structures available to access the event
@@ -722,39 +722,34 @@ PETSC_EXTERN PetscErrorCode PetscLogGpuTimeEnd(void);
 static inline PetscErrorCode PetscLogGpuFlops(PetscLogDouble n)
 {
   PetscAssert(n >= 0, PETSC_COMM_SELF, PETSC_ERR_ARG_OUTOFRANGE, "Cannot log negative flops");
-  PetscAddLogDouble(&petsc_TotalFlops, &petsc_TotalFlops_th, PETSC_FLOPS_PER_OP * n);
-  PetscAddLogDouble(&petsc_gflops, &petsc_gflops_th, PETSC_FLOPS_PER_OP * n);
+  PetscCall(PetscAddLogDouble(&petsc_TotalFlops, &petsc_TotalFlops_th, PETSC_FLOPS_PER_OP * n));
+  PetscCall(PetscAddLogDouble(&petsc_gflops, &petsc_gflops_th, PETSC_FLOPS_PER_OP * n));
   return PETSC_SUCCESS;
 }
 
 static inline PetscErrorCode PetscLogGpuTimeAdd(PetscLogDouble t)
 {
-  PetscAddLogDouble(&petsc_gtime, &petsc_gtime_th, t);
-  return PETSC_SUCCESS;
+  return PetscAddLogDouble(&petsc_gtime, &petsc_gtime_th, t);
 }
 
 static inline PetscErrorCode PetscLogCpuToGpu(PetscLogDouble size)
 {
-  PetscAddLogDoubleCnt(&petsc_ctog_ct, &petsc_ctog_sz, &petsc_ctog_ct_th, &petsc_ctog_sz_th, size);
-  return PETSC_SUCCESS;
+  return PetscAddLogDoubleCnt(&petsc_ctog_ct, &petsc_ctog_sz, &petsc_ctog_ct_th, &petsc_ctog_sz_th, size);
 }
 
 static inline PetscErrorCode PetscLogGpuToCpu(PetscLogDouble size)
 {
-  PetscAddLogDoubleCnt(&petsc_gtoc_ct, &petsc_gtoc_sz, &petsc_gtoc_ct_th, &petsc_gtoc_sz_th, size);
-  return PETSC_SUCCESS;
+  return PetscAddLogDoubleCnt(&petsc_gtoc_ct, &petsc_gtoc_sz, &petsc_gtoc_ct_th, &petsc_gtoc_sz_th, size);
 }
 
 static inline PetscErrorCode PetscLogCpuToGpuScalar(PetscLogDouble size)
 {
-  PetscAddLogDoubleCnt(&petsc_ctog_ct_scalar, &petsc_ctog_sz_scalar, &petsc_ctog_ct_scalar_th, &petsc_ctog_sz_scalar_th, size);
-  return PETSC_SUCCESS;
+  return PetscAddLogDoubleCnt(&petsc_ctog_ct_scalar, &petsc_ctog_sz_scalar, &petsc_ctog_ct_scalar_th, &petsc_ctog_sz_scalar_th, size);
 }
 
 static inline PetscErrorCode PetscLogGpuToCpuScalar(PetscLogDouble size)
 {
-  PetscAddLogDoubleCnt(&petsc_gtoc_ct_scalar, &petsc_gtoc_sz_scalar, &petsc_gtoc_ct_scalar_th, &petsc_gtoc_sz_scalar_th, size);
-  return PETSC_SUCCESS;
+  return PetscAddLogDoubleCnt(&petsc_gtoc_ct_scalar, &petsc_gtoc_sz_scalar, &petsc_gtoc_ct_scalar_th, &petsc_gtoc_sz_scalar_th, size);
 }
 #else
 
