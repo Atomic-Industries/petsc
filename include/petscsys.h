@@ -1526,26 +1526,31 @@ PETSC_EXTERN PetscErrorCode PetscScalarView(PetscInt, const PetscScalar[], Petsc
 static inline PetscErrorCode PetscMemmove(void *a, const void *b, size_t n)
 {
   PetscFunctionBegin;
-  if (n > 0) {
-    PetscAssert(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy to null pointer");
-    PetscAssert(b, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy from a null pointer");
-  }
-#if !defined(PETSC_HAVE_MEMMOVE)
+  if (!n) PetscFunctionReturn(PETSC_SUCCESS);
+  PetscAssert(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy to null pointer");
+  PetscAssert(b, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy from a null pointer");
+#if PetscDefined(HAVE_MEMMOVE)
+  memmove(a, b, n);
+#else
   if (a < b) {
-    if (a <= b - n) memcpy(a, b, n);
-    else {
-      memcpy(a, b, (int)(b - a));
-      PetscMemmove(b, b + (int)(b - a), n - (int)(b - a));
+    if (a <= b - n) {
+      memcpy(a, b, n);
+    } else {
+      const ptrdiff_t diff = b - a;
+
+      memcpy(a, b, diff);
+      PetscCall(PetscMemmove(b, b + diff, n - diff);
     }
   } else {
-    if (b <= a - n) memcpy(a, b, n);
-    else {
-      memcpy(b + n, b + (n - (int)(a - b)), (int)(a - b));
-      PetscMemmove(a, b, n - (int)(a - b));
+    if (b <= a - n) {
+      memcpy(a, b, n);
+    } else {
+      const ptrdiff_t diff = a - b;
+
+      memcpy(b + n, b + (n - diff), diff);
+      PetscCall(PetscMemmove(a, b, n - diff));
     }
   }
-#else
-  memmove((char *)(a), (char *)(b), n);
 #endif
   PetscFunctionReturn(PETSC_SUCCESS);
 }
@@ -1589,43 +1594,40 @@ static inline PetscErrorCode PetscMemmove(void *a, const void *b, size_t n)
 @*/
 static inline PetscErrorCode PetscMemcpy(void *a, const void *b, size_t n)
 {
-#if defined(PETSC_USE_DEBUG)
-  size_t al = (size_t)a, bl = (size_t)b;
-  size_t nl = (size_t)n;
-#endif
-
   PetscFunctionBegin;
-  if (n > 0) {
-    PetscAssert(b, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy from a null pointer");
-    PetscAssert(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy to a null pointer");
+  if (!n) PetscFunctionReturn(PETSC_SUCCESS);
+  PetscAssert(b, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy from a null pointer");
+  PetscAssert(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to copy to a null pointer");
+  if (a == b) PetscFunctionReturn(PETSC_SUCCESS);
+  if (PetscDefined(USE_DEBUG)) {
+    const size_t al = (size_t)a, bl = (size_t)b;
+
+    PetscCheck(!((al > bl && (al - bl) < n) || (bl - al) < n), PETSC_COMM_SELF, PETSC_ERR_ARG_INCOMP,
+               "Memory regions overlap: either use PetscMemmove()\n"
+               "or make sure your copy regions and lengths are correct.\n"
+               "Length (bytes) %zu first address %zu second address %zu",
+               n, al, bl);
   }
-  if (a != b && n > 0) {
-#if defined(PETSC_USE_DEBUG)
-    PetscCheck(!((al > bl && (al - bl) < nl) || (bl - al) < nl), PETSC_COMM_SELF, PETSC_ERR_ARG_INCOMP, "Memory regions overlap: either use PetscMemmov()\n\
-              or make sure your copy regions and lengths are correct. \n\
-              Length (bytes) %zu first address %zu second address %zu",
-               nl, al, bl);
-#endif
 #if (defined(PETSC_PREFER_DCOPY_FOR_MEMCPY) || defined(PETSC_PREFER_COPY_FOR_MEMCPY) || defined(PETSC_PREFER_FORTRAN_FORMEMCPY))
-    if (!(a % sizeof(PetscScalar)) && !(n % sizeof(PetscScalar))) {
-      size_t len = n / sizeof(PetscScalar);
+  if (!(a % sizeof(PetscScalar)) && !(n % sizeof(PetscScalar))) {
+    size_t len = n / sizeof(PetscScalar);
   #if defined(PETSC_PREFER_DCOPY_FOR_MEMCPY)
-      PetscBLASInt one = 1, blen;
-      PetscCall(PetscBLASIntCast(len, &blen));
-      PetscCallBLAS("BLAScopy", BLAScopy_(&blen, (PetscScalar *)b, &one, (PetscScalar *)a, &one));
+    PetscBLASInt one = 1, blen;
+
+    PetscCall(PetscBLASIntCast(len, &blen));
+    PetscCallBLAS("BLAScopy", BLAScopy_(&blen, (PetscScalar *)b, &one, (PetscScalar *)a, &one));
   #elif defined(PETSC_PREFER_FORTRAN_FORMEMCPY)
-      fortrancopy_(&len, (PetscScalar *)b, (PetscScalar *)a);
+    fortrancopy_(&len, (PetscScalar *)b, (PetscScalar *)a);
   #else
-      PetscScalar *x = (PetscScalar *)b, *y = (PetscScalar *)a;
-      for (size_t i = 0; i < len; i++) y[i] = x[i];
+    PetscScalar *x = (PetscScalar *)b, *y = (PetscScalar *)a;
+    for (size_t i = 0; i < len; i++) y[i] = x[i];
   #endif
-    } else {
-      memcpy((char *)(a), (char *)(b), n);
-    }
-#else
-    memcpy((char *)(a), (char *)(b), n);
-#endif
+  } else {
+    memcpy(a, b, n);
   }
+#else
+  memcpy(a, b, n);
+#endif
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 
@@ -1656,30 +1658,30 @@ static inline PetscErrorCode PetscMemcpy(void *a, const void *b, size_t n)
 @*/
 static inline PetscErrorCode PetscMemzero(void *a, size_t n)
 {
-  if (n > 0) {
-    PetscAssert(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to zero at a null pointer with %zu bytes", n);
+  PetscFunctionBegin;
+  if (!n) PetscFunctionReturn(PETSC_SUCCESS);
+  PetscAssert(a, PETSC_COMM_SELF, PETSC_ERR_ARG_NULL, "Trying to zero at a null pointer with %zu bytes", n);
 #if defined(PETSC_PREFER_ZERO_FOR_MEMZERO)
-    if (!(((long)a) % sizeof(PetscScalar)) && !(n % sizeof(PetscScalar))) {
-      size_t       i, len = n / sizeof(PetscScalar);
-      PetscScalar *x = (PetscScalar *)a;
-      for (i = 0; i < len; i++) x[i] = 0.0;
-    } else {
+  if (!(((long)a) % sizeof(PetscScalar)) && !(n % sizeof(PetscScalar))) {
+    size_t       i, len = n / sizeof(PetscScalar);
+    PetscScalar *x = (PetscScalar *)a;
+    for (i = 0; i < len; i++) x[i] = 0.0;
+  } else {
 #elif defined(PETSC_PREFER_FORTRAN_FOR_MEMZERO)
-    if (!(((long)a) % sizeof(PetscScalar)) && !(n % sizeof(PetscScalar))) {
-      PetscInt len = n / sizeof(PetscScalar);
-      fortranzero_(&len, (PetscScalar *)a);
-    } else {
+  if (!(((long)a) % sizeof(PetscScalar)) && !(n % sizeof(PetscScalar))) {
+    PetscInt len = n / sizeof(PetscScalar);
+    fortranzero_(&len, (PetscScalar *)a);
+  } else {
 #endif
 #if defined(PETSC_PREFER_BZERO)
-      bzero((char *)a, n);
+    bzero((char *)a, n);
 #else
-      memset((char *)a, 0, n);
+    memset(a, 0, n);
 #endif
 #if defined(PETSC_PREFER_ZERO_FOR_MEMZERO) || defined(PETSC_PREFER_FORTRAN_FOR_MEMZERO)
-    }
-#endif
   }
-  return PETSC_SUCCESS;
+#endif
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*MC
@@ -2688,10 +2690,26 @@ static inline unsigned int PetscStrHash(const char *str)
 
 .seealso: `MPI_Allreduce()`
 M*/
-  #define MPIU_Allreduce(a, b, c, d, e, fcomm) \
-    PetscMacroReturnStandard(PetscMPIInt a_b1[6], a_b2[6]; int _mpiu_allreduce_c_int = (int)c; a_b1[0] = -(PetscMPIInt)__LINE__; a_b1[1] = -a_b1[0]; a_b1[2] = -(PetscMPIInt)PetscStrHash(PETSC_FUNCTION_NAME); a_b1[3] = -a_b1[2]; a_b1[4] = -(PetscMPIInt)(c); a_b1[5] = -a_b1[4]; PetscCallMPI(MPI_Allreduce(a_b1, a_b2, 6, MPI_INT, MPI_MAX, fcomm)); PetscCheck(-a_b2[0] == a_b2[1], PETSC_COMM_SELF, PETSC_ERR_PLIB, "MPI_Allreduce() called in different locations (code lines) on different processors"); PetscCheck(-a_b2[2] == a_b2[3], PETSC_COMM_SELF, PETSC_ERR_PLIB, "MPI_Allreduce() called in different locations (functions) on different processors"); PetscCheck(-a_b2[4] == a_b2[5], PETSC_COMM_SELF, PETSC_ERR_PLIB, "MPI_Allreduce() called with different counts %d on different processors", _mpiu_allreduce_c_int); PetscCallMPI(MPI_Allreduce((a), (b), (c), d, e, (fcomm)));)
+  // clang-format off
+#define MPIU_Allreduce(a, b, c, d, e, fcomm) \
+  PetscMacroReturnStandard( \
+    PetscMPIInt a_b1[6], a_b2[6]; \
+    int _mpiu_allreduce_c_int = (int)(c); \
+    a_b1[0] = -(PetscMPIInt)__LINE__; \
+    a_b1[1] = -a_b1[0]; \
+    a_b1[2] = -(PetscMPIInt)PetscStrHash(PETSC_FUNCTION_NAME); \
+    a_b1[3] = -a_b1[2]; \
+    a_b1[4] = -(PetscMPIInt)(c); \
+    a_b1[5] = -a_b1[4]; \
+    \
+    PetscCallMPI(MPI_Allreduce(a_b1, a_b2, 6, MPI_INT, MPI_MAX, fcomm)); \
+    PetscCheck(-a_b2[0] == a_b2[1], PETSC_COMM_SELF, PETSC_ERR_PLIB, "MPI_Allreduce() called in different locations (code lines) on different processors"); \
+    PetscCheck(-a_b2[2] == a_b2[3], PETSC_COMM_SELF, PETSC_ERR_PLIB, "MPI_Allreduce() called in different locations (functions) on different processors"); \
+    PetscCheck(-a_b2[4] == a_b2[5], PETSC_COMM_SELF, PETSC_ERR_PLIB, "MPI_Allreduce() called with different counts %d on different processors", _mpiu_allreduce_c_int); \
+    PetscCallMPI(MPI_Allreduce((a), (b), (c), (d), (e), (fcomm)));)
+// clang-format on
 #else
-  #define MPIU_Allreduce(a, b, c, d, e, fcomm) PetscMacroReturnStandard(PetscCallMPI(MPI_Allreduce((a), (b), (c), d, e, (fcomm))))
+  #define MPIU_Allreduce(a, b, c, d, e, fcomm) PetscMacroReturnStandard(PetscCallMPI(MPI_Allreduce((a), (b), (c), (d), (e), (fcomm))))
 #endif
 
 #if defined(PETSC_HAVE_MPI_PROCESS_SHARED_MEMORY)
