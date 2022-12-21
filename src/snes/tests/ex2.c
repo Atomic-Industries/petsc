@@ -273,15 +273,13 @@ int main(int argc, char **argv)
     for (c = 0; c < Nc; ++c) {
 #if defined(PETSC_USE_COMPLEX)
       PetscReal vcoordsReal[3];
-      PetscInt  i;
 
-      for (i = 0; i < spaceDim; i++) vcoordsReal[i] = PetscRealPart(vcoords[p * spaceDim + i]);
+      for (PetscInt i = 0; i < spaceDim; i++) vcoordsReal[i] = PetscRealPart(vcoords[p * spaceDim + i]);
 #else
       const PetscReal *vcoordsReal = &vcoords[p * spaceDim];
 #endif
-      (*funcs[c])(dim, 0.0, vcoordsReal, Nc, vals, NULL);
-      if (PetscAbsScalar(ivals[p * Nc + c] - vals[c]) > PETSC_SQRT_MACHINE_EPSILON)
-        SETERRQ(PETSC_COMM_SELF, PETSC_ERR_PLIB, "Invalid interpolated value %g != %g (%" PetscInt_FMT ", %" PetscInt_FMT ")", (double)PetscRealPart(ivals[p * Nc + c]), (double)PetscRealPart(vals[c]), p, c);
+      PetscCall((*funcs[c])(dim, 0.0, vcoordsReal, Nc, vals, NULL));
+      PetscCheck(PetscAbsScalar(ivals[p * Nc + c] - vals[c]) <= PETSC_SQRT_MACHINE_EPSILON, PETSC_COMM_SELF, PETSC_ERR_PLIB, "Invalid interpolated value %g != %g (%" PetscInt_FMT ", %" PetscInt_FMT ")", (double)PetscRealPart(ivals[p * Nc + c]), (double)PetscRealPart(vals[c]), p, c);
     }
   }
   PetscCall(VecRestoreArrayRead(interpolator->coords, &vcoords));

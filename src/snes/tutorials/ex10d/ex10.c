@@ -639,12 +639,12 @@ PetscErrorCode FormJacobian(SNES snes, Vec X, Mat J, Mat jac, void *ptr)
   PetscInt    row, Nvglobal, Neglobal;
   PetscInt   *gloInd;
 
-  PetscFunctionBeginUser;
   Nvglobal = user->Nvglobal;
   Neglobal = user->Neglobal;
   gloInd   = user->gloInd;
 #endif
 
+  PetscFunctionBeginUser;
   /*printf("Entering into FormJacobian \n");*/
   Nvlocal = user->Nvlocal;
   lambda  = user->non_lin_param;
