@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#ifdef __linux__
+#if defined(__linux__)&&defined(PETSC_HAVE_DLFCN_H)
 #include <dlfcn.h>
 #else
 #define PERFSTUBS_USE_STATIC 1
