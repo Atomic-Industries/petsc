@@ -19,6 +19,7 @@ import build_classic_docs
 import fix_man_page_edit_links
 import make_links_relative
 import update_htmlmap_links
+import copy_meetings_pre_2023
 
 
 if not os.path.isdir("images"):
@@ -59,7 +60,7 @@ needs_sphinx='5.3'
 nitpicky = True  # checks internal links. For external links, use "make linkcheck"
 master_doc = 'index'
 templates_path = ['_templates']
-exclude_patterns = ['_build*', 'images', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build*', 'images', 'Thumbs.db', '.DS_Store','community/meetings/pre-2023']
 highlight_language = 'c'
 numfig = True
 
@@ -182,6 +183,7 @@ def build_finished_handler(app, exception):
     if app.builder.name.endswith('html'):
         _build_classic_docs(app, 'post')
         _copy_classic_docs(app, exception, app.outdir, 'post')
+        _copy_meetings_pre_2023(app, exception, os.path.join(app.outdir,'community','meetings'), 'post')
         _fix_links(app, exception)
         _fix_man_page_edit_links(app, exception)
         if app.builder.name == 'dirhtml':
@@ -216,6 +218,13 @@ def _fix_man_page_edit_links(app, exception):
         print("    Fixing man page edit links")
         print("============================================")
         fix_man_page_edit_links.fix_man_page_edit_links(app.outdir)
+
+def _copy_meetings_pre_2023(app, exception, destination, stage):
+    if exception is None:
+        print("============================================")
+        print("    Copying pre 2023 meetings (%s)" % stage)
+        print("============================================")
+        copy_meetings_pre_2023.copy(destination)
 
 #
 #   The following two scripts are needed because the Sphinx html and dirhtml builds save the output html

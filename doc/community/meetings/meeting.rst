@@ -1,8 +1,11 @@
-************************
-Annual PETSc Conferences
-************************
 
-The PETSc development teams hosts an annual PETSc-users conference in order to foster
+.. _meetings:
+
+*********************
+Annual PETSc Meetings
+*********************
+
+The PETSc community hosts an annual PETSc-users conference in order to foster
 continuous dialogue with our community. These yearly meetings allow us to (among other
 things):
 
@@ -30,14 +33,9 @@ Upcoming Meetings
 
 Previous Meetings
 =================
-- `Cologne, Germany; June 3-5, 2020 (Canceled due to pandemic)
-  <https://www.mcs.anl.gov/petsc/meetings/2020/index.html>`__
-- `Atlanta, USA; June 5-7, 2019
-  <https://www.mcs.anl.gov/petsc/meetings/2019/index.html>`__
-- `London, UK; June 4-6, 2018 <https://www.mcs.anl.gov/petsc/meetings/2018/index.html>`__
-- `Boulder, Colorado; June 14-16, 2017
-  <https://www.mcs.anl.gov/petsc/meetings/2017/index.html>`__
-- `Vienna, Austria; June 28-30, 2016
-  <https://www.mcs.anl.gov/petsc/meetings/2016/program.html>`__
-- `Argonne National Laboratory, USA; June 15-18, 2015
-  <https://www.mcs.anl.gov/petsc/meetings/2015/program.html>`__
+
+- `Atlanta, USA; June 5-7, 2019 <PETSC_DOC_OUT_ROOT_PLACEHOLDER/community/meetings/2019/index.html>`__
+- `London, UK; June 4-6, 2018 <PETSC_DOC_OUT_ROOT_PLACEHOLDER/community/meetings/2018/index.html>`__
+- `Boulder, Colorado; June 14-16, 2017 <PETSC_DOC_OUT_ROOT_PLACEHOLDER/community/meetings/2017/index.html>`__
+- `Vienna, Austria; June 28-30, 2016  <PETSC_DOC_OUT_ROOT_PLACEHOLDER/community/meetings/2016/program.html>`__
+- `Argonne National Laboratory, USA; June 15-18, 2015 <PETSC_DOC_OUT_ROOT_PLACEHOLDER/community/meetings/2015/program.html>`__
