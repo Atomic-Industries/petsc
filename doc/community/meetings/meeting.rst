@@ -28,8 +28,8 @@ simulations by scientists and engineers.
 
 Upcoming Meetings
 =================
-- The next PETSc user meeting will take place at the IIT campus in Chicago, June 5-7, 2023.
-- Stay tuned: The 2024 PETSc user meeting will hopefully take place in Cologne, Germany
+- The next :any:`annual PETSc meeting<2023_meeting>` will take place June 5-7, 2023 at the IIT campus in Chicago.
+- Stay tuned: The 2024 PETSc user meeting will hopefully take place in Cologne, Germany.
 
 Previous Meetings
 =================
