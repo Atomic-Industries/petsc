@@ -89,13 +89,21 @@ static PetscErrorCode DMPlexTransformCellTransform_Filter(DMPlexTransform tr, DM
   PetscFunctionReturn(0);
 }
 
+static PetscErrorCode DMPlexTransformSetDimensions_Filter_Private(DMPlexTransform tr, DM dm, DM tdm)
+{
+  PetscFunctionBegin;
+  PetscCall(DMPlexTransformSetDimensions_Internal(tr, dm, tdm));
+  PetscCall(DMPlexSetSubpointMap(tdm, tr->trType));
+  PetscFunctionReturn(0);
+}
+
 static PetscErrorCode DMPlexTransformInitialize_Filter(DMPlexTransform tr)
 {
   PetscFunctionBegin;
   tr->ops->view                  = DMPlexTransformView_Filter;
   tr->ops->setup                 = DMPlexTransformSetUp_Filter;
   tr->ops->destroy               = DMPlexTransformDestroy_Filter;
-  tr->ops->setdimensions         = DMPlexTransformSetDimensions_Internal;
+  tr->ops->setdimensions         = DMPlexTransformSetDimensions_Filter_Private;
   tr->ops->celltransform         = DMPlexTransformCellTransform_Filter;
   tr->ops->getsubcellorientation = DMPlexTransformGetSubcellOrientationIdentity;
   tr->ops->mapcoordinates        = DMPlexTransformMapCoordinatesBarycenter_Internal;
