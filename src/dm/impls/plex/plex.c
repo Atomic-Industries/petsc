@@ -3874,8 +3874,21 @@ PetscErrorCode DMPlexGetMaxSizes(DM dm, PetscInt *maxConeSize, PetscInt *maxSupp
 
   PetscFunctionBegin;
   PetscValidHeaderSpecific(dm, DM_CLASSID, 1);
-  if (maxConeSize) PetscCall(PetscSectionGetMaxDof(mesh->coneSection, maxConeSize));
-  if (maxSupportSize) PetscCall(PetscSectionGetMaxDof(mesh->supportSection, maxSupportSize));
+  if (mesh->tr) {
+    PetscInt ctS, ctE, mCS = 0;
+
+    for (PetscInt pt = 0; pt < DM_NUM_POLYTOPES; ++pt) {
+      const DMPolytopeType ct = (DMPolytopeType)pt;
+
+      PetscCall(DMPlexTransformGetCellStratum(mesh->tr, ct, &ctS, &ctE));
+      if (ctE > ctS) mCS = PetscMax(mCS, DMPolytopeTypeGetConeSize(ct));
+    }
+    if (maxConeSize) *maxConeSize = mCS;
+    if (maxSupportSize) *maxSupportSize = 0;
+  } else {
+    if (maxConeSize) PetscCall(PetscSectionGetMaxDof(mesh->coneSection, maxConeSize));
+    if (maxSupportSize) PetscCall(PetscSectionGetMaxDof(mesh->supportSection, maxSupportSize));
+  }
   PetscFunctionReturn(0);
 }
 
@@ -5058,10 +5071,16 @@ PetscErrorCode DMPlexGetHeightStratum(DM dm, PetscInt height, PetscInt *start, P
 @*/
 PetscErrorCode DMPlexGetPointDepth(DM dm, PetscInt point, PetscInt *depth)
 {
+  DM_Plex *mesh = (DM_Plex *)dm->data;
+
   PetscFunctionBegin;
   PetscValidHeaderSpecific(dm, DM_CLASSID, 1);
   PetscValidIntPointer(depth, 3);
-  PetscCall(DMLabelGetValue(dm->depthLabel, point, depth));
+  if (mesh->tr) {
+    PetscCall(DMPlexTransformGetPointDepth(mesh->tr, point, depth));
+  } else {
+    PetscCall(DMLabelGetValue(dm->depthLabel, point, depth));
+  }
   PetscFunctionReturn(0);
 }
 
@@ -8235,14 +8254,19 @@ PetscErrorCode DMPlexSetVTKCellHeight(DM dm, PetscInt cellHeight)
 @*/
 PetscErrorCode DMPlexGetGhostCellStratum(DM dm, PetscInt *gcStart, PetscInt *gcEnd)
 {
+  DM_Plex *mesh = (DM_Plex *)dm->data;
   DMLabel ctLabel;
 
   PetscFunctionBegin;
   PetscValidHeaderSpecific(dm, DM_CLASSID, 1);
-  PetscCall(DMPlexGetCellTypeLabel(dm, &ctLabel));
-  PetscCall(DMLabelGetStratumBounds(ctLabel, DM_POLYTOPE_FV_GHOST, gcStart, gcEnd));
-  // Reset label for fast lookup
-  PetscCall(DMLabelMakeAllInvalid_Internal(ctLabel));
+  if (mesh->tr) {
+    PetscCall(DMPlexTransformGetCellStratum(mesh->tr, DM_POLYTOPE_FV_GHOST, gcStart, gcEnd));
+  } else {
+    PetscCall(DMPlexGetCellTypeLabel(dm, &ctLabel));
+    PetscCall(DMLabelGetStratumBounds(ctLabel, DM_POLYTOPE_FV_GHOST, gcStart, gcEnd));
+    // Reset label for fast lookup
+    PetscCall(DMLabelMakeAllInvalid_Internal(ctLabel));
+  }
   PetscFunctionReturn(0);
 }
 
