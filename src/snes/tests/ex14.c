@@ -85,29 +85,50 @@ static PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
 
 static PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
 {
-  DMPlexTransform tr;
-
   PetscFunctionBeginUser;
   PetscCall(DMCreate(comm, dm));
   PetscCall(DMSetType(*dm, DMPLEX));
   PetscCall(DMSetFromOptions(*dm));
   PetscCall(DMSetApplicationContext(*dm, user));
   PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
+  PetscFunctionReturn(0);
+}
 
-  PetscCall(DMPlexTransformCreate(PetscObjectComm((PetscObject)*dm), &tr));
+// TODO: Patch should be on PETSC_COMM_SELF
+static PetscErrorCode CreatePatch(DM dm, PetscInt cell, DMLabel *active, DM *patch) {
+  DMPlexTransform tr;
+  PetscInt       *adj     = NULL;
+  PetscInt        adjSize = PETSC_DETERMINE;
+  MPI_Comm        comm;
+
+  PetscFunctionBegin;
+  PetscCall(PetscObjectGetComm((PetscObject)dm, &comm));
+  PetscCall(DMLabelCreate(comm, "active", active));
+  PetscCall(DMPlexGetAdjacency(dm, cell, &adjSize, &adj));
+  for (PetscInt a = 0; a < adjSize; ++a) PetscCall(DMLabelSetValue(*active, adj[a], DM_ADAPT_REFINE));
+  PetscCall(PetscObjectViewFromOptions((PetscObject)*active, NULL, "-active_view"));
+  PetscCall(PetscFree(adj));
+
+  PetscCall(DMPlexTransformCreate(comm, &tr));
   PetscCall(PetscObjectSetName((PetscObject)tr, "Transform"));
   PetscCall(PetscObjectSetOptionsPrefix((PetscObject)tr, "first_"));
-  PetscCall(DMPlexTransformSetDM(tr, *dm));
-  PetscCall(DMPlexTransformSetActive(tr, user->active));
+  PetscCall(DMPlexTransformSetDM(tr, dm));
+  PetscCall(DMPlexTransformSetActive(tr, *active));
   PetscCall(DMPlexTransformSetFromOptions(tr));
   PetscCall(DMPlexTransformSetUp(tr));
   PetscCall(PetscObjectViewFromOptions((PetscObject)tr, NULL, "-dm_plex_transform_view"));
-  PetscCall(DMDestroy(dm));
 
-  PetscCall(DMPlexCreateEphemeral(tr, dm));
-  PetscCall(PetscObjectSetName((PetscObject)*dm, "Ephemeral Mesh"));
-  PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
+  PetscCall(DMPlexCreateEphemeral(tr, patch));
+  PetscCall(PetscObjectSetName((PetscObject)*patch, "Ephemeral Patch"));
+  PetscCall(DMViewFromOptions(*patch, NULL, "-patch_view"));
   PetscCall(DMPlexTransformDestroy(&tr));
+  PetscFunctionReturn(0);
+}
+
+static PetscErrorCode DestroyPatch(DM dm, PetscInt c, DMLabel *active, DM *patch) {
+  PetscFunctionBegin;
+  PetscCall(DMLabelDestroy(active));
+  PetscCall(DMDestroy(patch));
   PetscFunctionReturn(0);
 }
 
@@ -158,30 +179,96 @@ static PetscErrorCode SetupDiscretization(DM dm, PetscInt Nf, const char *names[
   PetscFunctionReturn(0);
 }
 
+static PetscErrorCode PatchSolve(DM patch, AppCtx *user)
+{
+  DMLabel      subpMap;
+  SNES         snes;
+  Vec          u, b;
+  PetscScalar *elemP;
+  PetscSection gs;
+  PetscInt     pStart, pEnd, Nfine, Ncoarse = 0, j = 0;
+  const char  *names[] = {"phi", "mu"};
+
+  PetscFunctionBegin;
+  PetscCall(DMPlexGetChart(patch, &pStart, &pEnd));
+  PetscCall(SetupDiscretization(patch, 2, names, SetupPrimalProblem, user));
+  PetscCall(DMGetGlobalSection(patch, &gs));
+  for (PetscInt p = pStart; p < pEnd; ++p) {
+    PetscInt dof;
+
+    PetscCall(PetscSectionGetFieldDof(gs, p, 0, &dof));
+    Ncoarse += dof;
+  }
+  Nfine = Ncoarse;
+  PetscCall(PetscCalloc1(Nfine * Ncoarse, &elemP));
+
+  // TODO: Make injection numbering
+  PetscCall(DMPlexGetSubpointMap(patch, &subpMap));
+  if (subpMap) PetscCall(PetscObjectViewFromOptions((PetscObject)subpMap, NULL, "-subpoint_map_view"));
+
+  PetscCall(SNESCreate(PetscObjectComm((PetscObject)patch), &snes));
+  PetscCall(SNESSetDM(snes, patch));
+  PetscCall(SNESSetFromOptions(snes));
+  PetscCall(DMPlexSetSNESLocalFEM(patch, user, user, user));
+
+  PetscCall(DMGetGlobalVector(patch, &u));
+  PetscCall(PetscObjectSetName((PetscObject)u, "potential"));
+  PetscCall(DMGetGlobalVector(patch, &b));
+  PetscCall(PetscObjectSetName((PetscObject)b, "rhs"));
+  PetscCall(VecZeroEntries(b));
+  PetscCall(DMSNESCheckFromOptions(snes, u));
+  for (PetscInt p = pStart; p < pEnd; ++p) {
+    const PetscScalar *a;
+    PetscInt           dof, off;
+
+    PetscCall(PetscSectionGetFieldDof(gs, p, 0, &dof));
+    PetscCall(PetscSectionGetFieldOffset(gs, p, 0, &off));
+    for (PetscInt d = 0; d < dof; ++d, ++j) {
+      PetscCall(VecSetValue(b, off+d, 1., INSERT_VALUES));
+      PetscCall(SNESSolve(snes, b, u));
+      PetscCall(VecSetValue(b, off+d, 0., INSERT_VALUES));
+      // Insert values into element matrix
+      PetscCall(VecGetArrayRead(u, &a));
+      for (PetscInt i = 0; i < Nfine; ++i) {
+        if (PetscAbsScalar(a[i]) > PETSC_SMALL) elemP[i * Ncoarse + j] = a[i];
+      }
+      PetscCall(VecRestoreArrayRead(u, &a));
+    }
+  }
+  PetscCheck(j == Ncoarse, PETSC_COMM_SELF, PETSC_ERR_ARG_INCOMP, "Number of columns %" PetscInt_FMT " != %" PetscInt_FMT " coarse space size", j, Ncoarse);
+  // TODO Insert elemP
+  PetscCall(PetscFree(elemP));
+  PetscCall(DMRestoreGlobalVector(patch, &u));
+  PetscCall(DMRestoreGlobalVector(patch, &b));
+  PetscCall(SNESDestroy(&snes));
+  PetscFunctionReturn(0);
+}
+
 int main(int argc, char **argv)
 {
-  DM          dm;
-  SNES        snes;
-  Vec         u;
-  AppCtx      user;
-  const char *names[] = {"phi", "mu"};
+  DM        dm;
+  PetscInt  cStart, cEnd;
+  PetscBool useCone, useClosure;
+  AppCtx    user;
 
   PetscFunctionBeginUser;
   PetscCall(PetscInitialize(&argc, &argv, NULL, help));
   PetscCall(ProcessOptions(PETSC_COMM_WORLD, &user));
   PetscCall(CreateMesh(PETSC_COMM_WORLD, &user, &dm));
-  PetscCall(SNESCreate(PETSC_COMM_WORLD, &snes));
-  PetscCall(SNESSetDM(snes, dm));
-  PetscCall(SetupDiscretization(dm, 2, names, SetupPrimalProblem, &user));
-  PetscCall(DMCreateGlobalVector(dm, &u));
-  PetscCall(PetscObjectSetName((PetscObject)u, "potential"));
-  PetscCall(SNESSetFromOptions(snes));
-  PetscCall(DMPlexSetSNESLocalFEM(dm, &user, &user, &user));
-  PetscCall(DMSNESCheckFromOptions(snes, u));
-  PetscCall(SNESSolve(snes, NULL, u));
-  PetscCall(DMLabelDestroy(&user.active));
-  PetscCall(VecDestroy(&u));
-  PetscCall(SNESDestroy(&snes));
+  // Make a patch for each cell
+  //   TODO: Just need a patch covering each dof
+  PetscCall(DMPlexGetHeightStratum(dm, 0, &cStart, &cEnd));
+  PetscCall(DMGetBasicAdjacency(dm, &useCone, &useClosure));
+  PetscCall(DMSetBasicAdjacency(dm, PETSC_TRUE, PETSC_TRUE));
+  for (PetscInt c = cStart; c < cEnd; ++c) {
+    DM      patch;
+    DMLabel active;
+
+    PetscCall(CreatePatch(dm, c, &active, &patch));
+    PetscCall(PatchSolve(patch, &user));
+    PetscCall(DestroyPatch(dm, c, &active, &patch));
+  }
+  PetscCall(DMSetBasicAdjacency(dm, useCone, useClosure));
   PetscCall(DMDestroy(&dm));
   PetscCall(PetscFinalize());
   return 0;
@@ -191,7 +278,7 @@ int main(int argc, char **argv)
 
   test:
     suffix: 0
-    args: -first_dm_plex_transform_type transform_filter -cells 0,1,2,4 \
+    args: -first_dm_plex_transform_type transform_filter \
           -phi_petscspace_degree 1 -mu_petscspace_degree 1 -pc_type lu \
           -snes_converged_reason -snes_monitor
 
