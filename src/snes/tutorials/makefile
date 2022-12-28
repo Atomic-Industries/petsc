@@ -12,18 +12,18 @@ include ${PETSC_DIR}/lib/petsc/conf/rules
 #-------------------------------------------------------------------------
 
 #  these tests are used by the makefile in PETSC_DIR for basic tests of the install and should not be removed
-testex5f: ex5f.PETSc
-	-@${MPIEXEC} -n 1 ./ex5f -snes_rtol 1e-4 > ex5f_1.tmp 2>&1; \
-        if (${DIFF} output/ex5f_1.testout ex5f_1.tmp > /dev/null 2>&1) then \
-          echo "Fortran example src/snes/tutorials/ex5f run successfully with 1 MPI process"; \
+testex5f90: ex5f90.PETSc
+	-@${MPIEXEC} -n 1 ./ex5f90 -snes_rtol 1e-4 > ex5f90_1.tmp 2>&1; \
+        if (${DIFF} output/ex5f90_1.testout ex5f90_1.tmp > /dev/null 2>&1) then \
+          echo "Fortran example src/snes/tutorials/ex5f90 run successfully with 1 MPI process"; \
         else \
-          echo "Possible error running Fortran example src/snes/tutorials/ex5f with 1 MPI process"; \
+          echo "Possible error running Fortran example src/snes/tutorials/ex5f90 with 1 MPI process"; \
           echo "See https://petsc.org/release/faq/";\
-          cat ex5f_1.tmp; \
+          cat ex5f90_1.tmp; \
           touch ${PETSC_DIR}/check_error;\
         fi;  \
-        ${RM} -f ex5f_1.tmp ;\
-        ${MAKE} PETSC_ARCH=${PETSC_ARCH} PETSC_DIR=${PETSC_DIR} ex5f.rm;
+        ${RM} -f ex5f90_1.tmp ;\
+        ${MAKE} PETSC_ARCH=${PETSC_ARCH} PETSC_DIR=${PETSC_DIR} ex5f90.rm;
 testex19: ex19.PETSc
 	-@${MPIEXEC} -n 1 ./ex19 -da_refine 3 -pc_type mg -ksp_type fgmres  > ex19_1.tmp 2>&1; \
         if (${DIFF} output/ex19_1.testout ex19_1.tmp > /dev/null 2>&1) then \
