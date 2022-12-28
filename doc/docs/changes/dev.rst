@@ -56,6 +56,8 @@ Changes: Development
 
 .. rubric:: IS:
 
+- Document depreciation of ``ISGetIndices()`` and ``ISRestoreIndices()`` in Fortran and promote use of F90 versions
+
 .. rubric:: VecScatter / PetscSF:
 
 - Change ``PetscSFConcatenate()`` to accept ``PetscSFConcatenateRootMode`` parameter; add option to concatenate root spaces globally
@@ -68,6 +70,7 @@ Changes: Development
 - Add ``VECOP_SET``
 - Significantly improve performance of ``VecMDot()``, ``VecMAXPY()`` and ``VecDotNorm2()`` for CUDA and HIP vector types. These routines should be between 2x and 4x faster.
 - Enforce the rule that ``VecAssemblyBegin()`` and ``VecAssemblyEnd()`` must be called on even sequential vectors after calls to ``VecSetValues()``. This also applies to assignment of vector entries in petsc4py
+- Document depreciation of ``VecGetArray()`` and ``VecRestoreArray()`` in Fortran and promote use of F90 versions
 
 .. rubric:: PetscSection:
 
@@ -77,6 +80,9 @@ Changes: Development
 
 - Add ``MatEliminateZeros()``
 - Improve efficiency of ``MatConvert()`` from ``MATNORMAL`` to ``MATHYPRE``
+- Document depreciation of ``MatDenseGetArray()`` and ``MatDenseRestoreQArray()`` in Fortran and promote use of F90 versions
+- Document depreciation of ``MatSeqAIJGetArray()`` and ``MatSeqAIJRestoreArray()`` in Fortran and promote use of F90 versions
+- Document depreciation of ``MatGetRowIJ()`` and ``MatRestoreRowIJ()`` in Fortran and promote use of F90 versions
 
 .. rubric:: MatCoarsen:
 
