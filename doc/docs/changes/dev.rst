@@ -83,6 +83,7 @@ Changes: Development
 - Document depreciation of ``MatDenseGetArray()`` and ``MatDenseRestoreQArray()`` in Fortran and promote use of F90 versions
 - Document depreciation of ``MatSeqAIJGetArray()`` and ``MatSeqAIJRestoreArray()`` in Fortran and promote use of F90 versions
 - Document depreciation of ``MatGetRowIJ()`` and ``MatRestoreRowIJ()`` in Fortran and promote use of F90 versions
+- Add `MatMPIAIJGetSeqAIJF90()` and document depreciation of `MatMPIAIJGetSeqAIJ()` in Fortran
 
 .. rubric:: MatCoarsen:
 

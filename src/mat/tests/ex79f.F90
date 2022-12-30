@@ -12,12 +12,11 @@
       PetscMPIInt rank
       PetscViewer v
       PetscInt i,j
-      PetscInt n,icol(1),rstart
+      PetscInt n,rstart
       PetscInt zero,one,rend
       PetscBool   done,bb
-      PetscOffset iicol
       PetscScalar,pointer :: aa(:)
-      PetscInt,pointer :: ia(:),ja(:)
+      PetscInt,pointer :: ia(:),ja(:),icol(:)
 
       PetscCallA(PetscInitialize(ierr))
       PetscCallMPIA(MPI_Comm_rank(PETSC_COMM_WORLD,rank,ierr))
@@ -28,7 +27,7 @@
       PetscCallA(MatLoad(A,v,ierr))
       PetscCallA(MatView(A,PETSC_VIEWER_STDOUT_WORLD,ierr))
 
-      PetscCallA(MatMPIAIJGetSeqAIJ(A,Ad,Ao,icol,iicol,ierr))
+      PetscCallA(MatMPIAIJGetSeqAIJF90(A,Ad,Ao,icol,ierr))
       PetscCallA(MatGetOwnershipRange(A,rstart,rend,ierr))
 !
 !   Print diagonal portion of matrix
@@ -55,9 +54,10 @@
       do 30, i=1,n
         write(7+rank,*) 'row ',i+rstart,' number nonzeros ',ia(i+1)-ia(i)
         do 40, j=ia(i),ia(i+1)-1
-          write(7+rank,*)'  ',j,icol(iicol+ja(j))+1,aa(j)
+          write(7+rank,*)'  ',j,icol(ja(j))+1,aa(j)
  40     continue
  30   continue
+      PetscCallA(MatMPIAIJRestoreSeqAIJF90(A,Ad,Ao,icol,ierr))
       PetscCallA(MatRestoreRowIJF90(Ao,one,bb,bb,n,ia,ja,done,ierr))
       PetscCallA(MatSeqAIJRestoreArrayF90(Ao,aa,ierr))
 

@@ -4534,7 +4534,7 @@ PetscErrorCode MatCreateAIJ(MPI_Comm comm, PetscInt m, PetscInt n, PetscInt M, P
 }
 
 /*@C
-  MatMPIAIJGetSeqAIJ - Returns the local piece of this distributed matrix
+  MatMPIAIJGetSeqAIJ - Returns the local pieces of this distributed matrix
 
   Not collective
 
@@ -4546,15 +4546,18 @@ PetscErrorCode MatCreateAIJ(MPI_Comm comm, PetscInt m, PetscInt n, PetscInt M, P
 . Ao - The local off-diagonal block as a `MATSEQAIJ` matrix
 - colmap - An array mapping local column numbers of Ao to global column numbers of the parallel matrix
 
+  Level: intermediate
+
   Note:
   The rows in Ad and Ao are in [0, Nr), where Nr is the number of local rows on this process. The columns
   in Ad are in [0, Nc) where Nc is the number of local columns. The columns are Ao are in [0, Nco), where Nco is
   the number of nonzero columns in the local off-diagonal piece of the matrix A. The array colmap maps these
   local column numbers to global column numbers in the original matrix.
 
-  Level: intermediate
+  Fortran Note:
+  In Fortran the `MatMPIAIJGetSeqAIJ()` binding is deprecated (since PETSc 3.19), use `MatMPIAIJGetSeqAIJF90()` and `MatMPIAIJRestoreSeqAIJF90()`
 
-.seealso: `MATMPIAIJ`, `MatMPIAIJGetLocalMat()`, `MatMPIAIJGetLocalMatCondensed()`, `MatCreateAIJ()`, `MATMPIAIJ`, `MATSEQAIJ`
+.seealso: `Mat`, `MATMPIAIJ`, `MatMPIAIJGetSeqAIJF90()`, `MatMPIAIJRestoreSeqAIJF90()`, `MatMPIAIJGetLocalMat()`, `MatMPIAIJGetLocalMatCondensed()`, `MatCreateAIJ()`, `MATMPIAIJ`, `MATSEQAIJ`
 @*/
 PetscErrorCode MatMPIAIJGetSeqAIJ(Mat A, Mat *Ad, Mat *Ao, const PetscInt *colmap[])
 {
