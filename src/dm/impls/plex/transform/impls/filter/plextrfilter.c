@@ -91,9 +91,32 @@ static PetscErrorCode DMPlexTransformCellTransform_Filter(DMPlexTransform tr, DM
 
 static PetscErrorCode DMPlexTransformSetDimensions_Filter_Private(DMPlexTransform tr, DM dm, DM tdm)
 {
+  DMLabel         subpMap;
+  IS              valueIS, pointIS;
+  const PetscInt *values, *points;
+  PetscInt        Nv, Np;
+
   PetscFunctionBegin;
   PetscCall(DMPlexTransformSetDimensions_Internal(tr, dm, tdm));
-  PetscCall(DMPlexSetSubpointMap(tdm, tr->trType));
+  // Create subpoint map
+  PetscCall(DMLabelCreate(PETSC_COMM_SELF, "Subpoint Map", &subpMap));
+  PetscCall(DMLabelGetValueIS(tr->trType, &valueIS));
+  PetscCall(ISGetLocalSize(valueIS, &Nv));
+  PetscCall(ISGetIndices(valueIS, &values));
+  for (PetscInt v = 0; v < Nv; ++v) {
+    PetscCall(DMLabelGetStratumIS(tr->trType, values[v], &pointIS));
+    PetscCall(ISGetLocalSize(pointIS, &Np));
+    PetscCall(ISGetIndices(pointIS, &points));
+    for (PetscInt p = 0; p < Np; ++p) {
+      PetscCall(DMLabelSetValue(subpMap, points[p], DMPolytopeTypeGetDim((DMPolytopeType)values[v])));
+    }
+    PetscCall(ISRestoreIndices(pointIS, &points));
+    PetscCall(ISDestroy(&pointIS));
+  }
+  PetscCall(ISRestoreIndices(valueIS, &values));
+  PetscCall(ISDestroy(&valueIS));
+  PetscCall(DMPlexSetSubpointMap(tdm, subpMap));
+  PetscCall(DMLabelDestroy(&subpMap));
   PetscFunctionReturn(0);
 }
 
