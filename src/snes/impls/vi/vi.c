@@ -498,8 +498,8 @@ PetscErrorCode SNESVISetVariableBounds_VI(SNES snes, Vec xl, Vec xu)
 
    Input Parameters:
 +  snes - the `SNES` context.
-.  xl   - lower bound.
--  xu   - upper bound.
+.  xl   - lower bound (may be `NULL`)
+-  xu   - upper bound (may be `NULL`)
 
    Level: advanced
 
