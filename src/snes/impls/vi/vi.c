@@ -508,12 +508,9 @@ PetscErrorCode SNESVISetVariableBounds_VI(SNES snes, Vec xl, Vec xu)
 PetscErrorCode SNESVIGetVariableBounds(SNES snes, Vec *xl, Vec *xu)
 {
   PetscFunctionBegin;
-  if (snes->usersetbounds) {
-    *xl = snes->xl;
-    *xu = snes->xu;
-  } else {
-    SETERRQ(PETSC_COMM_SELF, PETSC_ERR_ARG_WRONGSTATE, "Must set SNESVI bounds before calling SNESVIGetVariableBounds_VI");
-  }
+  PetscCheck(snes->usersetbounds, PETSC_COMM_SELF, PETSC_ERR_ARG_WRONGSTATE, "Must set SNESVI bounds before calling SNESVIGetVariableBounds()");
+  if (xl) *xl = snes->xl;
+  if (xu) *xu = snes->xu;
   PetscFunctionReturn(0);
 }
 
