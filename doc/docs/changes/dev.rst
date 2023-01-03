@@ -80,7 +80,7 @@ Changes: Development
 
 - Add ``MatEliminateZeros()``
 - Improve efficiency of ``MatConvert()`` from ``MATNORMAL`` to ``MATHYPRE``
-- Document deprecation of ``MatDenseGetArray()`` and ``MatDenseRestoreQArray()`` in Fortran and promote use of F90 versions
+- Document deprecation of ``MatDenseGetArray()`` and ``MatDenseRestoreArray()`` in Fortran and promote use of F90 versions
 - Document deprecation of ``MatSeqAIJGetArray()`` and ``MatSeqAIJRestoreArray()`` in Fortran and promote use of F90 versions
 - Document deprecation of ``MatGetRowIJ()`` and ``MatRestoreRowIJ()`` in Fortran and promote use of F90 versions
 - Add `MatMPIAIJGetSeqAIJF90()` and document deprecation of `MatMPIAIJGetSeqAIJ()` in Fortran
