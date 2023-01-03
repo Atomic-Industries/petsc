@@ -225,7 +225,7 @@ check_build:
          if test -s .ftn.log; then \
            cd src/snes/tutorials >/dev/null; \
            ${RUN_TEST} clean-legacy; \
-           ${RUN_TEST} testex5f90; \
+           ${RUN_TEST} testex5f; \
            ${RUN_TEST} clean-legacy; \
          fi; ${RM} .ftn.log;
 	+@grep -E "^#define PETSC_HAVE_MATLAB 1" ${PETSCCONF_H} | tee .ftn.log > /dev/null; \
@@ -244,7 +244,7 @@ check_usermakefile:
 	@cd src/snes/tutorials; ${OMAKE} PETSC_ARCH=${PETSC_ARCH} PETSC_DIR=${PETSC_DIR} -f ${PETSC_DIR}/share/petsc/Makefile.user ex19
 	@grep -E "^#define PETSC_HAVE_FORTRAN 1" ${PETSCCONF_H} | tee .ftn.log > /dev/null; \
          if test -s .ftn.log; then \
-          cd src/snes/tutorials; ${OMAKE} PETSC_ARCH=${PETSC_ARCH} PETSC_DIR=${PETSC_DIR} -f ${PETSC_DIR}/share/petsc/Makefile.user ex5f90; \
+          cd src/snes/tutorials; ${OMAKE} PETSC_ARCH=${PETSC_ARCH} PETSC_DIR=${PETSC_DIR} -f ${PETSC_DIR}/share/petsc/Makefile.user ex5f; \
          fi; ${RM} .ftn.log;
 	@cd src/snes/tutorials; ${RUN_TEST} clean-legacy
 	-@echo "Completed compile with user makefile"
