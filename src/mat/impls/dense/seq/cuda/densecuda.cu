@@ -984,6 +984,40 @@ static PetscErrorCode MatDenseGetArray_SeqDenseCUDA(Mat A, PetscScalar **array)
   PetscFunctionReturn(0);
 }
 
+static PetscErrorCode MatDenseGetArrayAndMemType_SeqDenseCUDA(Mat A, PetscScalar **array, PetscMemType *mtype)
+{
+  Mat_SeqDenseCUDA *dA = (Mat_SeqDenseCUDA *)A->spptr;
+
+  PetscFunctionBegin;
+  PetscCall(MatSeqDenseCUDACopyToGPU(A)); // Since we will read the array on device, we sync the GPU data if necessary
+  *array = dA->d_v;
+  if (mtype) *mtype = PETSC_MEMTYPE_CUDA;
+  PetscFunctionReturn(0);
+}
+
+static PetscErrorCode MatDenseRestoreArrayAndMemType_SeqDenseCUDA(Mat A, PetscScalar **array)
+{
+  PetscFunctionBegin;
+  A->offloadmask = PETSC_OFFLOAD_GPU; // Since we've written to the array on device
+  PetscFunctionReturn(0);
+}
+
+static PetscErrorCode (*MatDenseGetArrayReadAndMemType_SeqDenseCUDA)(Mat, PetscScalar **, PetscMemType *) = MatDenseGetArrayAndMemType_SeqDenseCUDA;
+static PetscErrorCode (*MatDenseRestoreArrayReadAndMemType_SeqDenseCUDA)(Mat, PetscScalar **)             = NULL; // Keep the offload mask as is
+
+static PetscErrorCode MatDenseGetArrayWriteAndMemType_SeqDenseCUDA(Mat A, PetscScalar **array, PetscMemType *mtype)
+{
+  Mat_SeqDenseCUDA *dA = (Mat_SeqDenseCUDA *)A->spptr;
+
+  PetscFunctionBegin;
+  if (!dA->d_v) PetscCall(MatSeqDenseCUDASetPreallocation(A, NULL)); // Allocate GPU memory if not present
+  *array = dA->d_v;
+  if (mtype) *mtype = PETSC_MEMTYPE_CUDA;
+  PetscFunctionReturn(0);
+}
+
+static PetscErrorCode (*MatDenseRestoreArrayWriteAndMemType_SeqDenseCUDA)(Mat, PetscScalar **) = MatDenseRestoreArrayAndMemType_SeqDenseCUDA; // Since we've written to the array on device
+
 PetscErrorCode MatScale_SeqDenseCUDA(Mat Y, PetscScalar alpha)
 {
   Mat_SeqDense  *y = (Mat_SeqDense *)Y->data;
@@ -1431,6 +1465,13 @@ static PetscErrorCode MatBindToCPU_SeqDenseCUDA(Mat A, PetscBool flg)
     PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseSetLDA_C", MatDenseSetLDA_SeqDenseCUDA));
     PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatQRFactor_C", MatQRFactor_SeqDenseCUDA));
 
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseGetArrayAndMemType_C", MatDenseGetArrayAndMemType_SeqDenseCUDA));
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseRestoreArrayAndMemType_C", MatDenseRestoreArrayAndMemType_SeqDenseCUDA));
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseGetArrayReadAndMemType_C", MatDenseGetArrayReadAndMemType_SeqDenseCUDA));
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseRestoreArrayReadAndMemType_C", MatDenseRestoreArrayReadAndMemType_SeqDenseCUDA));
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseGetArrayWriteAndMemType_C", MatDenseGetArrayWriteAndMemType_SeqDenseCUDA));
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseRestoreArrayWriteAndMemType_C", MatDenseRestoreArrayWriteAndMemType_SeqDenseCUDA));
+
     A->ops->duplicate               = MatDuplicate_SeqDenseCUDA;
     A->ops->mult                    = MatMult_SeqDenseCUDA;
     A->ops->multadd                 = MatMultAdd_SeqDenseCUDA;
@@ -1468,6 +1509,13 @@ static PetscErrorCode MatBindToCPU_SeqDenseCUDA(Mat A, PetscBool flg)
     PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseRestoreSubMatrix_C", MatDenseRestoreSubMatrix_SeqDense));
     PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseSetLDA_C", MatDenseSetLDA_SeqDense));
     PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatQRFactor_C", MatQRFactor_SeqDense));
+
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseGetArrayAndMemType_C", NULL));
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseRestoreArrayAndMemType_C", NULL));
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseGetArrayReadAndMemType_C", NULL));
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseRestoreArrayReadAndMemType_C", NULL));
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseGetArrayWriteAndMemType_C", NULL));
+    PetscCall(PetscObjectComposeFunction((PetscObject)A, "MatDenseRestoreArrayWriteAndMemType_C", NULL));
 
     A->ops->duplicate               = MatDuplicate_SeqDense;
     A->ops->mult                    = MatMult_SeqDense;
