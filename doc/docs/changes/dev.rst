@@ -77,6 +77,7 @@ Changes: Development
 
 - Add ``MatEliminateZeros()``
 - Improve efficiency of ``MatConvert()`` from ``MATNORMAL`` to ``MATHYPRE``
+- Add ``MatDenseGetArrayAndMemType()``, ``MatDenseRestoreArrayAndMemType()`` and friend APIs for read-only or write-only access to matrix data
 
 .. rubric:: MatCoarsen:
 
