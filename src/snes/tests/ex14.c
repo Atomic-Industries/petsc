@@ -128,7 +128,7 @@ static PetscErrorCode CreatePatch(DM dm, PetscInt cell, DM *patch) {
   PetscFunctionReturn(0);
 }
 
-static PetscErrorCode RefinePatch(DM patch, DM *refpatch) {
+static PetscErrorCode RefinePatch(DM patch, DM *rpatch) {
   DMPlexTransform tr;
 
   PetscFunctionBegin;
@@ -140,9 +140,9 @@ static PetscErrorCode RefinePatch(DM patch, DM *refpatch) {
   PetscCall(DMPlexTransformSetUp(tr));
   PetscCall(PetscObjectViewFromOptions((PetscObject)tr, NULL, "-dm_plex_transform_view"));
 
-  PetscCall(DMPlexCreateEphemeral(tr, refpatch));
-  PetscCall(PetscObjectSetName((PetscObject)*refpatch, "Ephemeral Refined Patch"));
-  PetscCall(DMViewFromOptions(*refpatch, NULL, "-patch_view"));
+  PetscCall(DMPlexCreateEphemeral(tr, rpatch));
+  PetscCall(PetscObjectSetName((PetscObject)*rpatch, "Ephemeral Refined Patch"));
+  PetscCall(DMViewFromOptions(*rpatch, NULL, "-patch_view"));
   PetscCall(DMPlexTransformDestroy(&tr));
   PetscFunctionReturn(0);
 }
@@ -198,31 +198,34 @@ static PetscErrorCode SetupDiscretization(DM dm, PetscInt Nf, const char *names[
   PatchSolve - Solve the saddle-point system on the refined patch and inject the results into the corrector
 
   Input Parameters:
-+ patch    - The patch from the coarse grid
-. c        - The central cell for this patch
-. refpatch - The patch from the fine grid
-- user     - A user context
++ patch  - The patch from the coarse grid
+. c      - The central cell for this patch
+. rpatch - The patch from the fine grid
+- user   - A user context
+
+  Note:
+  Coarse indices are those for the closure of the original seed cell. Fine indices are those for the closure of the entire refined patch, so we just indicate the whole section
 
   Level; advanced
 
 .seealso: `CreatePatch()`
 */
-static PetscErrorCode PatchSolve(DM patch, PetscInt c, DM refpatch, AppCtx *user)
+static PetscErrorCode PatchSolve(DM dm, DM patch, PetscInt c, DM rdm, DM rpatch, Mat dP, AppCtx *user)
 {
-  SNES           snes;
-  Mat            P;
-  Vec            u, b, cb;
-  IS             subpIS;
-  PetscScalar   *elemP;
-  PetscSection   gs, gsRef;
-  PetscInt      *closure = NULL;
-  PetscInt       cell, Ncl, Nfine, Ncoarse = 0, j = 0;
-  const char    *names[] = {"phi", "mu"};
+  SNES            snes;
+  Mat             P;
+  Vec             u, b, cb;
+  IS              subpIS;
+  PetscScalar    *elemP;
+  PetscSection    gs, gsRef, dgs;
+  const PetscInt *points;
+  PetscInt       *closure = NULL, *rows, *cols;
+  PetscInt        cell, pStart, pEnd, Ncl, Nfine = 0, Ncoarse = 0, j = 0;
+  const char     *names[] = {"phi", "mu"};
 
   PetscFunctionBegin;
   {
-    const PetscInt *points;
-    PetscInt        n;
+    PetscInt n;
 
     PetscCall(DMPlexGetSubpointIS(patch, &subpIS));
     if (subpIS) PetscCall(PetscObjectViewFromOptions((PetscObject)subpIS, NULL, "-subpoint_is_view"));
@@ -233,31 +236,50 @@ static PetscErrorCode PatchSolve(DM patch, PetscInt c, DM refpatch, AppCtx *user
     PetscCall(ISRestoreIndices(subpIS, &points));
   }
   PetscCall(SetupDiscretization(patch, 2, names, SetupPrimalProblem, user));
-  PetscCall(SetupDiscretization(refpatch, 2, names, SetupPrimalProblem, user));
+  PetscCall(SetupDiscretization(rpatch, 2, names, SetupPrimalProblem, user));
   PetscCall(DMGetGlobalSection(patch, &gs));
-  PetscCall(DMGetGlobalSection(refpatch, &gsRef));
+  PetscCall(DMGetGlobalSection(rpatch, &gsRef));
 
+  PetscCall(PetscSectionGetChart(gsRef, &pStart, &pEnd));
+  for (PetscInt p = pStart, dof; p < pEnd; ++p) {
+    PetscCall(PetscSectionGetFieldDof(gsRef, p, 0, &dof));
+    Nfine += dof > 0 ? dof : 0;
+  }
   PetscCall(DMPlexGetTransitiveClosure(patch, cell, PETSC_TRUE, &Ncl, &closure));
-  for (PetscInt cl = 0; cl < Ncl*2; cl += 2) {
-    PetscInt dof;
+  for (PetscInt cl = 0, dof; cl < Ncl*2; cl += 2) {
+    PetscCall(PetscSectionGetFieldDof(gs, closure[cl], 0, &dof));
+    Ncoarse += dof > 0 ? dof : 0;
+  }
+  PetscCall(PetscCalloc3(Nfine, &rows, Ncoarse, &cols, Nfine * Ncoarse, &elemP));
+  PetscCall(DMGetGlobalSection(dm, &dgs));
+  PetscCall(ISGetIndices(subpIS, &points));
+  PetscCall(PetscSectionGetChart(gsRef, &pStart, &pEnd));
+  for (PetscInt p = pStart, dof; p < pEnd; ++p) {
+    PetscInt dof, off, doff;
+
+    PetscCall(PetscSectionGetFieldDof(gsRef, p, 0, &dof));
+    PetscCall(PetscSectionGetFieldOffset(dgs, points[p], 0, &doff));
+    for (PetscInt d = 0; d < dof; ++d) rows[off + d] = doff + d;
+  }
+  for (PetscInt cl = 0, i = 0; cl < Ncl*2; cl += 2) {
+    PetscInt dof, doff;
 
     PetscCall(PetscSectionGetFieldDof(gs, closure[cl], 0, &dof));
-    Ncoarse += dof;
+    PetscCall(PetscSectionGetFieldOffset(dgs, points[closure[cl]], 0, &doff));
+    for (PetscInt d = 0; d < dof; ++d) cols[i++] = doff + d;
   }
+  PetscCall(ISRestoreIndices(subpIS, &points));
   PetscCall(DMPlexRestoreTransitiveClosure(patch, cell, PETSC_TRUE, &Ncl, &closure));
-  // TODO: Nfine should only be the size of the first field
-  PetscCall(PetscSectionGetStorageSize(gsRef, &Nfine));
-  PetscCall(PetscCalloc1(Nfine * Ncoarse, &elemP));
-  PetscCall(DMCreateInterpolation(patch, refpatch, &P, NULL));
+  PetscCall(DMCreateInterpolation(patch, rpatch, &P, NULL));
 
-  PetscCall(SNESCreate(PetscObjectComm((PetscObject)refpatch), &snes));
-  PetscCall(SNESSetDM(snes, refpatch));
+  PetscCall(SNESCreate(PetscObjectComm((PetscObject)rpatch), &snes));
+  PetscCall(SNESSetDM(snes, rpatch));
   PetscCall(SNESSetFromOptions(snes));
-  PetscCall(DMPlexSetSNESLocalFEM(refpatch, user, user, user));
+  PetscCall(DMPlexSetSNESLocalFEM(rpatch, user, user, user));
 
-  PetscCall(DMGetGlobalVector(refpatch, &u));
+  PetscCall(DMGetGlobalVector(rpatch, &u));
   PetscCall(PetscObjectSetName((PetscObject)u, "potential"));
-  PetscCall(DMGetGlobalVector(refpatch, &b));
+  PetscCall(DMGetGlobalVector(rpatch, &b));
   PetscCall(PetscObjectSetName((PetscObject)b, "rhs"));
   PetscCall(DMGetGlobalVector(patch, &cb));
   PetscCall(PetscObjectSetName((PetscObject)cb, "rhs"));
@@ -278,54 +300,78 @@ static PetscErrorCode PatchSolve(DM patch, PetscInt c, DM refpatch, AppCtx *user
       // Insert values into element matrix
       PetscCall(VecGetArrayRead(u, &a));
       // TODO Should only copy out first field
-      for (PetscInt i = 0; i < Nfine; ++i) {
-        if (PetscAbsScalar(a[i]) > PETSC_SMALL) elemP[i * Ncoarse + j] = a[i];
+      for (PetscInt p = pStart; p < pEnd; ++p) {
+        PetscInt dof, off;
+
+        PetscCall(PetscSectionGetFieldDof(gsRef, p, 0, &dof));
+        PetscCall(PetscSectionGetFieldDof(gsRef, p, 0, &off));
+        for (PetscInt d = 0; d < dof; ++d) {
+          if (PetscAbsScalar(a[off + d]) > PETSC_SMALL) elemP[(off + d) * Ncoarse + j] = a[off + d];
+        }
       }
       PetscCall(VecRestoreArrayRead(u, &a));
     }
   }
   PetscCall(DMPlexRestoreTransitiveClosure(patch, cell, PETSC_TRUE, &Ncl, &closure));
   PetscCheck(j == Ncoarse, PETSC_COMM_SELF, PETSC_ERR_ARG_INCOMP, "Number of columns %" PetscInt_FMT " != %" PetscInt_FMT " coarse space size", j, Ncoarse);
-  // TODO Insert elemP
-  //   Coarse indices are those for the closure of the original seed cell
-  //   Fine indices are those for the closure of the entire refined patch, so we just indicate the whole section
-  PetscCall(DMRestoreGlobalVector(refpatch, &u));
-  PetscCall(DMRestoreGlobalVector(refpatch, &b));
+  PetscCall(MatSetValues(dP, Nfine, rows, Ncoarse, cols, elemP, INSERT_VALUES));
+  PetscCall(DMRestoreGlobalVector(rpatch, &u));
+  PetscCall(DMRestoreGlobalVector(rpatch, &b));
   PetscCall(DMRestoreGlobalVector(patch, &cb));
   PetscCall(SNESDestroy(&snes));
   PetscCall(MatDestroy(&P));
-  PetscCall(PetscFree(elemP));
+  PetscCall(PetscFree3(rows, cols, elemP));
   PetscFunctionReturn(0);
 }
 
 int main(int argc, char **argv)
 {
-  DM        dm;
-  PetscInt  cStart, cEnd;
-  PetscBool useCone, useClosure;
-  AppCtx    user;
+  DM          dm, rdm;
+  Mat         P;
+  PetscInt    cStart, cEnd;
+  PetscBool   useCone, useClosure;
+  AppCtx      user;
+  const char *names[1] = {"phi"};
 
   PetscFunctionBeginUser;
   PetscCall(PetscInitialize(&argc, &argv, NULL, help));
   PetscCall(ProcessOptions(PETSC_COMM_WORLD, &user));
   PetscCall(CreateMesh(PETSC_COMM_WORLD, &user, &dm));
+  PetscCall(DMRefine(dm, PETSC_COMM_WORLD, &rdm));
+  PetscCall(SetupDiscretization(dm, 1, names, SetupPrimalProblem, &user));
+  PetscCall(SetupDiscretization(rdm, 1, names, SetupPrimalProblem, &user));
+  // Create global prolongator
+  {
+    PetscSection gs, rgs;
+    PetscInt     m, n;
+
+    PetscCall(DMGetGlobalSection(dm, &gs));
+    PetscCall(DMGetGlobalSection(rdm, &rgs));
+    PetscCall(PetscSectionGetStorageSize(rgs, &m));
+    PetscCall(PetscSectionGetStorageSize(gs, &n));
+    PetscCall(MatCreate(PETSC_COMM_WORLD, &P));
+    PetscCall(MatSetSizes(P, m, n, PETSC_DETERMINE, PETSC_DETERMINE));
+    PetscCall(MatSetUp(P));
+    PetscCall(MatSetOption(P, MAT_NEW_NONZERO_LOCATIONS, PETSC_TRUE));
+    PetscCall(MatSetOption(P, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE));
+  }
   // Make a patch for each cell
   //   TODO: Just need a patch covering each dof
   PetscCall(DMPlexGetHeightStratum(dm, 0, &cStart, &cEnd));
   PetscCall(DMGetBasicAdjacency(dm, &useCone, &useClosure));
   PetscCall(DMSetBasicAdjacency(dm, PETSC_TRUE, PETSC_TRUE));
   for (PetscInt c = cStart; c < cEnd; ++c) {
-    DM patch, refpatch;
+    DM patch, rpatch;
 
     PetscCall(CreatePatch(dm, c, &patch));
-    PetscCall(RefinePatch(patch, &refpatch));
-#if 1
-    PetscCall(PatchSolve(patch, c, refpatch, &user));
-#endif
-    PetscCall(DMDestroy(&refpatch));
+    PetscCall(RefinePatch(patch, &rpatch));
+    PetscCall(PatchSolve(dm, patch, c, rdm, rpatch, P, &user));
+    PetscCall(DMDestroy(&rpatch));
     PetscCall(DMDestroy(&patch));
   }
   PetscCall(DMSetBasicAdjacency(dm, useCone, useClosure));
+  PetscCall(MatDestroy(&P));
+  PetscCall(DMDestroy(&rdm));
   PetscCall(DMDestroy(&dm));
   PetscCall(PetscFinalize());
   return 0;
