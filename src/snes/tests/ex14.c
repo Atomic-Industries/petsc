@@ -257,7 +257,12 @@ static PetscErrorCode PatchSolve(DM dm, DM patch, PetscInt c, DM rdm, DM rpatch,
   for (PetscInt p = pStart, dof; p < pEnd; ++p) {
     PetscInt dof, off, doff;
 
+    // TODO: dof here must be only for field 1
     PetscCall(PetscSectionGetFieldDof(gsRef, p, 0, &dof));
+    // TODO: we need to convert this patch refined point to a domain refined point
+    //   first get parent point for this point
+    //   convert parent point to domain point
+    //   get points produced by domain point
     PetscCall(PetscSectionGetFieldOffset(dgs, points[p], 0, &doff));
     for (PetscInt d = 0; d < dof; ++d) rows[off + d] = doff + d;
   }
