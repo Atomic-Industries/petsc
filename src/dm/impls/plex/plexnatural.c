@@ -417,7 +417,7 @@ PetscErrorCode DMPlexCreateNaturalVector(DM dm, Vec *nv)
     */
     PetscCall(DMGetLocalVector(dm, &v));
     PetscCall(VecGetBlockSize(v, &bs));
-    PetscCallMPI(MPI_Allreduce(&bs,&maxbs,1,MPIU_INT,MPI_MAX,PetscObjectComm((PetscObject)dm)));
+    PetscCallMPI(MPI_Allreduce(&bs, &maxbs, 1, MPIU_INT, MPI_MAX, PetscObjectComm((PetscObject)dm)));
     if (bs == 1 && maxbs > 1) bs = maxbs;
     PetscCall(DMRestoreLocalVector(dm, &v));
 
