@@ -245,6 +245,7 @@ static PetscErrorCode PatchSolve(DM patch, PetscInt c, DM refpatch, AppCtx *user
     Ncoarse += dof;
   }
   PetscCall(DMPlexRestoreTransitiveClosure(patch, cell, PETSC_TRUE, &Ncl, &closure));
+  // TODO: Nfine should only be the size of the first field
   PetscCall(PetscSectionGetStorageSize(gsRef, &Nfine));
   PetscCall(PetscCalloc1(Nfine * Ncoarse, &elemP));
   PetscCall(DMCreateInterpolation(patch, refpatch, &P, NULL));
@@ -276,6 +277,7 @@ static PetscErrorCode PatchSolve(DM patch, PetscInt c, DM refpatch, AppCtx *user
       PetscCall(VecSetValue(cb, off+d, 0., INSERT_VALUES));
       // Insert values into element matrix
       PetscCall(VecGetArrayRead(u, &a));
+      // TODO Should only copy out first field
       for (PetscInt i = 0; i < Nfine; ++i) {
         if (PetscAbsScalar(a[i]) > PETSC_SMALL) elemP[i * Ncoarse + j] = a[i];
       }
