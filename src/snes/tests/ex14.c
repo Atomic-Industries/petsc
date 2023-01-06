@@ -19,6 +19,8 @@ static char help[] = "Finite element discretization on mesh patches.\n\n\n";
 #include <petscsnes.h>
 #include <petscconvest.h>
 
+#include <petsc/private/dmpleximpl.h>
+
 typedef struct {
   DMLabel active; /* Label for transform */
 } AppCtx;
@@ -91,6 +93,25 @@ static PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
   PetscCall(DMSetFromOptions(*dm));
   PetscCall(DMSetApplicationContext(*dm, user));
   PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
+  PetscFunctionReturn(0);
+}
+
+static PetscErrorCode RefineMesh(DM dm, DM *rdm) {
+  DMPlexTransform tr;
+
+  PetscFunctionBegin;
+  PetscCall(DMPlexTransformCreate(PetscObjectComm((PetscObject)dm), &tr));
+  PetscCall(PetscObjectSetName((PetscObject)tr, "Transform"));
+  PetscCall(PetscObjectSetOptionsPrefix((PetscObject)tr, "refine_"));
+  PetscCall(DMPlexTransformSetDM(tr, dm));
+  PetscCall(DMPlexTransformSetFromOptions(tr));
+  PetscCall(DMPlexTransformSetUp(tr));
+  PetscCall(PetscObjectViewFromOptions((PetscObject)tr, NULL, "-dm_plex_transform_view"));
+
+  PetscCall(DMPlexCreateEphemeral(tr, rdm));
+  PetscCall(PetscObjectSetName((PetscObject)*rdm, "Ephemeral Refined Mesh"));
+  PetscCall(DMViewFromOptions(*rdm, NULL, "-dm_view"));
+  PetscCall(DMPlexTransformDestroy(&tr));
   PetscFunctionReturn(0);
 }
 
@@ -217,7 +238,7 @@ static PetscErrorCode PatchSolve(DM dm, DM patch, PetscInt c, DM rdm, DM rpatch,
   Vec             u, b, cb;
   IS              subpIS;
   PetscScalar    *elemP;
-  PetscSection    gs, gsRef, dgs;
+  PetscSection    gs, gsRef, dgs, dgsRef;
   const PetscInt *points;
   PetscInt       *closure = NULL, *rows, *cols;
   PetscInt        cell, pStart, pEnd, Ncl, Nfine = 0, Ncoarse = 0, j = 0;
@@ -252,19 +273,28 @@ static PetscErrorCode PatchSolve(DM dm, DM patch, PetscInt c, DM rdm, DM rpatch,
   }
   PetscCall(PetscCalloc3(Nfine, &rows, Ncoarse, &cols, Nfine * Ncoarse, &elemP));
   PetscCall(DMGetGlobalSection(dm, &dgs));
+  PetscCall(DMGetGlobalSection(rdm, &dgsRef));
   PetscCall(ISGetIndices(subpIS, &points));
   PetscCall(PetscSectionGetChart(gsRef, &pStart, &pEnd));
-  for (PetscInt p = pStart, dof; p < pEnd; ++p) {
-    PetscInt dof, off, doff;
+  for (PetscInt p = pStart, i = 0; p < pEnd; ++p) {
+    DMPolytopeType cct;  // Celltype for parrent point in coarse patch
+    DMPolytopeType ct;   // Celltype for point p in refined patch
+    PetscInt       cp;   // Parent point in coarse patch
+    PetscInt       r;    // Replica number for point p in refined patch
+    PetscInt       dcp;  // Parent point in coarse domain
+    PetscInt       dp;   // Point p in refined domain
+    PetscInt       doff; // Offset in global vector for refined domain
+    PetscInt       dof;
 
-    // TODO: dof here must be only for field 1
     PetscCall(PetscSectionGetFieldDof(gsRef, p, 0, &dof));
-    // TODO: we need to convert this patch refined point to a domain refined point
-    //   first get parent point for this point
-    //   convert parent point to domain point
-    //   get points produced by domain point
-    PetscCall(PetscSectionGetFieldOffset(dgs, points[p], 0, &doff));
-    for (PetscInt d = 0; d < dof; ++d) rows[off + d] = doff + d;
+    // Get parent point in coarse patch for this point in refined patch
+    PetscCall(DMPlexTransformGetSourcePoint(((DM_Plex*)rpatch->data)->tr, p, &cct, &ct, &cp, &r));
+    // Convert parent point in coarse patch to point in coarse domain
+    dcp = points[cp];
+    // Get points produced by domain point
+    PetscCall(DMPlexTransformGetTargetPoint(((DM_Plex*)rdm->data)->tr, cct, ct, dcp, r, &dp));
+    PetscCall(PetscSectionGetFieldOffset(dgsRef, dp, 0, &doff));
+    for (PetscInt d = 0; d < dof; ++d) rows[i++] = doff + d;
   }
   for (PetscInt cl = 0, i = 0; cl < Ncl*2; cl += 2) {
     PetscInt dof, doff;
@@ -342,7 +372,7 @@ int main(int argc, char **argv)
   PetscCall(PetscInitialize(&argc, &argv, NULL, help));
   PetscCall(ProcessOptions(PETSC_COMM_WORLD, &user));
   PetscCall(CreateMesh(PETSC_COMM_WORLD, &user, &dm));
-  PetscCall(DMRefine(dm, PETSC_COMM_WORLD, &rdm));
+  PetscCall(RefineMesh(dm, &rdm));
   PetscCall(SetupDiscretization(dm, 1, names, SetupPrimalProblem, &user));
   PetscCall(SetupDiscretization(rdm, 1, names, SetupPrimalProblem, &user));
   // Create global prolongator
