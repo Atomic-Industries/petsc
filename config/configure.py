@@ -197,7 +197,7 @@ def chksynonyms():
 
 def chkwincompilerusinglink():
   for arg in sys.argv:
-    if (arg.find('win32fe') >= 0 and (arg.find('f90') >=0 or arg.find('ifort') >=0 or arg.find('icl') >=0)):
+    if (arg.find('win32fe') >= 0 and (arg.find('ifort') >=0 or arg.find('icl') >=0)):
       return 1
   return 0
 
@@ -261,13 +261,14 @@ def chkcygwinpython():
   return 0
 
 def chkcygwinwindowscompilers():
-  '''Adds win32fe for Microsoft/Intel compilers'''
+  '''Adds converts Microsoft and Intel Windows compilers to PETSc script using win32fe'''
   if os.path.exists('/usr/bin/cygcheck.exe'):
+    path = os.path.join(os.getcwd(),'lib','petsc','win32fe','bin')
     for l in range(1,len(sys.argv)):
       option = sys.argv[l]
-      for i in ['cl','icl','ifort']:
+      for i in ['cl','icl','ifort','tlib']:
         if option.startswith(i):
-          sys.argv[l] = 'win32fe '+option
+          sys.argv[l] = os.path.join(path,'win_'+option)
           break
   return 0
 
