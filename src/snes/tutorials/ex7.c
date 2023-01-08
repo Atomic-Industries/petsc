@@ -404,7 +404,7 @@ static PetscErrorCode TestFreeField(DM dm)
 
       tmp1 += 2. * PetscSqr(PetscSinReal(0.5 * coef[d] * idx));
       for (PetscInt i = 0; i < dof; ++i) tmp[i] = PETSC_i * PetscSinReal(coef[d] * idx) * psih[off + i];
-      for (PetscInt c = 0; c < 3; ++c) ComputeGamma(d, 3, &tmp[c]);
+      for (PetscInt c = 0; c < 3; ++c) PetscCall(ComputeGamma(d, 3, &tmp[c]));
       for (PetscInt i = 0; i < dof; ++i) dh[off + i] += tmp[i];
     }
     for (PetscInt i = 0; i < dof; ++i) dh[off + i] += (M + tmp1) * psih[off + i];
