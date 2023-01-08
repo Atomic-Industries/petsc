@@ -3887,7 +3887,7 @@ static PetscErrorCode MatSeqAIJCUSPARSEMultStruct_Destroy(Mat_SeqAIJCUSPARSEMult
 #endif
       } else {
         mat = (CsrMatrix *)(*matstruct)->mat;
-        CsrMatrix_Destroy(&mat);
+        PetscCall(CsrMatrix_Destroy(&mat));
       }
     }
     if ((*matstruct)->descr) PetscCallCUSPARSE(cusparseDestroyMatDescr((*matstruct)->descr));

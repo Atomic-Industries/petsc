@@ -445,7 +445,7 @@ __device__ void landau_jac_kernel(const PetscInt num_grids, const PetscInt jpidx
             for (q = 0; q < nr; q++) {
               for (d = 0; d < nc; d++) vals[q * nc + d] = s_scale[f][q] * s_scale[g][d] * s_fieldMats[f][g];
             }
-            MatSetValuesDevice(d_mat, nr, s_idx[f], nc, s_idx[g], vals, ADD_VALUES);
+            static_cast<void>(MatSetValuesDevice(d_mat, nr, s_idx[f], nc, s_idx[g], vals, ADD_VALUES));
           }
         }
         __syncthreads();
@@ -637,7 +637,7 @@ __global__ void __launch_bounds__(256, 4) landau_mass(const PetscInt dim, const 
             for (q = 0; q < nr; q++) {
               for (d = 0; d < nc; d++) vals[q * nc + d] = (*s_scale)[f][q] * (*s_scale)[g][d] * (*s_fieldMats)[f][g];
             }
-            MatSetValuesDevice(d_mat, nr, (*s_idx)[f], nc, (*s_idx)[g], vals, ADD_VALUES);
+            static_cast<void>(MatSetValuesDevice(d_mat, nr, (*s_idx)[f], nc, (*s_idx)[g], vals, ADD_VALUES));
           }
         }
       }
@@ -835,10 +835,10 @@ PetscErrorCode LandauCUDAJacobian(DM plex[], const PetscInt Nq, const PetscInt b
           PetscCall(DMPlexMatSetClosure(plex[grid], section, globalSection, B, ej, elMat, ADD_VALUES));
           if (ej == -1) {
             int d, f;
-            PetscPrintf(PETSC_COMM_SELF, "GPU Element matrix\n");
+            PetscCall(PetscPrintf(PETSC_COMM_SELF, "GPU Element matrix\n"));
             for (d = 0; d < totDim; ++d) {
-              for (f = 0; f < totDim; ++f) PetscPrintf(PETSC_COMM_SELF, " %12.5e", PetscRealPart(elMat[d * totDim + f]));
-              PetscPrintf(PETSC_COMM_SELF, "\n");
+              for (f = 0; f < totDim; ++f) PetscCall(PetscPrintf(PETSC_COMM_SELF, " %12.5e", PetscRealPart(elMat[d * totDim + f])));
+              PetscCall(PetscPrintf(PETSC_COMM_SELF, "\n"));
             }
           }
         }

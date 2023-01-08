@@ -58,13 +58,13 @@ protected:
   template <typename U = T>
   PETSC_NODISCARD static constexpr PetscErrorCode record_event_(const typename U::event_type &) noexcept
   {
-    return 0;
+    return PETSC_SUCCESS;
   }
 
   template <typename U = T>
   PETSC_NODISCARD static constexpr PetscErrorCode wait_for_(const typename U::event_type &) noexcept
   {
-    return 0;
+    return PETSC_SUCCESS;
   }
 };
 

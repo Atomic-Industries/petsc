@@ -175,9 +175,9 @@ PETSC_INTERN PetscErrorCode PetscLogEventResume_Internal(PetscLogEvent);
 PETSC_EXTERN PetscBool PetscLogGpuTimeFlag;
   #endif
 #else /* PETSC_USE_LOG */
-  #define PetscLogGetCurrentEvent_Internal(event) ((*(event) = PETSC_DECIDE), 0)
-  #define PetscLogEventPause_Internal(event)      0
-  #define PetscLogEventResume_Internal(event)     0
+  #define PetscLogGetCurrentEvent_Internal(event) ((*(event) = PETSC_DECIDE), PETSC_SUCCESS)
+  #define PetscLogEventPause_Internal(event)      PETSC_SUCCESS
+  #define PetscLogEventResume_Internal(event)     PETSC_SUCCESS
 #endif /* PETSC_USE_LOG */
 static inline PetscErrorCode PetscLogPauseCurrentEvent_Internal(PetscLogEvent *event)
 {

@@ -903,7 +903,7 @@ template <typename T>
 static inline constexpr unsigned integer_log2(T x) noexcept
 {
   static_assert(std::numeric_limits<T>::is_integer && std::is_unsigned<T>::value, "");
-  return x ? 1 + integer_log2(x >> 1) : -1;
+  return x ? 1 + integer_log2(x >> 1) : std::numeric_limits<unsigned>::max();
 }
 
 } // namespace detail

@@ -153,7 +153,7 @@ static PetscErrorCode PCDestroy_VPBJacobi_CUDA(PC pc)
 
   PetscFunctionBegin;
   PetscCallCXX(delete static_cast<PC_VPBJacobi_CUDA *>(jac->spptr));
-  PCDestroy_VPBJacobi(pc);
+  PetscCall(PCDestroy_VPBJacobi(pc));
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 

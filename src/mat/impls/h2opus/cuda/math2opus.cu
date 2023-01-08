@@ -31,7 +31,7 @@ PETSC_INTERN PetscErrorCode MatApproximateNorm_Private(Mat, NormType, PetscInt, 
   #if defined(PETSC_H2OPUS_USE_GPU)
     #define MatH2OpusUpdateIfNeeded(A, B) MatBindToCPU(A, (PetscBool)((A)->boundtocpu || (B)))
   #else
-    #define MatH2OpusUpdateIfNeeded(A, B) 0
+    #define MatH2OpusUpdateIfNeeded(A, B) PETSC_SUCCESS
   #endif
 
 // TODO H2OPUS:

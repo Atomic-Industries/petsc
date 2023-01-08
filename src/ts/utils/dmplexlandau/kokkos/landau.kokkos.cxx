@@ -382,7 +382,7 @@ PetscErrorCode landau_mat_assemble(PetscSplitCSRDataStructure d_mat, PetscScalar
     for (q = 0; q < nr; q++) {
       for (d = 0; d < nc; d++) vals[q * nc + d] = row_scale[q] * col_scale[d] * Aij;
     }
-    PetscCallAbort(PETSC_COMM_SELF, MatSetValuesDevice(d_mat, nr, rows, nc, cols, vals, ADD_VALUES));
+    static_cast<void>(MatSetValuesDevice(d_mat, nr, rows, nc, cols, vals, ADD_VALUES));
   }
   return PETSC_SUCCESS;
 }
@@ -725,7 +725,7 @@ PetscErrorCode LandauKokkosJacobian(DM plex[], const PetscInt Nq, const PetscInt
                   d_elem_mats(b_id, grid, loc_elem, fOff) = t;
 #endif
                 } else {
-                  PetscCallAbort(PETSC_COMM_SELF, landau_mat_assemble(d_mat, d_coo_vals, t, f, g, Nb, moffset, loc_elem, fieldA, maps[grid], d_coo_elem_offsets, d_coo_elem_fullNb, d_coo_elem_point_offsets, b_elem_idx, b_id * coo_sz_batch));
+                  static_cast<void>(landau_mat_assemble(d_mat, d_coo_vals, t, f, g, Nb, moffset, loc_elem, fieldA, maps[grid], d_coo_elem_offsets, d_coo_elem_fullNb, d_coo_elem_point_offsets, b_elem_idx, b_id * coo_sz_batch));
                 }
               });
             });
@@ -777,7 +777,7 @@ PetscErrorCode LandauKokkosJacobian(DM plex[], const PetscInt Nq, const PetscInt
                   d_elem_mats(b_id, grid, loc_elem, fOff) = t;
 #endif
                 } else {
-                  PetscCallAbort(PETSC_COMM_SELF, landau_mat_assemble(d_mat, d_coo_vals, t, f, g, Nb, moffset, loc_elem, fieldA, maps[grid], d_coo_elem_offsets, d_coo_elem_fullNb, d_coo_elem_point_offsets, b_elem_idx, b_id * coo_sz_batch));
+                  static_cast<void>(landau_mat_assemble(d_mat, d_coo_vals, t, f, g, Nb, moffset, loc_elem, fieldA, maps[grid], d_coo_elem_offsets, d_coo_elem_fullNb, d_coo_elem_point_offsets, b_elem_idx, b_id * coo_sz_batch));
                 }
               });
             });
