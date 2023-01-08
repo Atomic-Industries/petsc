@@ -686,7 +686,7 @@ PetscErrorCode DMSwarmGetMigrateType(DM dm, DMSwarmMigrateType *mtype)
   PetscValidHeaderSpecific(dm, DM_CLASSID, 1);
   PetscValidIntPointer(mtype, 2);
   *mtype = ((DM_Swarm *)dm->data)->migrate_type;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@
@@ -708,5 +708,5 @@ PetscErrorCode DMSwarmSetMigrateType(DM dm, DMSwarmMigrateType mtype)
   PetscValidHeaderSpecific(dm, DM_CLASSID, 1);
   PetscValidLogicalCollectiveInt(dm, mtype, 2);
   ((DM_Swarm *)dm->data)->migrate_type = mtype;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

@@ -22,7 +22,7 @@ PetscErrorCode ProcessOptions(MPI_Comm comm, AppCtx *options)
   PetscOptionsBegin(comm, "", "Meshing Problem Options", "DMPLEX");
   PetscCall(PetscOptionsBool("-use_pv", "Use Pauli-Villars preconditioning", "ex1.c", options->usePV, &options->usePV, NULL));
   PetscOptionsEnd();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
@@ -32,7 +32,7 @@ PetscErrorCode CreateMesh(MPI_Comm comm, AppCtx *user, DM *dm)
   PetscCall(DMSetType(*dm, DMPLEX));
   PetscCall(DMSetFromOptions(*dm));
   PetscCall(DMViewFromOptions(*dm, NULL, "-dm_view"));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupDiscretization(DM dm, AppCtx *ctx)
@@ -51,7 +51,7 @@ static PetscErrorCode SetupDiscretization(DM dm, AppCtx *ctx)
   PetscCall(PetscSectionSetUp(s));
   PetscCall(DMSetLocalSection(dm, s));
   PetscCall(PetscSectionDestroy(&s));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode SetupAuxDiscretization(DM dm, AppCtx *user)
@@ -80,7 +80,7 @@ static PetscErrorCode SetupAuxDiscretization(DM dm, AppCtx *user)
   PetscCall(DMDestroy(&dmAux));
   PetscCall(DMSetAuxiliaryVec(dm, NULL, 0, 0, gauge));
   PetscCall(VecDestroy(&gauge));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PrintVertex(DM dm, PetscInt v)
@@ -102,7 +102,7 @@ static PetscErrorCode PrintVertex(DM dm, PetscInt v)
     PetscCall(PetscPrintf(comm, " %" PetscInt_FMT, (v / sum) % extent[d]));
     if (d < dim) sum *= extent[d];
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 // Apply \gamma_\mu
@@ -139,7 +139,7 @@ static PetscErrorCode ComputeGamma(PetscInt d, PetscInt ldx, PetscScalar f[])
   default:
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_ARG_OUTOFRANGE, "Direction for gamma %" PetscInt_FMT " not in [0, 4)", d);
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 // Apply (1 \pm \gamma_\mu)/2
@@ -181,7 +181,7 @@ static PetscErrorCode ComputeGammaFactor(PetscInt d, PetscBool forward, PetscInt
   f[1 * ldx] *= 0.5;
   f[2 * ldx] *= 0.5;
   f[3 * ldx] *= 0.5;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #include <petsc/private/dmpleximpl.h>
@@ -201,7 +201,7 @@ static PetscErrorCode ComputeAction(PetscInt d, PetscBool forward, const PetscSc
   for (PetscInt c = 0; c < 3; ++c) PetscCall(ComputeGammaFactor(d, forward, 3, &tmp[c]));
   // Note that we are subtracting this contribution
   for (PetscInt i = 0; i < 12; ++i) f[i] -= tmp[i];
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -248,19 +248,19 @@ static PetscErrorCode ComputeResidual(DM dm, Vec u, Vec f)
   }
   PetscCall(VecRestoreArray(f, &fa));
   PetscCall(VecRestoreArrayRead(u, &ua));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode CreateJacobian(DM dm, Mat *J)
 {
   PetscFunctionBegin;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode ComputeJacobian(DM dm, Vec u, Mat J)
 {
   PetscFunctionBegin;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode PrintTraversal(DM dm)
@@ -290,7 +290,7 @@ static PetscErrorCode PrintTraversal(DM dm)
       PetscCall(PetscPrintf(comm, "\n"));
     }
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscErrorCode ComputeFFT(Mat FT, PetscInt Nc, Vec x, Vec p)
@@ -320,7 +320,7 @@ static PetscErrorCode ComputeFFT(Mat FT, PetscInt Nc, Vec x, Vec p)
     PetscCall(VecDestroy(&pComp[i]));
   }
   PetscCall(PetscFree2(xComp, pComp));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*
@@ -457,7 +457,7 @@ static PetscErrorCode TestFreeField(DM dm)
   PetscCall(DMRestoreGlobalVector(dm, &eta));
   PetscCall(DMRestoreGlobalVector(dm, &etaHat));
   PetscCall(DMRestoreGlobalVector(dm, &DHat));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 int main(int argc, char **argv)

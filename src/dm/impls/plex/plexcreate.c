@@ -1496,7 +1496,7 @@ static PetscErrorCode DMPlexTensorPointLexicographic_Private(PetscInt len, const
   }
   if (i == len) tup[i - 1] = max[i - 1];
   else ++tup[i];
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 static PetscInt TupleToIndex_Private(PetscInt len, const PetscInt max[], const PetscInt tup[])
@@ -1557,21 +1557,21 @@ static PetscErrorCode DMPlexCreateHypercubicMesh_Internal(DM dm, PetscInt dim, c
     const PetscInt vertex = TupleToIndex_Private(dim, vertices, vert) + numCells;
     PetscInt       s      = 0;
 
-    PetscPrintf(PETSC_COMM_SELF, "Vertex %" PetscInt_FMT ":", vertex);
-    for (d = 0; d < dim; ++d) PetscPrintf(PETSC_COMM_SELF, " %" PetscInt_FMT, vert[d]);
-    PetscPrintf(PETSC_COMM_SELF, "\n");
+    PetscCall(PetscPrintf(PETSC_COMM_SELF, "Vertex %" PetscInt_FMT ":", vertex));
+    for (d = 0; d < dim; ++d) PetscCall(PetscPrintf(PETSC_COMM_SELF, " %" PetscInt_FMT, vert[d]));
+    PetscCall(PetscPrintf(PETSC_COMM_SELF, "\n"));
     PetscCall(DMPlexSetCellType(dm, vertex, DM_POLYTOPE_POINT));
     for (d = 0; d < dim; ++d) {
       for (e = 0; e < dim; ++e) vtmp[e] = vert[e];
       vtmp[d] = (vert[d] + 1) % vertices[d];
       cone[0] = vertex;
       cone[1] = TupleToIndex_Private(dim, vertices, vtmp) + numCells;
-      PetscPrintf(PETSC_COMM_SELF, "  Vertex %" PetscInt_FMT ":", cone[1]);
-      for (e = 0; e < dim; ++e) PetscPrintf(PETSC_COMM_SELF, " %" PetscInt_FMT, vtmp[e]);
-      PetscPrintf(PETSC_COMM_SELF, "\n");
+      PetscCall(PetscPrintf(PETSC_COMM_SELF, "  Vertex %" PetscInt_FMT ":", cone[1]));
+      for (e = 0; e < dim; ++e) PetscCall(PetscPrintf(PETSC_COMM_SELF, " %" PetscInt_FMT, vtmp[e]));
+      PetscCall(PetscPrintf(PETSC_COMM_SELF, "\n"));
       PetscCall(DMPlexSetCone(dm, cell, cone));
       PetscCall(DMPlexSetCellType(dm, cell, DM_POLYTOPE_SEGMENT));
-      PetscPrintf(PETSC_COMM_SELF, "  Edge %" PetscInt_FMT " (%" PetscInt_FMT " %" PetscInt_FMT ")\n", cell, cone[0], cone[1]);
+      PetscCall(PetscPrintf(PETSC_COMM_SELF, "  Edge %" PetscInt_FMT " (%" PetscInt_FMT " %" PetscInt_FMT ")\n", cell, cone[0], cone[1]));
       ++cell;
     }
     for (d = 0; d < dim; ++d) {
@@ -1606,10 +1606,10 @@ static PetscErrorCode DMPlexCreateHypercubicMesh_Internal(DM dm, PetscInt dim, c
     const PetscInt vertex = TupleToIndex_Private(dim, vertices, vert);
 
     for (d = 0; d < dim; ++d) coords[vertex * dim + d] = lower[d] + ((upper[d] - lower[d]) / vertices[d]) * vert[d];
-    PetscPrintf(PETSC_COMM_SELF, "Vertex %" PetscInt_FMT ":", vertex);
-    for (d = 0; d < dim; ++d) PetscPrintf(PETSC_COMM_SELF, " %" PetscInt_FMT, vert[d]);
-    for (d = 0; d < dim; ++d) PetscPrintf(PETSC_COMM_SELF, " %g", (double)PetscRealPart(coords[vertex * dim + d]));
-    PetscPrintf(PETSC_COMM_SELF, "\n");
+    PetscCall(PetscPrintf(PETSC_COMM_SELF, "Vertex %" PetscInt_FMT ":", vertex));
+    for (d = 0; d < dim; ++d) PetscCall(PetscPrintf(PETSC_COMM_SELF, " %" PetscInt_FMT, vert[d]));
+    for (d = 0; d < dim; ++d) PetscCall(PetscPrintf(PETSC_COMM_SELF, " %g", (double)PetscRealPart(coords[vertex * dim + d])));
+    PetscCall(PetscPrintf(PETSC_COMM_SELF, "\n"));
     PetscCall(DMPlexTensorPointLexicographic_Private(dim, vertices, vert));
   }
   PetscCall(VecRestoreArray(coordinates, &coords));
@@ -1630,7 +1630,7 @@ static PetscErrorCode DMPlexCreateHypercubicMesh_Internal(DM dm, PetscInt dim, c
     PetscCall(PetscObjectCompose((PetscObject)dm, "_extent", (PetscObject)c));
     PetscCall(PetscContainerDestroy(&c));
   }
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C
@@ -1692,7 +1692,7 @@ PetscErrorCode DMPlexCreateHypercubicMesh(MPI_Comm comm, PetscInt dim, const Pet
   }
   PetscCall(DMPlexCreateHypercubicMesh_Internal(*dm, dim, low, upp, edg, bdt));
   PetscCall(PetscFree4(edg, low, upp, bdt));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@C

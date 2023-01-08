@@ -340,7 +340,7 @@ PetscErrorCode MatConvert_NormalHermitian_HYPRE(Mat A, MatType type, MatReuse re
     PetscCall(MatConvert(A, MATAIJ, reuse, B));
     PetscCall(MatConvert(*B, type, MAT_INPLACE_MATRIX, B));
   } else PetscCall(MatConvert_Basic(A, type, reuse, B)); /* fall back to basic convert */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 #endif
 

@@ -6751,7 +6751,7 @@ PetscErrorCode DMPlexVecSetStar(DM dm, PetscSection section, Vec v, PetscInt poi
     for (PetscInt i = 0; i < dof; ++i) a[off + i] = values[n++];
   }
   PetscCall(VecRestoreArray(v, &a));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /* Check whether the given point is in the label. If not, update the offset to skip this point */
