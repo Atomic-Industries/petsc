@@ -265,7 +265,7 @@ def chkcygwinpython():
 def chkcygwinwindowscompilers():
   ''' Converts Microsoft and Intel Windows compilers to PETSc script using win32fe'''
   if os.path.exists('/usr/bin/cygcheck.exe'):
-    path = os.path.join(os.getcwd(),'lib','petsc','win32fe','bin')
+    path = os.path.join(os.getcwd(),'lib','petsc','bin','win32fe')
     for l in range(1,len(sys.argv)):
       option = sys.argv[l]
       for i in ['cl','icl','ifort','tlib','lib']:
