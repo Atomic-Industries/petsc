@@ -25,7 +25,7 @@ PetscErrorCode PetscObjectSAWsTakeAccess(PetscObject obj)
     /* cannot wrap with PetscPushStack() because that also deals with the locks */
     SAWs_Lock();
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C
@@ -47,7 +47,7 @@ PetscErrorCode PetscObjectSAWsGrantAccess(PetscObject obj)
     /* cannot wrap with PetscPushStack() because that also deals with the locks */
     SAWs_Unlock();
   }
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /*@C

@@ -36,41 +36,41 @@ PetscViewer PETSC_VIEWER_SAWS_(MPI_Comm comm)
   PetscFunctionBegin;
   ierr = PetscCommDuplicate(comm, &ncomm, NULL);
   if (ierr) {
-    PetscError(PETSC_COMM_SELF, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, " ");
-    PetscFunctionReturn(PETSC_SUCCESS);
+    ierr = PetscError(PETSC_COMM_SELF, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, " ");
+    PetscFunctionReturn(NULL);
   }
   if (Petsc_Viewer_SAWs_keyval == MPI_KEYVAL_INVALID) {
-    ierr = MPI_Comm_create_keyval(MPI_COMM_NULL_COPY_FN, MPI_COMM_NULL_DELETE_FN, &Petsc_Viewer_SAWs_keyval, 0);
+    ierr = (PetscErrorCode)MPI_Comm_create_keyval(MPI_COMM_NULL_COPY_FN, MPI_COMM_NULL_DELETE_FN, &Petsc_Viewer_SAWs_keyval, 0);
     if (ierr) {
-      PetscError(ncomm, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, 1, PETSC_ERROR_INITIAL, " ");
+      ierr = PetscError(ncomm, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, 1, PETSC_ERROR_INITIAL, " ");
       PetscFunctionReturn(NULL);
     }
   }
-  ierr = MPI_Comm_get_attr(ncomm, Petsc_Viewer_SAWs_keyval, (void **)&viewer, &flag);
+  ierr = (PetscErrorCode)MPI_Comm_get_attr(ncomm, Petsc_Viewer_SAWs_keyval, (void **)&viewer, &flag);
   if (ierr) {
-    PetscError(ncomm, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, 1, PETSC_ERROR_INITIAL, " ");
+    ierr = PetscError(ncomm, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, 1, PETSC_ERROR_INITIAL, " ");
     PetscFunctionReturn(NULL);
   }
   if (!flag) { /* PetscViewer not yet created */
     ierr = PetscViewerSAWsOpen(comm, &viewer);
     if (ierr) {
-      PetscError(ncomm, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, 1, PETSC_ERROR_REPEAT, " ");
+      ierr = PetscError(ncomm, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, 1, PETSC_ERROR_REPEAT, " ");
       PetscFunctionReturn(NULL);
     }
     ierr = PetscObjectRegisterDestroy((PetscObject)viewer);
     if (ierr) {
-      PetscError(ncomm, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, 1, PETSC_ERROR_REPEAT, " ");
+      ierr = PetscError(ncomm, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, 1, PETSC_ERROR_REPEAT, " ");
       PetscFunctionReturn(NULL);
     }
-    ierr = MPI_Comm_set_attr(ncomm, Petsc_Viewer_SAWs_keyval, (void *)viewer);
+    ierr = (PetscErrorCode)MPI_Comm_set_attr(ncomm, Petsc_Viewer_SAWs_keyval, (void *)viewer);
     if (ierr) {
-      PetscError(ncomm, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, 1, PETSC_ERROR_INITIAL, " ");
+      ierr = PetscError(ncomm, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, 1, PETSC_ERROR_INITIAL, " ");
       PetscFunctionReturn(NULL);
     }
   }
   ierr = PetscCommDestroy(&ncomm);
   if (ierr) {
-    PetscError(PETSC_COMM_SELF, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, PETSC_ERR_PLIB, PETSC_ERROR_REPEAT, " ");
+    ierr = PetscError(PETSC_COMM_SELF, __LINE__, "PETSC_VIEWER_SAWS_", __FILE__, PETSC_ERR_PLIB, PETSC_ERROR_REPEAT, " ");
     PetscFunctionReturn(NULL);
   }
   PetscFunctionReturn(viewer);

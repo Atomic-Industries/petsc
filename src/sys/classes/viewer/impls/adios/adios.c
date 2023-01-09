@@ -19,10 +19,10 @@ static PetscErrorCode PetscViewerFileClose_ADIOS(PetscViewer viewer)
   PetscFunctionBegin;
   switch (adios->btype) {
   case FILE_MODE_READ:
-    PetscCall(adios_read_close(adios->adios_fp));
+    PetscCallExternal(adios_read_close, adios->adios_fp);
     break;
   case FILE_MODE_WRITE:
-    PetscCall(adios_close(adios->adios_handle));
+    PetscCallExternal(adios_close, adios->adios_handle);
     break;
   default:
     break;
