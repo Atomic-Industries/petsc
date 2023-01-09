@@ -92,7 +92,7 @@ static PetscErrorCode deletemouselist_Win32(WindowNode deletelist)
   if (deletelist->wprev) deletelist->wprev->wnext = deletelist->wnext;
   if (deletelist->wnext) deletelist->wnext->wprev = deletelist->wprev;
   PetscFree(deletelist);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode PetscDrawGetMouseButton_Win32(PetscDraw draw, PetscDrawButton *button, PetscReal *x_user, PetscReal *y_user, PetscReal *x_phys, PetscReal *y_phys)
@@ -152,7 +152,7 @@ static PetscErrorCode TranslateColor_Win32(PetscDraw draw, int color)
   /* Maps single color value into the RGB colors in our tables */
   PetscDraw_Win32 *windraw = (PetscDraw_Win32 *)draw->data;
   windraw->currentcolor    = RGB(RedMap[color], GreenMap[color], BlueMap[color]);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode AverageColorRectangle_Win32(PetscDraw draw, int c1, int c2, int c3, int c4)
@@ -161,7 +161,7 @@ static PetscErrorCode AverageColorRectangle_Win32(PetscDraw draw, int c1, int c2
     will be changed once the color gradient problem is worked out */
   PetscDraw_Win32 *windraw = (PetscDraw_Win32 *)draw->data;
   windraw->currentcolor    = RGB(((RedMap[c1] + RedMap[c2] + RedMap[c3] + RedMap[c4]) / 4), ((GreenMap[c1] + GreenMap[c2] + GreenMap[c3] + GreenMap[c4]) / 4), ((BlueMap[c1] + BlueMap[c2] + BlueMap[c3] + BlueMap[c4]) / 4));
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode AverageColorTriangle_Win32(PetscDraw draw, int c1, int c2, int c3)
@@ -170,7 +170,7 @@ static PetscErrorCode AverageColorTriangle_Win32(PetscDraw draw, int c1, int c2,
     will be changed once the color gradient problem is worked out */
   PetscDraw_Win32 *windraw = (PetscDraw_Win32 *)draw->data;
   windraw->currentcolor    = RGB((RedMap[c1] + RedMap[c2] + RedMap[c3]) / 3, (GreenMap[c1] + GreenMap[c2] + GreenMap[c3]) / 3, (BlueMap[c1] + BlueMap[c2] + BlueMap[c3]) / 3);
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode PetscDrawRectangle_Win32(PetscDraw draw, PetscReal xl, PetscReal yl, PetscReal xr, PetscReal yr, int c1, int c2, int c3, int c4)

@@ -130,7 +130,7 @@ PetscErrorCode CholmodStart(Mat F)
   PetscFunctionBegin;
   if (chol->common) PetscFunctionReturn(PETSC_SUCCESS);
   PetscCall(PetscMalloc1(1, &chol->common));
-  PetscCall(!cholmod_X_start(chol->common));
+  PetscCallExternal(!cholmod_X_start, chol->common);
 
   c                = chol->common;
   c->error_handler = CholmodErrorHandler;
@@ -279,12 +279,12 @@ PETSC_INTERN PetscErrorCode MatDestroy_CHOLMOD(Mat F)
   Mat_CHOLMOD *chol = (Mat_CHOLMOD *)F->data;
 
   PetscFunctionBegin;
-  if (chol->spqrfact) PetscCall(!SuiteSparseQR_C_free(&chol->spqrfact, chol->common));
-  if (chol->factor) PetscCall(!cholmod_X_free_factor(&chol->factor, chol->common));
+  if (chol->spqrfact) PetscCallExternal(!SuiteSparseQR_C_free, &chol->spqrfact, chol->common);
+  if (chol->factor) PetscCallExternal(!cholmod_X_free_factor, &chol->factor, chol->common);
   if (chol->common->itype == CHOLMOD_INT) {
-    PetscCall(!cholmod_finish(chol->common));
+    PetscCallExternal(!cholmod_finish, chol->common);
   } else {
-    PetscCall(!cholmod_l_finish(chol->common));
+    PetscCallExternal(!cholmod_l_finish, chol->common);
   }
   PetscCall(PetscFree(chol->common));
   PetscCall(PetscFree(chol->matrix));
@@ -378,9 +378,9 @@ static PetscErrorCode MatSolve_CHOLMOD(Mat F, Vec B, Vec X)
   PetscCall(VecWrapCholmod(B, GET_ARRAY_READ, &cholB));
   PetscCall(VecWrapCholmod(X, GET_ARRAY_WRITE, &cholX));
   X_handle = &cholX;
-  PetscCall(!cholmod_X_solve2(CHOLMOD_A, chol->factor, &cholB, NULL, &X_handle, NULL, &Y_handle, &E_handle, chol->common));
-  PetscCall(!cholmod_X_free_dense(&Y_handle, chol->common));
-  PetscCall(!cholmod_X_free_dense(&E_handle, chol->common));
+  PetscCallExternal(!cholmod_X_solve2, CHOLMOD_A, chol->factor, &cholB, NULL, &X_handle, NULL, &Y_handle, &E_handle, chol->common);
+  PetscCallExternal(!cholmod_X_free_dense, &Y_handle, chol->common);
+  PetscCallExternal(!cholmod_X_free_dense, &E_handle, chol->common);
   PetscCall(VecUnWrapCholmod(B, GET_ARRAY_READ, &cholB));
   PetscCall(VecUnWrapCholmod(X, GET_ARRAY_WRITE, &cholX));
   PetscCall(PetscLogFlops(4.0 * chol->common->lnz));
@@ -397,9 +397,9 @@ static PetscErrorCode MatMatSolve_CHOLMOD(Mat F, Mat B, Mat X)
   PetscCall(MatDenseWrapCholmod(B, GET_ARRAY_READ, &cholB));
   PetscCall(MatDenseWrapCholmod(X, GET_ARRAY_WRITE, &cholX));
   X_handle = &cholX;
-  PetscCall(!cholmod_X_solve2(CHOLMOD_A, chol->factor, &cholB, NULL, &X_handle, NULL, &Y_handle, &E_handle, chol->common));
-  PetscCall(!cholmod_X_free_dense(&Y_handle, chol->common));
-  PetscCall(!cholmod_X_free_dense(&E_handle, chol->common));
+  PetscCallExternal(!cholmod_X_solve2, CHOLMOD_A, chol->factor, &cholB, NULL, &X_handle, NULL, &Y_handle, &E_handle, chol->common);
+  PetscCallExternal(!cholmod_X_free_dense, &Y_handle, chol->common);
+  PetscCallExternal(!cholmod_X_free_dense, &E_handle, chol->common);
   PetscCall(MatDenseUnWrapCholmod(B, GET_ARRAY_READ, &cholB));
   PetscCall(MatDenseUnWrapCholmod(X, GET_ARRAY_WRITE, &cholX));
   PetscCall(PetscLogFlops(4.0 * B->cmap->n * chol->common->lnz));

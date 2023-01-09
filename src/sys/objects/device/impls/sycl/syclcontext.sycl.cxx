@@ -61,7 +61,7 @@ public:
     PetscFunctionReturn(PETSC_SUCCESS);
   };
   PETSC_NODISCARD static PetscErrorCode changeStreamType(PetscDeviceContext, PetscStreamType) noexcept { SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Not implemented"); };
-  PETSC_NODISCARD static PetscErrorCode setUp(PetscDeviceContext) noexcept { return 0; }; // Nothing to setup
+  PETSC_NODISCARD static PetscErrorCode setUp(PetscDeviceContext) noexcept { return PETSC_SUCCESS; }; // Nothing to setup
   PETSC_NODISCARD static PetscErrorCode query(PetscDeviceContext, PetscBool *) noexcept { SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Not implemented"); };
   PETSC_NODISCARD static PetscErrorCode waitForContext(PetscDeviceContext, PetscDeviceContext) noexcept { SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Not implemented"); };
   PETSC_NODISCARD static PetscErrorCode synchronize(PetscDeviceContext) noexcept { SETERRQ(PETSC_COMM_SELF, PETSC_ERR_SUP, "Not implemented"); };

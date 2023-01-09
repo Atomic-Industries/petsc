@@ -1972,7 +1972,7 @@ static PetscErrorCode PCHYPRESetType_HYPRE(PC pc, const char name[])
   }
   PetscCall(PetscStrcmp("ams", jac->hypre_type, &flag));
   if (flag) {
-    PetscCall(HYPRE_AMSCreate(&jac->hsolver));
+    PetscCallExternal(HYPRE_AMSCreate, &jac->hsolver);
     pc->ops->setfromoptions = PCSetFromOptions_HYPRE_AMS;
     pc->ops->view           = PCView_HYPRE_AMS;
     jac->destroy            = HYPRE_AMSDestroy;
@@ -2028,7 +2028,7 @@ static PetscErrorCode PCHYPRESetType_HYPRE(PC pc, const char name[])
   }
   PetscCall(PetscStrcmp("ads", jac->hypre_type, &flag));
   if (flag) {
-    PetscCall(HYPRE_ADSCreate(&jac->hsolver));
+    PetscCallExternal(HYPRE_ADSCreate, &jac->hsolver);
     pc->ops->setfromoptions = PCSetFromOptions_HYPRE_ADS;
     pc->ops->view           = PCView_HYPRE_ADS;
     jac->destroy            = HYPRE_ADSDestroy;

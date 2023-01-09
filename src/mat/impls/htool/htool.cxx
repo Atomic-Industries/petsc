@@ -742,7 +742,7 @@ static PetscErrorCode GenEntriesTranspose(PetscInt sdim, PetscInt M, PetscInt N,
   PetscScalar             *tmp;
 
   PetscFunctionBegin;
-  generator->kernel(sdim, N, M, cols, rows, ptr, generator->kernelctx);
+  PetscCall(generator->kernel(sdim, N, M, cols, rows, ptr, generator->kernelctx));
   PetscCall(PetscMalloc1(M * N, &tmp));
   PetscCall(PetscArraycpy(tmp, ptr, M * N));
   for (PetscInt i = 0; i < M; ++i) {
