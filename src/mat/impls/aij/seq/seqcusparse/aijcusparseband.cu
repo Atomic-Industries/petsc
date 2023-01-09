@@ -153,7 +153,7 @@ static PetscErrorCode MatLUFactorNumeric_SeqAIJCUSPARSEBAND(Mat B, Mat A, const 
   PetscScalar                  *ba_t = cusparseTriFactors->a_band_d;
   int                          *bi_t = cusparseTriFactors->i_band_d;
   int                           Ni = 10, team_size = 9, Nf = 1, nVec = 56, nconcurrent = 1; // Nf is batch size - not used
-#if defined(AIJBANDUSEGROUPS)
+#if defined(AIJBANDUSEGROUPS) || defined(PETSC_USE_INFO)
   int nsm = -1;
 #endif
 
