@@ -681,7 +681,7 @@ PetscErrorCode DMPlexCreateBoxMesh_Tensor_SFC_Internal(DM dm, PetscInt dim, cons
   PetscInt local_elems = 0;
   for (ZCode z = layout.zstarts[rank]; z < layout.zstarts[rank + 1]; z++) {
     Ijk loc = ZCodeSplit(z);
-    if (IjkActive(layout.vextent, loc)) PetscZSetAdd(vset, z);
+    if (IjkActive(layout.vextent, loc)) PetscCall(PetscZSetAdd(vset, z));
     else {
       z += ZStepOct(z);
       continue;
@@ -693,7 +693,7 @@ PetscErrorCode DMPlexCreateBoxMesh_Tensor_SFC_Internal(DM dm, PetscInt dim, cons
         Ijk   inc  = closure_dim[dim][n];
         Ijk   nloc = {loc.i + inc.i, loc.j + inc.j, loc.k + inc.k};
         ZCode v    = ZEncode(nloc);
-        PetscZSetAdd(vset, v);
+        PetscCall(PetscZSetAdd(vset, v));
       }
     }
   }
@@ -737,7 +737,7 @@ PetscErrorCode DMPlexCreateBoxMesh_Tensor_SFC_Internal(DM dm, PetscInt dim, cons
 
   { // Create point SF
     PetscSF sf;
-    PetscSFCreate(PetscObjectComm((PetscObject)dm), &sf);
+    PetscCall(PetscSFCreate(PetscObjectComm((PetscObject)dm), &sf));
     PetscInt owned_verts = ZCodeFind(layout.zstarts[rank + 1], local_verts, vert_z);
     if (owned_verts < 0) owned_verts = -(owned_verts + 1); // We don't care whether the key was found
     PetscInt     num_ghosts = local_verts - owned_verts;   // Due to sorting, owned vertices always come first
