@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 from __future__ import print_function
 import os
@@ -266,8 +267,8 @@ def chkcygwinwindowscompilers():
     path = os.path.join(os.getcwd(),'lib','petsc','win32fe','bin')
     for l in range(1,len(sys.argv)):
       option = sys.argv[l]
-      for i in ['cl','icl','ifort','tlib']:
-        if option.startswith(i):
+      for i in ['cl','icl','ifort','tlib','lib']:
+        if option.endswith('='+i):
           sys.argv[l] = os.path.join(path,'win_'+option)
           break
   return 0
