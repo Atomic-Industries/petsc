@@ -489,7 +489,7 @@ PetscErrorCode PetscOmpCtrlDestroy(PetscOmpCtrl *pctrl)
   PetscFunctionBegin;
   hwloc_bitmap_free(ctrl->cpuset);
   hwloc_topology_destroy(ctrl->topology);
-  PetscOmpCtrlDestroyBarrier(ctrl);
+  PetscCall(PetscOmpCtrlDestroyBarrier(ctrl));
   PetscCallMPI(MPI_Comm_free(&ctrl->omp_comm));
   if (ctrl->is_omp_master) {
     hwloc_bitmap_free(ctrl->omp_cpuset);

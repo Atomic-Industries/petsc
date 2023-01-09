@@ -41,8 +41,8 @@ public:
     if (initialized()) PetscFunctionReturn(PETSC_SUCCESS);
     if (syclDevice_.is_gpu() && use_gpu_aware_mpi) {
       if (!isMPISyclAware_()) {
-        (*PetscErrorPrintf)("PETSc is configured with sycl support, but your MPI is not aware of sycl GPU devices. For better performance, please use a sycl GPU-aware MPI.\n");
-        (*PetscErrorPrintf)("If you do not care, add option -use_gpu_aware_mpi 0. To not see the message again, add the option to your .petscrc, OR add it to the env var PETSC_OPTIONS.\n");
+        PetscCall((*PetscErrorPrintf)("PETSc is configured with sycl support, but your MPI is not aware of sycl GPU devices. For better performance, please use a sycl GPU-aware MPI.\n"));
+        PetscCall((*PetscErrorPrintf)("If you do not care, add option -use_gpu_aware_mpi 0. To not see the message again, add the option to your .petscrc, OR add it to the env var PETSC_OPTIONS.\n"));
         PETSCABORT(PETSC_COMM_SELF, PETSC_ERR_LIB);
       }
     }

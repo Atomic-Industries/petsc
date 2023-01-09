@@ -14,14 +14,14 @@ PetscErrorCode VecHYPRE_IJVectorCreate(PetscLayout map, VecHYPRE_IJVector *ij)
   PetscFunctionBegin;
   PetscCall(PetscNew(&nij));
   PetscCall(PetscLayoutSetUp(map));
-  PetscCall(HYPRE_IJVectorCreate(map->comm, map->rstart, map->rend - 1, &nij->ij));
-  PetscCall(HYPRE_IJVectorSetObjectType(nij->ij, HYPRE_PARCSR));
+  PetscCallExternal(HYPRE_IJVectorCreate, map->comm, map->rstart, map->rend - 1, &nij->ij);
+  PetscCallExternal(HYPRE_IJVectorSetObjectType, nij->ij, HYPRE_PARCSR);
 #if defined(PETSC_HAVE_HYPRE_DEVICE)
-  PetscCall(HYPRE_IJVectorInitialize_v2(nij->ij, HYPRE_MEMORY_DEVICE));
+  PetscCallExternal(HYPRE_IJVectorInitialize_v2, nij->ij, HYPRE_MEMORY_DEVICE);
 #else
-  PetscCall(HYPRE_IJVectorInitialize(nij->ij));
+  PetscCallExternal(HYPRE_IJVectorInitialize, nij->ij);
 #endif
-  PetscCall(HYPRE_IJVectorAssemble(nij->ij));
+  PetscCallExternal(HYPRE_IJVectorAssemble, nij->ij);
   *ij = nij;
   PetscFunctionReturn(PETSC_SUCCESS);
 }
@@ -42,14 +42,14 @@ PetscErrorCode VecHYPRE_IJVectorCopy(Vec v, VecHYPRE_IJVector ij)
 
   PetscFunctionBegin;
 #if defined(PETSC_HAVE_HYPRE_DEVICE)
-  PetscCall(HYPRE_IJVectorInitialize_v2(ij->ij, HYPRE_MEMORY_DEVICE));
+  PetscCallExternal(HYPRE_IJVectorInitialize_v2, ij->ij, HYPRE_MEMORY_DEVICE);
 #else
-  PetscCall(HYPRE_IJVectorInitialize(ij->ij));
+  PetscCallExternal(HYPRE_IJVectorInitialize, ij->ij);
 #endif
   PetscCall(VecGetArrayRead(v, &array));
-  PetscCall(HYPRE_IJVectorSetValues(ij->ij, v->map->n, NULL, (HYPRE_Complex *)array));
+  PetscCallExternal(HYPRE_IJVectorSetValues, ij->ij, v->map->n, NULL, (HYPRE_Complex *)array);
   PetscCall(VecRestoreArrayRead(v, &array));
-  PetscCall(HYPRE_IJVectorAssemble(ij->ij));
+  PetscCallExternal(HYPRE_IJVectorAssemble, ij->ij);
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 

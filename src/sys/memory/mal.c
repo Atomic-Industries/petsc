@@ -63,7 +63,7 @@ PETSC_EXTERN PetscErrorCode PetscMallocAlign(size_t mem, PetscBool clear, int li
     } else {
       ptr = (int *)malloc(mem + 2 * PETSC_MEMALIGN);
     }
-    PetscCheck(ptr, PETSC_COMM_SELF, line, func, file, PETSC_ERR_MEM, PETSC_ERROR_INITIAL, "Memory requested %.0f", (PetscLogDouble)mem);
+    PetscCheck(ptr, PETSC_COMM_SELF, PETSC_ERR_MEM, "Memory requested %.0f", (PetscLogDouble)mem);
     shift          = (int)(((PETSC_UINTPTR_T)ptr) % PETSC_MEMALIGN);
     shift          = (2 * PETSC_MEMALIGN - shift) / sizeof(int);
     ptr[shift - 1] = shift + SHIFT_CLASSID;
@@ -90,15 +90,15 @@ PETSC_EXTERN PetscErrorCode PetscFreeAlign(void *ptr, int line, const char func[
     */
     const int shift = *(((int *)ptr) - 1) - SHIFT_CLASSID;
 
-    PetscCheck(shift <= PETSC_MEMALIGN - 1, PETSC_COMM_SELF, line, func, file, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, "Likely memory corruption in heap");
-    PetscCheck(shift >= 0, PETSC_COMM_SELF, line, func, file, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, "Likely memory corruption in heap");
+    PetscCheck(shift <= PETSC_MEMALIGN - 1, PETSC_COMM_SELF, PETSC_ERR_PLIB, "Likely memory corruption in heap");
+    PetscCheck(shift >= 0, PETSC_COMM_SELF, PETSC_ERR_PLIB, "Likely memory corruption in heap");
     ptr = (void *)(((int *)ptr) - shift);
   }
   #endif
 
   #if PetscDefined(HAVE_FREE_RETURN_INT)
   int err = free(ptr);
-  PetscCheck(!err, PETSC_COMM_SELF, line, func, file, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, "System free returned error %d\n", err);
+  PetscCheck(!err, PETSC_COMM_SELF, PETSC_ERR_PLIB, "System free returned error %d\n", err);
   #else
   free(ptr);
   #endif
@@ -123,8 +123,8 @@ PETSC_EXTERN PetscErrorCode PetscReallocAlign(size_t mem, int line, const char f
       the original address provided by the system malloc().
     */
     int shift = *(((int *)*result) - 1) - SHIFT_CLASSID;
-    PetscCheck(shift <= PETSC_MEMALIGN - 1, PETSC_COMM_SELF, line, func, file, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, "Likely memory corruption in heap");
-    PetscCheck(shift >= 0, PETSC_COMM_SELF, line, func, file, PETSC_ERR_PLIB, PETSC_ERROR_INITIAL, "Likely memory corruption in heap");
+    PetscCheck(shift <= PETSC_MEMALIGN - 1, PETSC_COMM_SELF, PETSC_ERR_PLIB, "Likely memory corruption in heap");
+    PetscCheck(shift >= 0, PETSC_COMM_SELF, PETSC_ERR_PLIB, "Likely memory corruption in heap");
     *result = (void *)(((int *)*result) - shift);
   }
   #endif

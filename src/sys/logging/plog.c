@@ -110,9 +110,9 @@ PETSC_TLS PetscLogDouble petsc_gtime_th          = 0.0;
 PetscErrorCode PetscAddLogDouble(PetscLogDouble *tot, PetscLogDouble *tot_th, PetscLogDouble tmp)
 {
   *tot_th += tmp;
-  PetscSpinlockLock(&PetscLogSpinLock);
+  PetscCall(PetscSpinlockLock(&PetscLogSpinLock));
   *tot += tmp;
-  PetscSpinlockUnlock(&PetscLogSpinLock);
+  PetscCall(PetscSpinlockUnlock(&PetscLogSpinLock));
   return PETSC_SUCCESS;
 }
 
@@ -120,19 +120,19 @@ PetscErrorCode PetscAddLogDoubleCnt(PetscLogDouble *cnt, PetscLogDouble *tot, Pe
 {
   *cnt_th = *cnt_th + 1;
   *tot_th += tmp;
-  PetscSpinlockLock(&PetscLogSpinLock);
+  PetscCall(PetscSpinlockLock(&PetscLogSpinLock));
   *tot += (PetscLogDouble)(tmp);
   *cnt += *cnt + 1;
-  PetscSpinlockUnlock(&PetscLogSpinLock);
+  PetscCall(PetscSpinlockUnlock(&PetscLogSpinLock));
   return PETSC_SUCCESS;
 }
 
 PetscInt PetscLogGetTid(void)
 {
   if (petsc_log_tid < 0) {
-    PetscSpinlockLock(&PetscLogSpinLock);
+    PetscCall(PetscSpinlockLock(&PetscLogSpinLock));
     petsc_log_tid = ++petsc_log_gid;
-    PetscSpinlockUnlock(&PetscLogSpinLock);
+    PetscCall(PetscSpinlockUnlock(&PetscLogSpinLock));
   }
   return petsc_log_tid;
 }

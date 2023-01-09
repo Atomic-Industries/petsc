@@ -148,11 +148,10 @@ PetscErrorCode PetscDLClose(PetscDLHandle *handle)
   #if defined(PETSC_HAVE_FREELIBRARY)
   if (FreeLibrary((dlhandle_t)*handle) == 0) {
     #if defined(PETSC_HAVE_GETLASTERROR)
-    PetscErrorCode ierr;
-    char          *buff = NULL;
-    DWORD          erc  = GetLastError();
+    char *buff = NULL;
+    DWORD erc  = GetLastError();
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, erc, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&buff, 0, NULL);
-    ierr = PetscErrorPrintf("Error closing dynamic library:\n  Error message from FreeLibrary() %s\n", buff);
+    PetscCall(PetscErrorPrintf("Error closing dynamic library:\n  Error message from FreeLibrary() %s\n", buff));
     LocalFree(buff);
     #else
     SETERRQ(PETSC_COMM_SELF, PETSC_ERR_LIB, "Error closing dynamic library:\n  Error message from FreeLibrary() %s", "unavailable");

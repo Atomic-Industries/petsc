@@ -61,7 +61,7 @@ PetscErrorCode FormFunctionLocalVec(DMDALocalInfo *info, Vec x, Vec f, AppCtx *u
       if (i == 0 || j == 0 || i == mx - 1 || j == my - 1) {
         c.x = i * hx;
         c.y = j * hy;
-        MMSSolution1(user, &c, &mms_solution);
+        static_cast<void>(MMSSolution1(user, &c, &mms_solution));
         fv(j, i) = 2.0 * (hydhx + hxdhy) * (xv(j, i) - mms_solution);
       } else {
         u  = xv(j, i);

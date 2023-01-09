@@ -1539,7 +1539,7 @@ static inline PetscErrorCode PetscMemmove(void *a, const void *b, size_t n)
       const ptrdiff_t diff = b - a;
 
       memcpy(a, b, diff);
-      PetscCall(PetscMemmove(b, b + diff, n - diff));
+      PetscCall(PetscMemmove((void *)b, b + diff, n - diff));
     }
   } else {
     if (b <= a - n) {
@@ -1547,7 +1547,7 @@ static inline PetscErrorCode PetscMemmove(void *a, const void *b, size_t n)
     } else {
       const ptrdiff_t diff = a - b;
 
-      memcpy(b + n, b + (n - diff), diff);
+      memcpy((void *)b + n, b + (n - diff), diff);
       PetscCall(PetscMemmove(a, b, n - diff));
     }
   }

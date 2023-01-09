@@ -1082,10 +1082,10 @@ PETSC_INTERN PetscErrorCode PetscInitialize_Common(const char *prog, const char 
   if (!flg) PetscCall(PetscOptionsPushGetViewerOff(PETSC_TRUE));
 
 #if defined(PETSC_HAVE_ADIOS)
-  PetscCall(adios_init_noxml(PETSC_COMM_WORLD));
-  PetscCall(adios_declare_group(&Petsc_adios_group, "PETSc", "", adios_stat_default));
-  PetscCall(adios_select_method(Petsc_adios_group, "MPI", "", ""));
-  PetscCall(adios_read_init_method(ADIOS_READ_METHOD_BP, PETSC_COMM_WORLD, ""));
+  PetscCallExternal(adios_init_noxml, PETSC_COMM_WORLD);
+  PetscCallExternal(adios_declare_group, &Petsc_adios_group, "PETSc", "", adios_stat_default);
+  PetscCallExternal(adios_select_method, Petsc_adios_group, "MPI", "", "");
+  PetscCallExternal(adios_read_init_method, ADIOS_READ_METHOD_BP, PETSC_COMM_WORLD, "");
 #endif
 
 #if defined(__VALGRIND_H)
@@ -1375,8 +1375,8 @@ PetscErrorCode PetscFinalize(void)
 
   PetscCallMPI(MPI_Comm_rank(PETSC_COMM_WORLD, &rank));
 #if defined(PETSC_HAVE_ADIOS)
-  PetscCall(adios_read_finalize_method(ADIOS_READ_METHOD_BP_AGGREGATE));
-  PetscCall(adios_finalize(rank));
+  PetscCallExternal(adios_read_finalize_method, ADIOS_READ_METHOD_BP_AGGREGATE);
+  PetscCallExternal(adios_finalize, rank);
 #endif
   PetscCall(PetscOptionsHasName(NULL, NULL, "-citations", &flg));
   if (flg) {

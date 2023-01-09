@@ -288,7 +288,7 @@ static PetscErrorCode VecDestroy_SeqViennaCL_Private(Vec v)
   PetscFunctionBegin;
   PetscCall(PetscObjectSAWsViewOff(v));
 #if defined(PETSC_USE_LOG)
-  PetscLogObjectState((PetscObject)v, "Length=%" PetscInt_FMT, v->map->n);
+  PetscCall(PetscLogObjectState((PetscObject)v, "Length=%" PetscInt_FMT, v->map->n));
 #endif
   if (vs->array_allocated) PetscCall(PetscFree(vs->array_allocated));
   PetscCall(PetscFree(vs));
@@ -449,7 +449,7 @@ PetscErrorCode VecMAXPY_SeqViennaCL(Vec xin, PetscInt nv, const PetscScalar *alp
   PetscFunctionBegin;
   for (j = 0; j < nv; ++j) {
     if (j + 1 < nv) {
-      VecAXPBYPCZ_SeqViennaCL(xin, alpha[j], alpha[j + 1], 1.0, y[j], y[j + 1]);
+      PetscCall(VecAXPBYPCZ_SeqViennaCL(xin, alpha[j], alpha[j + 1], 1.0, y[j], y[j + 1]));
       ++j;
     } else {
       PetscCall(VecAXPY_SeqViennaCL(xin, alpha[j], y[j]));
