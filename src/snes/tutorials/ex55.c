@@ -117,7 +117,7 @@ static PetscErrorCode FormExactSolution(DM da, AppCtx *user, Vec U)
 static PetscErrorCode ZeroBCSolution(AppCtx *user, const DMDACoor2d *c, PetscScalar *u)
 {
   u[0] = 0.;
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* The functions below evaluate the MMS solution u(x,y) and associated forcing
@@ -131,13 +131,13 @@ static PetscErrorCode MMSSolution1(AppCtx *user, const DMDACoor2d *c, PetscScala
   PetscReal x = PetscRealPart(c->x), y = PetscRealPart(c->y);
   u[0] = x * (1 - x) * y * (1 - y);
   PetscLogFlops(5);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode MMSForcing1(AppCtx *user, const DMDACoor2d *c, PetscScalar *f)
 {
   PetscReal x = PetscRealPart(c->x), y = PetscRealPart(c->y);
   f[0] = 2 * x * (1 - x) + 2 * y * (1 - y) - user->param * PetscExpReal(x * (1 - x) * y * (1 - y));
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode MMSSolution2(AppCtx *user, const DMDACoor2d *c, PetscScalar *u)
@@ -145,13 +145,13 @@ static PetscErrorCode MMSSolution2(AppCtx *user, const DMDACoor2d *c, PetscScala
   PetscReal x = PetscRealPart(c->x), y = PetscRealPart(c->y);
   u[0] = PetscSinReal(PETSC_PI * x) * PetscSinReal(PETSC_PI * y);
   PetscLogFlops(5);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode MMSForcing2(AppCtx *user, const DMDACoor2d *c, PetscScalar *f)
 {
   PetscReal x = PetscRealPart(c->x), y = PetscRealPart(c->y);
   f[0] = 2 * PetscSqr(PETSC_PI) * PetscSinReal(PETSC_PI * x) * PetscSinReal(PETSC_PI * y) - user->param * PetscExpReal(PetscSinReal(PETSC_PI * x) * PetscSinReal(PETSC_PI * y));
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode MMSSolution3(AppCtx *user, const DMDACoor2d *c, PetscScalar *u)
@@ -159,14 +159,14 @@ static PetscErrorCode MMSSolution3(AppCtx *user, const DMDACoor2d *c, PetscScala
   PetscReal x = PetscRealPart(c->x), y = PetscRealPart(c->y);
   u[0] = PetscSinReal(user->m * PETSC_PI * x * (1 - y)) * PetscSinReal(user->n * PETSC_PI * y * (1 - x));
   PetscLogFlops(5);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode MMSForcing3(AppCtx *user, const DMDACoor2d *c, PetscScalar *f)
 {
   PetscReal x = PetscRealPart(c->x), y = PetscRealPart(c->y);
   PetscReal m = user->m, n = user->n, lambda = user->param;
   f[0] = (-(PetscExpReal(PetscSinReal(m * PETSC_PI * x * (1 - y)) * PetscSinReal(n * PETSC_PI * (1 - x) * y)) * lambda) + PetscSqr(PETSC_PI) * (-2 * m * n * ((-1 + x) * x + (-1 + y) * y) * PetscCosReal(m * PETSC_PI * x * (-1 + y)) * PetscCosReal(n * PETSC_PI * (-1 + x) * y) + (PetscSqr(m) * (PetscSqr(x) + PetscSqr(-1 + y)) + PetscSqr(n) * (PetscSqr(-1 + x) + PetscSqr(y))) * PetscSinReal(m * PETSC_PI * x * (-1 + y)) * PetscSinReal(n * PETSC_PI * (-1 + x) * y)));
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 static PetscErrorCode MMSSolution4(AppCtx *user, const DMDACoor2d *c, PetscScalar *u)
@@ -175,14 +175,14 @@ static PetscErrorCode MMSSolution4(AppCtx *user, const DMDACoor2d *c, PetscScala
   PetscReal       x = PetscRealPart(c->x), y = PetscRealPart(c->y);
   u[0] = (PetscPowReal(x, 4) - PetscSqr(Lx) * PetscSqr(x)) * (PetscPowReal(y, 4) - PetscSqr(Ly) * PetscSqr(y));
   PetscLogFlops(9);
-  return 0;
+  return PETSC_SUCCESS;
 }
 static PetscErrorCode MMSForcing4(AppCtx *user, const DMDACoor2d *c, PetscScalar *f)
 {
   const PetscReal Lx = 1., Ly = 1.;
   PetscReal       x = PetscRealPart(c->x), y = PetscRealPart(c->y);
   f[0] = (2 * PetscSqr(x) * (PetscSqr(x) - PetscSqr(Lx)) * (PetscSqr(Ly) - 6 * PetscSqr(y)) + 2 * PetscSqr(y) * (PetscSqr(Lx) - 6 * PetscSqr(x)) * (PetscSqr(y) - PetscSqr(Ly)) - user->param * PetscExpReal((PetscPowReal(x, 4) - PetscSqr(Lx) * PetscSqr(x)) * (PetscPowReal(y, 4) - PetscSqr(Ly) * PetscSqr(y))));
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 /* ------------------------------------------------------------------- */
@@ -447,7 +447,7 @@ static PetscErrorCode FormFunctionMatlab(SNES snes, Vec X, Vec F, void *ptr)
   PetscCall(DMRestoreLocalVector(da, &localF));
   PetscFunctionReturn(PETSC_SUCCESS);
 #else
-  return 0; /* Never called */
+  return PETSC_SUCCESS; /* Never called */
 #endif
 }
 

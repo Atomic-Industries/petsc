@@ -121,7 +121,7 @@ static PetscErrorCode PTScotch_PartGraph_MPI(SCOTCH_Num strategy, double imbalan
   PetscCallPTSCOTCH(SCOTCH_dgraphInit(&grafdat, comm));
   PetscCallPTSCOTCH(SCOTCH_dgraphBuild(&grafdat, 0, vertlocnbr, vertlocnbr, xadj, xadj + 1, veloloctab, NULL, edgelocnbr, edgelocnbr, adjncy, NULL, edloloctab));
   PetscCallPTSCOTCH(SCOTCH_stratInit(&stradat));
-  PetscCall(SCOTCH_stratDgraphMapBuild(&stradat, flagval, procglbnbr, nparts, kbalval));
+  PetscCallPTSCOTCH(SCOTCH_stratDgraphMapBuild(&stradat, flagval, procglbnbr, nparts, kbalval));
   PetscCallPTSCOTCH(SCOTCH_archInit(&archdat));
   if (tpart) { /* target partition weights */
     PetscCallPTSCOTCH(SCOTCH_archCmpltw(&archdat, nparts, tpart));

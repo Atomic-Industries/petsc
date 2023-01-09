@@ -240,8 +240,8 @@ static PetscErrorCode RHSFunction2(TS ts, PetscReal t, Vec X, Vec Vres, void *ct
   PetscReal          m_e = 9.11e-31, q_e = 1.60e-19, epsi_0 = 8.85e-12;
 
   PetscFunctionBeginUser;
-  PetscObjectSetName((PetscObject)X, "rhsf2 position");
-  VecViewFromOptions(X, NULL, "-rhsf2_x_view");
+  PetscCall(PetscObjectSetName((PetscObject)X, "rhsf2 position"));
+  PetscCall(VecViewFromOptions(X, NULL, "-rhsf2_x_view"));
   PetscCall(VecGetArrayRead(X, &x));
   PetscCall(VecGetArray(Vres, &vres));
   PetscCall(TSGetDM(ts, &dm));
@@ -431,7 +431,7 @@ int main(int argc, char **argv)
     PetscCall(TSStep(ts));
     if (ts->steprollback) PetscCall(TSPostEvaluate(ts));
     if (!ts->steprollback) {
-      TSPostStep(ts);
+      PetscCall(TSPostStep(ts));
       PetscCall(DMSwarmGetField(sw, DMSwarmPICField_coor, NULL, NULL, (void **)&coor));
       PetscCall(DMSwarmGetField(sw, "kinematics", NULL, NULL, (void **)&kin));
       PetscCall(TSGetSolution(ts, &solution));
