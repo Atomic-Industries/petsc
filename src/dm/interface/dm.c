@@ -4506,7 +4506,7 @@ static PetscErrorCode DMGetIsoperiodicPointSF_Internal(DM dm, PetscSF *sf)
   PetscCall(PetscObjectQueryFunction((PetscObject)dm, "DMGetIsoperiodicPointSF_C", &f));
   if (f) PetscCall(f(dm, sf));
   else *sf = dm->sf;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 /*@

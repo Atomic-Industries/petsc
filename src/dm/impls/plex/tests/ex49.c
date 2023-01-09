@@ -65,7 +65,7 @@ static PetscErrorCode CheckOffsets(DM dm, AppCtx *user, const char *domain_name,
   PetscFunctionBeginUser;
   if (domain_name) PetscCall(DMGetLabel(dm, domain_name, &domain_label));
   PetscCall(PetscPrintf(PETSC_COMM_WORLD, "## %s: '%s' {%" PetscInt_FMT "}%s\n", height_name[height], domain_name ? domain_name : "default", label_value, domain_name && !domain_label ? " (null label)" : ""));
-  if (domain_name && !domain_label) PetscFunctionReturn(0);
+  if (domain_name && !domain_label) PetscFunctionReturn(PETSC_SUCCESS);
   if (user->closure_tensor) PetscCall(DMPlexSetClosurePermutationTensor(dm, PETSC_DETERMINE, NULL));
   // Offsets for cell closures
   PetscCall(DMGetNumFields(dm, &Nf));

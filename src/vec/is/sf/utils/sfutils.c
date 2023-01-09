@@ -836,5 +836,5 @@ PetscErrorCode PetscSFMerge(PetscSF sfa, PetscSF sfb, PetscSF *merged)
   PetscCall(PetscSFCreate(PetscObjectComm((PetscObject)sfa), merged));
   PetscCall(PetscSFSetGraph(*merged, aroots, nleaves, clocal, PETSC_COPY_VALUES, cremote, PETSC_COPY_VALUES));
   PetscCall(PetscFree2(clocal, cremote));
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
