@@ -25,7 +25,6 @@ fixLang('LANG')
 
 def check_for_option_mistakes(opts):
   for opt in opts[1:]:
-    print('opt:'+opt)
     name = opt.split('=')[0]
     if name.find(' ') >= 0:
       raise ValueError('The option "'+name+'" has a space character in the name - this is likely incorrect usage.');
