@@ -25,6 +25,7 @@ fixLang('LANG')
 
 def check_for_option_mistakes(opts):
   for opt in opts[1:]:
+    print('opt:'+opt)
     name = opt.split('=')[0]
     if name.find(' ') >= 0:
       raise ValueError('The option "'+name+'" has a space character in the name - this is likely incorrect usage.');
@@ -262,14 +263,14 @@ def chkcygwinpython():
   return 0
 
 def chkcygwinwindowscompilers():
-  '''Adds converts Microsoft and Intel Windows compilers to PETSc script using win32fe'''
+  ''' Converts Microsoft and Intel Windows compilers to PETSc script using win32fe'''
   if os.path.exists('/usr/bin/cygcheck.exe'):
     path = os.path.join(os.getcwd(),'lib','petsc','win32fe','bin')
     for l in range(1,len(sys.argv)):
       option = sys.argv[l]
       for i in ['cl','icl','ifort','tlib','lib']:
         if option.endswith('='+i):
-          sys.argv[l] = os.path.join(path,'win_'+option)
+          sys.argv[l] = option[:option.find('=')+1]+os.path.join(path,'win_'+i)
           break
   return 0
 
@@ -430,6 +431,7 @@ def petsc_configure(configure_options):
   chkcygwinpython()
   chkcygwinlink()
   chkdosfiles()
+  print("check windows")
   chkcygwinwindowscompilers()
   chktmpnoexec()
 
