@@ -314,7 +314,7 @@ static PetscErrorCode PCSetUp_AMGX(PC pc)
   } else {
     PetscCall(MatSeqAIJRestoreArrayRead(amgx->localA, &amgx->values));
   }
-  amgx_output_messages(amgx);
+  PetscCall(amgx_output_messages(amgx));
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 
@@ -365,7 +365,7 @@ static PetscErrorCode PCApply_AMGX(PC pc, Vec b, Vec x)
     PetscCall(VecRestoreArrayWrite(x, &x_));
     PetscCall(VecRestoreArrayRead(b, &b_));
   }
-  amgx_output_messages(amgx);
+  PetscCall(amgx_output_messages(amgx));
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 
@@ -380,7 +380,7 @@ static PetscErrorCode PCReset_AMGX(PC pc)
     PetscCallAmgX(AMGX_vector_destroy(amgx->sol));
     PetscCallAmgX(AMGX_vector_destroy(amgx->rhs));
     if (amgx->nranks > 1) PetscCall(MatDestroy(&amgx->localA));
-    amgx_output_messages(amgx);
+    PetscCall(amgx_output_messages(amgx));
     amgx->solve_state_init = false;
   }
   PetscFunctionReturn(PETSC_SUCCESS);
@@ -629,7 +629,7 @@ PETSC_EXTERN PetscErrorCode PCCreate_AMGX(PC pc)
   PetscCallMPI(MPI_Comm_size(amgx->comm, &amgx->nranks));
   PetscCallMPI(MPI_Comm_rank(amgx->comm, &amgx->rank));
 
-  amgx_output_messages(amgx);
+  PetscCall(amgx_output_messages(amgx));
   PetscFunctionReturn(PETSC_SUCCESS);
 }
 

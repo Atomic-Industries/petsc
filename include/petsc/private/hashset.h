@@ -141,8 +141,8 @@ M*/
 \
   static inline PETSC_UNUSED PetscErrorCode Petsc##HashT##Add(Petsc##HashT ht, KeyType key) \
   { \
-    int      ret; \
-    khiter_t iter; \
+    int                   ret; \
+    PETSC_UNUSED khiter_t iter; \
     PetscFunctionBeginHot; \
     PetscDisableStaticAnalyzerForExpressionUnderstandingThatThisIsDangerousAndBugprone(PetscValidPointer(ht, 1)); \
     iter = kh_put(HashT, ht, key, &ret); \
@@ -163,8 +163,8 @@ M*/
 \
   static inline PETSC_UNUSED PetscErrorCode Petsc##HashT##QueryAdd(Petsc##HashT ht, KeyType key, PetscBool *missing) \
   { \
-    int      ret; \
-    khiter_t iter; \
+    int                   ret; \
+    PETSC_UNUSED khiter_t iter; \
     PetscFunctionBeginHot; \
     PetscDisableStaticAnalyzerForExpressionUnderstandingThatThisIsDangerousAndBugprone(PetscValidPointer(ht, 1)); \
     PetscDisableStaticAnalyzerForExpressionUnderstandingThatThisIsDangerousAndBugprone(PetscValidPointer(missing, 3)); \

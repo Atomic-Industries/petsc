@@ -1592,7 +1592,7 @@ static herr_t ReadLabelStratumHDF5_Static(hid_t g_id, const char *vname, const H
   if (ctx->sfXC) {
     IS newStratumIS;
 
-    PetscCall(ReadLabelStratumHDF5_Distribute_Private(stratumIS, ctx, &newStratumIS));
+    PetscCallHDF5(ReadLabelStratumHDF5_Distribute_Private, (stratumIS, ctx, &newStratumIS));
     PetscCall(ISDestroy(&stratumIS));
     stratumIS = newStratumIS;
   }

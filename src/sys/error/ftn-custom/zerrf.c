@@ -96,11 +96,10 @@ PETSC_EXTERN void petscerror_(MPI_Fint *comm,PetscErrorCode *number,PetscErrorTy
 PETSC_EXTERN void petscerrorf_(PetscErrorCode *err, int *line, char *file, PETSC_FORTRAN_CHARLEN_T len)
 {
   char          *tfile;
-  PetscErrorCode derr, *ierr = &derr; /* needed by FIXCHAR */
+  PetscErrorCode ierr[] = {PETSC_SUCCESS}; /* needed by FIXCHAR */
 
   FIXCHAR(file, len, tfile);
-  derr = PetscError(PETSC_COMM_SELF, *line, NULL, tfile, *err, PETSC_ERROR_REPEAT, NULL);
-  (void)derr;
+  *err = PetscError(PETSC_COMM_SELF, *line, NULL, tfile, *err, PETSC_ERROR_REPEAT, NULL);
   FREECHAR(file, tfile);
 }
 
@@ -108,27 +107,26 @@ PETSC_EXTERN void petscerrormpi_(PetscErrorCode *err, int *line, char *file, PET
 {
   char           errorstring[2 * MPI_MAX_ERROR_STRING];
   char          *tfile;
-  PetscErrorCode derr, *ierr = &derr; /* needed by FIXCHAR */
+  PetscErrorCode ierr[] = {PETSC_SUCCESS}; /* needed by FIXCHAR */
 
   FIXCHAR(file, len, tfile);
   PetscMPIErrorString(*err, errorstring);
-  derr = PetscError(PETSC_COMM_SELF, *line, NULL, file, PETSC_ERR_MPI, PETSC_ERROR_INITIAL, "MPI error %d %s", *err, errorstring);
-  (void)derr;
+  *err = PetscError(PETSC_COMM_SELF, *line, NULL, file, PETSC_ERR_MPI, PETSC_ERROR_INITIAL, "MPI error %d %s", *err, errorstring);
   FREECHAR(file, tfile);
   *err = PETSC_ERR_MPI;
 }
 #else
 PETSC_EXTERN void petscerrorf_(PetscErrorCode *err)
 {
-  PetscError(PETSC_COMM_SELF,0,NULL,NULL,*err,PETSC_ERROR_REPEAT,NULL);
+  *err = PetscError(PETSC_COMM_SELF, 0, NULL, NULL, *err, PETSC_ERROR_REPEAT, NULL);
 }
 
 PETSC_EXTERN void petscerrormpi_(PetscErrorCode *err)
 {
-  char           errorstring[2*MPI_MAX_ERROR_STRING];
+  char errorstring[2 * MPI_MAX_ERROR_STRING];
 
-  PetscMPIErrorString(*err,errorstring);
-  PetscError(PETSC_COMM_SELF,0,NULL,NULL,PETSC_ERR_MPI,PETSC_ERROR_INITIAL,"MPI error %d %s",*err,errorstring);
+  PetscMPIErrorString(*err, errorstring);
+  *err = PetscError(PETSC_COMM_SELF, 0, NULL, NULL, PETSC_ERR_MPI, PETSC_ERROR_INITIAL, "MPI error %d %s", *err, errorstring);
   *err = PETSC_ERR_MPI;
 }
 #endif

@@ -1575,8 +1575,8 @@ M*/
 #endif /* PETSC_USE_DEBUG */
 
 #if defined(PETSC_CLANG_STATIC_ANALYZER)
-  #define PetscStackCallExternalVoid(name, ...)
-template <typename F, typename Args...>
+  #define PetscStackCallExternalVoid(...)
+template <typename F, typename... Args>
 void PetscCallExternal(F, Args...);
 #else
   /*MC

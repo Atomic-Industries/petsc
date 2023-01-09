@@ -152,7 +152,10 @@ static PetscErrorCode MatLUFactorNumeric_SeqAIJCUSPARSEBAND(Mat B, Mat A, const 
   const PetscScalar            *aa_d;
   PetscScalar                  *ba_t = cusparseTriFactors->a_band_d;
   int                          *bi_t = cusparseTriFactors->i_band_d;
-  int                           Ni = 10, team_size = 9, Nf = 1, nVec = 56, nconcurrent = 1, nsm = -1; // Nf is batch size - not used
+  int                           Ni = 10, team_size = 9, Nf = 1, nVec = 56, nconcurrent = 1; // Nf is batch size - not used
+#if defined(AIJBANDUSEGROUPS)
+  int nsm = -1;
+#endif
 
   PetscFunctionBegin;
   if (A->rmap->n == 0) PetscFunctionReturn(PETSC_SUCCESS);
@@ -173,7 +176,10 @@ static PetscErrorCode MatLUFactorNumeric_SeqAIJCUSPARSEBAND(Mat B, Mat A, const 
   PetscCallCUDA(WaitForCUDA());
   PetscCall(PetscLogGpuTimeBegin());
   {
-    int bw = (int)(2. * (double)n - 1. - (double)(PetscSqrtReal(1. + 4. * ((double)n * (double)n - (double)b->nz)) + PETSC_MACHINE_EPSILON)) / 2, bm1 = bw - 1, nl = n / Nf;
+    int bw = (int)(2. * (double)n - 1. - (double)(PetscSqrtReal(1. + 4. * ((double)n * (double)n - (double)b->nz)) + PETSC_MACHINE_EPSILON)) / 2;
+#if defined(PETSC_USE_LOG)
+    int bm1 = bw - 1, nl = n / Nf;
+#endif
 #if !defined(AIJBANDUSEGROUPS)
     Ni = 1 / nconcurrent;
     Ni = 1;

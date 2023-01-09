@@ -167,22 +167,17 @@ PETSC_INTERN PetscErrorCode PetscCloseHistoryFile(FILE **fd)
   in the debugger hence we call abort() instead of MPI_Abort().
 */
 
-void Petsc_MPI_AbortOnError(MPI_Comm *comm, PetscMPIInt *flag, ...)
+void Petsc_MPI_AbortOnError(PETSC_UNUSED MPI_Comm *comm, PetscMPIInt *flag, ...)
 {
-  PetscErrorCode ierr;
   PetscFunctionBegin;
-  ierr = (*PetscErrorPrintf)("MPI error %d\n", *flag);
-  (void)ierr;
+  PetscCallContinue((*PetscErrorPrintf)("MPI error %d\n", *flag));
   abort();
 }
 
 void Petsc_MPI_DebuggerOnError(MPI_Comm *comm, PetscMPIInt *flag, ...)
 {
-  PetscErrorCode ierr;
-
   PetscFunctionBegin;
-  ierr = (*PetscErrorPrintf)("MPI error %d\n", *flag);
-  (void)ierr;
+  PetscCallContinue((*PetscErrorPrintf)("MPI error %d\n", *flag));
   if (PetscAttachDebugger()) PETSCABORT(*comm, (PetscErrorCode)*flag); /* hopeless so get out */
 }
 

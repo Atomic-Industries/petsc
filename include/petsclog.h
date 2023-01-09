@@ -573,7 +573,7 @@ static inline int PetscMPIParallelComm(MPI_Comm comm)
 
   #define PetscLogMemory PETSC_FALSE
 
-  #define PetscLogFlops(n) PETSC_SUCCESS
+  #define PetscLogFlops(n) ((void)(n), PETSC_SUCCESS)
   #define PetscGetFlops(a) (*(a) = 0.0, PETSC_SUCCESS)
 
   #define PetscLogStageRegister(a, b)   PETSC_SUCCESS
