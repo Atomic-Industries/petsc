@@ -666,6 +666,7 @@ int main(int argc, char **argv)
 
   test:
     suffix: 0
+    requires: triangle
     nsize: 4
     args: -dm_plex_box_lower -2,-2 -dm_plex_box_upper 2,2 -dm_plex_simplex 1 -dm_refine_hierarchy 2 -eta 0.0001 -ksp_converged_reason -ksp_max_it 50 -ksp_rtol 1e-3 -ksp_type fgmres -mg_coarse_ksp_rtol 1e-1 -mg_coarse_ksp_type fgmres -mg_coarse_mg_levels_ksp_type gmres -mg_coarse_pc_type gamg -mg_levels_ksp_max_it 4 -mg_levels_ksp_type gmres -mg_levels_pc_type jacobi -mu 0.005 -pc_mg_type full -pc_type mg -petscpartitioner_type simple -petscspace_degree 2 -snes_converged_reason -snes_max_it 10 -snes_monitor -snes_rtol 1.e-9 -snes_stol 1.e-9 -ts_adapt_dt_max 0.01 -ts_adapt_monitor -ts_arkimex_type 1bee -ts_dt 0.001 -ts_max_reject 10 -ts_max_snes_failures -1 -ts_max_steps 1 -ts_max_time -ts_monitor -ts_type arkimex
 
