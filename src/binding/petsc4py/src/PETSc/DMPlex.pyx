@@ -521,6 +521,12 @@ cdef class DMPlex(DM):
         CHKERR( DMPlexRebalanceSharedPoints(self.dm, centityDepth, cuseInitialGuess, cparallel, &csuccess) )
         return toBool(csuccess)
 
+    def gather(self):
+        cdef SF sf = SF()
+        cdef PetscDM newdm = NULL
+        CHKERR( DMPlexGetGatherDM(self.dm, &sf, &newdm) )
+        return (sf, newdm)
+
     def distribute(self, overlap=0):
         cdef PetscDM dmParallel = NULL
         cdef PetscInt coverlap = asInt(overlap)

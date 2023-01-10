@@ -103,6 +103,7 @@ cdef extern from * nogil:
     int DMPlexGetAdjacency(PetscDM,PetscInt,PetscInt*,PetscInt*[])
     #int DMPlexCreateNeighborCSR(PetscDM,PetscInt,PetscInt*,PetscInt**,PetscInt**)
     int DMPlexRebalanceSharedPoints(PetscDM,PetscInt,PetscBool,PetscBool,PetscBool*)
+    int DMPlexGetGatherDM(PetscDM,PetscSF*,PetscDM*)
     int DMPlexDistribute(PetscDM,PetscInt,PetscSF*,PetscDM*)
     int DMPlexDistributeOverlap(PetscDM,PetscInt,PetscSF*,PetscDM*)
     int DMPlexDistributeGetDefault(PetscDM,PetscBool*)
