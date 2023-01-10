@@ -523,9 +523,12 @@ cdef class DMPlex(DM):
 
     def gather(self):
         cdef SF sf = SF()
-        cdef PetscDM newdm = NULL
-        CHKERR( DMPlexGetGatherDM(self.dm, &sf, &newdm) )
-        return (sf, newdm)
+        cdef PetscDM dmSerial = NULL
+        CHKERR( DMPlexGetGatherDM(self.dm, &sf, &dmSerial) )
+        # return (sf, dmSerial)
+        if dmSerial != NULL:
+            PetscCLEAR(self.obj); self.dm = dmSerial
+            return sf
 
     def distribute(self, overlap=0):
         cdef PetscDM dmParallel = NULL
