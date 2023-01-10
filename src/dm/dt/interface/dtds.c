@@ -131,6 +131,9 @@ PetscErrorCode PetscDSGetType(PetscDS prob, PetscDSType *name)
 #if defined(__clang__)
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wformat-pedantic"
+#elif defined(__GNUC__) || defined(__GNUG__)
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wformat"
 #endif
 
 static PetscErrorCode PetscDSView_Ascii(PetscDS ds, PetscViewer viewer)
@@ -241,6 +244,8 @@ static PetscErrorCode PetscDSView_Ascii(PetscDS ds, PetscViewer viewer)
 
 #if defined(__clang__)
   #pragma clang diagnostic pop
+#elif defined(__GNUC__) || defined(__GNUG__)
+  #pragma GCC diagnostic pop
 #endif
 
 /*@C

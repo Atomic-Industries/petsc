@@ -378,6 +378,9 @@ static PetscErrorCode MatProductSymbolic_X_Dense(Mat C)
 #if defined(__clang__)
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wformat-pedantic"
+#elif defined(__GNUC__) || defined(__GNUG__)
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wformat"
 #endif
 
 /* a single driver to query the dispatching */
@@ -509,6 +512,8 @@ static PetscErrorCode MatProductSetFromOptions_Private(Mat mat)
 
 #if defined(__clang__)
   #pragma clang diagnostic pop
+#elif defined(__GNUC__) || defined(__GNUG__)
+  #pragma GCC diagnostic pop
 #endif
 
 /*@C
