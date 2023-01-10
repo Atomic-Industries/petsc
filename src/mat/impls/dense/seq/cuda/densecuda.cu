@@ -999,6 +999,7 @@ static PetscErrorCode MatDenseRestoreArrayAndMemType_SeqDenseCUDA(Mat A, PetscSc
 {
   PetscFunctionBegin;
   A->offloadmask = PETSC_OFFLOAD_GPU; // Since we've written to the array on device
+  if (array) *array = NULL;
   PetscFunctionReturn(0);
 }
 

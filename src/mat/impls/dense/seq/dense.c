@@ -2546,7 +2546,7 @@ PetscErrorCode MatDenseGetArrayWriteAndMemType(Mat A, PetscScalar **array, Petsc
     if (fptr) {
       PetscCall((*fptr)(A, array, mtype));
     } else {
-      PetscUseMethod(A, "MatDenseGetWriteArray_C", (Mat, PetscScalar **), (A, array));
+      PetscUseMethod(A, "MatDenseGetArrayWrite_C", (Mat, PetscScalar **), (A, array));
       if (mtype) *mtype = PETSC_MEMTYPE_HOST;
     }
   }
